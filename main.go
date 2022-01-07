@@ -4,10 +4,10 @@ import (
 	constant "application/constants"
 	itemFile "application/items"
 	"flag"
-	"fmt"
 	"log"
 )
 
+//map command line input (-name, -price, -quantity, -type) to variables
 var (
 	name     = flag.String("name", "", "item name")
 	price    = flag.Float64("price", 0, "price of item")
@@ -19,13 +19,13 @@ func main() {
 
 	flag.Parse()
 
+	// logging inputted(from command line) item details
 	log.Println("item name: ", *name)
 	log.Println("price of item: ", *price)
 	log.Println("quantity of item: ", *quantity)
 	log.Println("type of item: ", *typeItem)
 
 	var itemsDetails []itemFile.Item
-
 	item := itemFile.Item{}
 
 	item.Name = *name
@@ -33,29 +33,35 @@ func main() {
 	item.Quantity = *quantity
 	item.TypeItem = *typeItem
 
+	// validate input
 	ok, err := item.ValidateItemDetails()
 	if !ok {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
+		// take input again from user and validate
 		_, err = item.SetItemDetails()
 		if err != nil {
+			//logging is already done in SetItemDetails()
 			log.Fatal(err)
 		}
-
 	}
 
-	err = item.CalculateTax()
+	// calculate tax and final price for the given item
+	err = item.CalculateTaxAndPrice()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// add item to items list
 	itemsDetails = append(itemsDetails, item)
 
+	// check whether user wants to add more item
 	var moreItems string
 	moreItems, err = itemFile.AddMoreItems()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// accept items details from user iteratively
 	for moreItems == constant.Accept {
 
 		_, err = item.SetItemDetails()
@@ -63,15 +69,26 @@ func main() {
 			log.Fatal(err)
 		}
 
-		item.CalculateTax()
+		// calculate tax and final price for the given item
+		err = item.CalculateTaxAndPrice()
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// add item to items list
 		itemsDetails = append(itemsDetails, item)
+
+		// check whether user wants to enter more item details
 		moreItems, err = itemFile.AddMoreItems()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	item.GetItemDetails()
-	itemFile.GetAllItemDetails(itemsDetails)
+	// print details of all items
+	err = itemFile.GetAllItemDetails(itemsDetails)
+	if err != nil {
+		log.Fatal(err)
+	}
 	log.Println(itemsDetails)
 }
