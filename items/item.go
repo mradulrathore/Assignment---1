@@ -129,7 +129,7 @@ func (item *Item) ValidateItemDetails() (bool, error) {
 	return true, nil
 }
 
-func AddMoreItems() (string, error) {
+func GetUserChoice() (string, error) {
 
 	fmt.Println("Do you want to enter details of any other item (" + constant.Accept + "/" + constant.Deny + ")")
 	var moreItems string = constant.Accept
@@ -139,7 +139,7 @@ func AddMoreItems() (string, error) {
 		return "", err
 	}
 
-	err = ValidateConfirmation(moreItems)
+	_, err = ValidateConfirmation(moreItems)
 
 	for err != nil {
 
@@ -148,20 +148,19 @@ func AddMoreItems() (string, error) {
 			log.Println(err)
 			return "", err
 		}
-		err = ValidateConfirmation(moreItems)
+		_, err = ValidateConfirmation(moreItems)
 	}
 
 	return moreItems, nil
-
 }
 
 // validate whether userChoice is eiter Accept or Deny
-func ValidateConfirmation(userChoice string) error {
+func ValidateConfirmation(userChoice string) (bool, error) {
 
 	if userChoice != constant.Accept && userChoice != constant.Deny {
 		log.Println("enter either " + constant.Accept + " or " + constant.Deny)
-		return errors.New("enter either " + constant.Accept + " or " + constant.Deny)
+		return false, errors.New("enter either " + constant.Accept + " or " + constant.Deny)
 	}
 
-	return nil
+	return true, nil
 }

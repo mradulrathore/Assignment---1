@@ -6,6 +6,10 @@ import (
 	"testing"
 )
 
+func TestAddMoreItems(t *testing.T) {
+
+}
+
 func TestCalculateTaxAndPrice(t *testing.T) {
 	var items = []Item{
 		// all item details provided
@@ -50,6 +54,47 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 			t.Errorf("got %g, wanted %g", item.SalesTaxLiabilityPerItem, expectedSalesTaxLiabilityPerItem[index])
 		}
 
+	}
+}
+
+func TestGetAllItemDetails(t *testing.T) {
+	var items = []Item{
+		// all item details provided
+		{
+			Name:     "Mango",
+			Price:    12,
+			Quantity: 1,
+			TypeItem: "raw",
+		},
+		{
+			Name:     "Mango",
+			Price:    12,
+			Quantity: 1,
+			TypeItem: "manufactured",
+		},
+		{
+			Name:     "Mango",
+			Price:    12,
+			Quantity: 1,
+			TypeItem: "imported",
+		},
+		{
+			Name:     "Orange",
+			Price:    100,
+			Quantity: 1,
+			TypeItem: "imported",
+		},
+		{
+			Name:     "Tomato",
+			Price:    1000,
+			Quantity: 1,
+			TypeItem: "imported",
+		},
+	}
+
+	err := GetAllItemDetails(items)
+	if err != nil {
+		t.Errorf("exception is occuring: %q", err)
 	}
 }
 
@@ -115,12 +160,36 @@ func TestValidateItemDetails(t *testing.T) {
 			Quantity: 2,
 			TypeItem: "raw",
 		},
+		// Price less than zero
+		{
+			Price:    -100,
+			Quantity: 2,
+			TypeItem: "raw",
+		},
 	}
 
-	expected := []bool{true, true, true, false, false, false, true, true, true}
+	expected := []bool{true, true, true, false, false, false, true, true, true, false}
 
 	for index, item := range items {
 		if ok, err := item.ValidateItemDetails(); ok != expected[index] {
+			if !expected[index] {
+				t.Errorf("exception is occuring: %q", err)
+			} else {
+				t.Errorf("exception is not occuring: %q", err)
+			}
+
+		}
+	}
+}
+
+func TestValidateConfirmation(t *testing.T) {
+
+	userChoices := []string{"y", "n", "er", "yes", "no"}
+
+	expected := []bool{true, true, false, false, false}
+
+	for index, choice := range userChoices {
+		if ok, err := ValidateConfirmation(choice); ok != expected[index] {
 			if !expected[index] {
 				t.Errorf("exception is occuring: %q", err)
 			} else {
