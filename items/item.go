@@ -26,19 +26,23 @@ func (item *Item) CalculateTax() error {
 	switch item.TypeItem {
 	case "raw":
 		item.SalesTaxLiabilityPerItem = constant.TaxRateForRAW * item.Price / 100
-		item.FinalPrice = item.Price*float64(item.Quantity) + item.SalesTaxLiabilityPerItem*float64(item.Quantity)
+		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 	case "manufactured":
 		item.SalesTaxLiabilityPerItem = constant.TaxRateForManufacturedItemOnItemCost*item.Price/100 + constant.TaxRateForManufactureItemOnCombined*(item.Price+constant.TaxRateForManufacturedItemOnItemCost*item.Price/100)/100
-		item.FinalPrice = item.Price*float64(item.Quantity) + item.SalesTaxLiabilityPerItem*float64(item.Quantity)
+		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 	case "imported":
-		item.SalesTaxLiabilityPerItem = constant.ImportDuty * item.Price / 10
-		item.FinalPrice = item.Price*float64(item.Quantity) + item.SalesTaxLiabilityPerItem*float64(item.Quantity)
+		item.SalesTaxLiabilityPerItem = constant.ImportDuty * item.Price / 100
+		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 		if item.FinalPrice <= constant.ImportDutyLimit1 {
 			item.FinalPrice = item.FinalPrice + constant.SurchargeAmountForFinalCostUptoImportDutyLimit1
+			item.SalesTaxLiabilityPerItem = item.SalesTaxLiabilityPerItem + constant.SurchargeAmountForFinalCostUptoImportDutyLimit1
 		} else if item.FinalPrice <= constant.ImportDutyLimit2 {
 			item.FinalPrice = item.FinalPrice + constant.SurchargeAmountForFinalCostUptoImportDutyLimit2
+			item.SalesTaxLiabilityPerItem = item.SalesTaxLiabilityPerItem + constant.SurchargeAmountForFinalCostUptoImportDutyLimit2
 		} else {
+			item.SalesTaxLiabilityPerItem = item.SalesTaxLiabilityPerItem + item.FinalPrice*constant.SurchargeRateForFinalCostExceedeImportDutyLimit2/100
 			item.FinalPrice = item.FinalPrice + item.FinalPrice*constant.SurchargeRateForFinalCostExceedeImportDutyLimit2/100
+
 		}
 
 	}
@@ -112,6 +116,9 @@ func (item *Item) ValidateItemDetails() (bool, error) {
 	}
 	if item.Quantity < 0 {
 		return false, errors.New("quantity can not be negative")
+	}
+	if item.Price < 0 {
+		return false, errors.New("price can not be negative")
 	}
 	if item.TypeItem != "raw" && item.TypeItem != "manufactured" && item.TypeItem != "imported" {
 		return false, errors.New("item type can only be raw, manufactured or imported")
