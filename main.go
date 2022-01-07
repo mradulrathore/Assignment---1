@@ -56,7 +56,7 @@ func main() {
 
 	// check whether user wants to add more item
 	var moreItems string
-	moreItems, err = itemFile.AddMoreItems()
+	moreItems, err = itemFile.GetUserChoice()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func main() {
 		itemsDetails = append(itemsDetails, item)
 
 		// check whether user wants to enter more item details
-		moreItems, err = itemFile.AddMoreItems()
+		moreItems, err = itemFile.GetUserChoice()
 		if err != nil {
 			log.Fatal(err)
 		}
