@@ -16,21 +16,18 @@ type Item struct {
 	FinalPrice               float64
 }
 
-// func checkError(msg string, err error) {
-// 	if err != nil {
-// 		log.Print(msg, err)
-// 	}
-// }
-
-func (item *Item) CalculateTax() error {
+func (item *Item) CalculateTaxAndPrice() error {
 	switch item.TypeItem {
 	case "raw":
+		//raw: 12.5% of the item cost
 		item.SalesTaxLiabilityPerItem = constant.TaxRateForRAW * item.Price / 100
 		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 	case "manufactured":
+		// manufactured: 12.5% of the item cost + 2% of (item cost + 12.5% of the item cost)
 		item.SalesTaxLiabilityPerItem = constant.TaxRateForManufacturedItemOnItemCost*item.Price/100 + constant.TaxRateForManufactureItemOnCombined*(item.Price+constant.TaxRateForManufacturedItemOnItemCost*item.Price/100)/100
 		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 	case "imported":
+		//imported: 10% import duty on item cost + a surcharge
 		item.SalesTaxLiabilityPerItem = constant.ImportDuty * item.Price / 100
 		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 		if item.FinalPrice <= constant.ImportDutyLimit1 {
@@ -42,21 +39,25 @@ func (item *Item) CalculateTax() error {
 		} else {
 			item.SalesTaxLiabilityPerItem = item.SalesTaxLiabilityPerItem + item.FinalPrice*constant.SurchargeRateForFinalCostExceedeImportDutyLimit2/100
 			item.FinalPrice = item.FinalPrice + item.FinalPrice*constant.SurchargeRateForFinalCostExceedeImportDutyLimit2/100
-
 		}
-
 	}
 	return nil
 }
 
-func GetAllItemDetails(items []Item) {
+func GetAllItemDetails(items []Item) error {
 
 	for _, item := range items {
-		item.GetItemDetails()
+		err := item.GetItemDetails()
+		if err != nil {
+			log.Println(err)
+			return err
+		}
 	}
+
+	return nil
 }
 
-func (item Item) GetItemDetails() {
+func (item Item) GetItemDetails() error {
 
 	fmt.Printf("Item Name: %s \n", item.Name)
 	fmt.Printf("Item Price: %g \n", item.Price)
@@ -64,44 +65,46 @@ func (item Item) GetItemDetails() {
 	fmt.Printf("Item Type: %s \n", item.TypeItem)
 	fmt.Printf("Item Type: %g \n", item.SalesTaxLiabilityPerItem)
 	fmt.Printf("Item Type: %g \n \n", item.FinalPrice)
+
+	return nil
 }
 
 func (item *Item) SetItemDetails() (bool, error) {
 
 	fmt.Printf("Item Name: ")
-	// MANGO JUICE
 	_, err := fmt.Scanf("%s", &(item.Name))
 	if err != nil {
-		log.Print("  Scan for Item Name failed, due to ", err)
+		log.Println("scan for Item Name failed, due to ", err)
 		return false, err
 	}
 
 	fmt.Printf("Item Price: ")
 	_, err = fmt.Scanf("%g", &(item.Price))
 	if err != nil {
-		log.Print("  Scan for Item Price failed, due to ", err)
+		log.Println("scan for Item Price failed, due to ", err)
 		return false, err
 	}
 
 	fmt.Printf("Item Quantity: ")
 	_, err = fmt.Scanf("%d", &(item.Quantity))
 	if err != nil {
-		log.Print("  Scan for Item Quantity failed, due to ", err)
+		log.Println("scan for Item Quantity failed, due to ", err)
 		return false, err
 	}
 
 	fmt.Printf("Item Type: ")
 	_, err = fmt.Scanf("%s", &(item.TypeItem))
 	if err != nil {
-		log.Print("  Scan for Item type failed, due to ", err)
+		log.Println(" scan for Item type failed, due to ", err)
 		return false, err
 	}
 
 	ok, err := item.ValidateItemDetails()
 	if !ok {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		ok, err = item.SetItemDetails()
 		if err != nil {
+			log.Println(err)
 			return ok, err
 		}
 	}
@@ -127,19 +130,22 @@ func (item *Item) ValidateItemDetails() (bool, error) {
 }
 
 func AddMoreItems() (string, error) {
+
 	fmt.Println("Do you want to enter details of any other item (" + constant.Accept + "/" + constant.Deny + ")")
 	var moreItems string = constant.Accept
 	_, err := fmt.Scanf("%s", &moreItems)
 	if err != nil {
+		log.Println(err)
 		return "", err
 	}
 
 	err = ValidateConfirmation(moreItems)
 
 	for err != nil {
-		fmt.Println(err.Error())
+
 		_, err = fmt.Scanf("%s", &moreItems)
 		if err != nil {
+			log.Println(err)
 			return "", err
 		}
 		err = ValidateConfirmation(moreItems)
@@ -149,9 +155,11 @@ func AddMoreItems() (string, error) {
 
 }
 
+// validate whether userChoice is eiter Accept or Deny
 func ValidateConfirmation(userChoice string) error {
 
 	if userChoice != constant.Accept && userChoice != constant.Deny {
+		log.Println("enter either " + constant.Accept + " or " + constant.Deny)
 		return errors.New("enter either " + constant.Accept + " or " + constant.Deny)
 	}
 

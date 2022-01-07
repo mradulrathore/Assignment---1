@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestCalculateTax(t *testing.T) {
+func TestCalculateTaxAndPrice(t *testing.T) {
 	var items = []Item{
 		// all item details provided
 		{
@@ -43,7 +43,7 @@ func TestCalculateTax(t *testing.T) {
 
 	expectedSalesTaxLiabilityPerItem := []float64{1.5, 1.77, 6.2, 20, 155}
 	for index, item := range items {
-		err := item.CalculateTax()
+		err := item.CalculateTaxAndPrice()
 		if err != nil {
 			t.Errorf("exception is occuring: %q", err)
 		} else if item.SalesTaxLiabilityPerItem != expectedSalesTaxLiabilityPerItem[index] {
