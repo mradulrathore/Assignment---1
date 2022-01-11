@@ -1,12 +1,12 @@
 package item
 
-// // cmd go test -coverprofile=coverage.out
+// cmd go test -coverprofile=coverage.out
 
-// import (
-// 	"testing"
+import (
+	"testing"
 
-// 	"github.com/mradulrathore/onboarding-assignments/item/enum"
-// )
+	"github.com/mradulrathore/onboarding-assignments/item/enum"
+)
 
 // // func TestNew(t *testing.T) {
 
@@ -80,104 +80,92 @@ package item
 
 // // }
 
-// func TestNew(t *testing.T) {
+func TestNew(t *testing.T) {
+	_, emptyTypeErr := enum.ItemTypeString("")
+	_, invalidTypeErr := enum.ItemTypeString("exported")
 
-// 	var tests = []struct {
-// 		desc string
-// 		req  Item
-// 		err  error
-// 	}{
-// 		// all item details provided
-// 		{
-// 			req: Item{
-// 				Name:     "Mango",
-// 				Price:    100,
-// 				Quantity: 2,
-// 				Type:     enum.ItemTypeString("raw"),
-// 			},
-// 			err: nil,
-// 		},
-// 		// all item details provided
-// 		{
-// 			req: Item{
-// 				Name:     "Orange",
-// 				Price:    100,
-// 				Quantity: 2,
-// 				Type:     "imported",
-// 			},
-// 			err: nil,
-// 		},
-// 		// Quantity less than 0
-// 		{
-// 			req: Item{
-// 				Name:     "Orange",
-// 				Price:    100,
-// 				Quantity: -2,
-// 				Type:     Imported,
-// 			},
-// 			err: NegativeQuantErr,
-// 		},
-// 		// type of item not matches predefined type
-// 		{
-// 			req: Item{
-// 				Name:     "Mango",
-// 				Price:    100,
-// 				Quantity: 2,
-// 				Type:     "exported",
-// 			},
-// 			err: InvalideItmType,
-// 		},
-// 		// item type missing
-// 		{
-// 			req: Item{
-// 				Name:     "Mango",
-// 				Price:    100,
-// 				Quantity: 2,
-// 			},
-// 			err: InvalideItmType,
-// 		},
-// 		// Quantity is not provided and mandatory field(item type) is provided
-// 		{
-// 			req: Item{
-// 				Name:  "Mango",
-// 				Price: 100,
-// 				Type:  Raw,
-// 			},
-// 			err: nil,
-// 		},
-// 		// Price is not provided and mandatory field(item type) is provided
-// 		{
-// 			req: Item{
-// 				Name:     "Mango",
-// 				Quantity: 2,
-// 				Type:     Raw,
-// 			},
-// 			err: nil,
-// 		},
-// 		// Name is not provided and mandatory field(item type) is provided
-// 		{
-// 			req: Item{
-// 				Price:    100,
-// 				Quantity: 2,
-// 				Type:     Raw,
-// 			},
-// 			err: nil,
-// 		},
-// 		// Price less than zero
-// 		{
-// 			req: Item{
-// 				Price:    -100,
-// 				Quantity: 2,
-// 				Type:     Raw,
-// 			},
-// 			err: NegativePriceErr,
-// 		},
-// 	}
+	var tests = []struct {
+		scenario string
+		desc     string
+		name     string
+		price    float64
+		quantity int
+		typeItem string
+		err      error
+	}{
+		{
+			scenario: "all item details provided",
+			name:     "Mango",
+			price:    100,
+			quantity: 2,
+			typeItem: "raw",
+			err:      nil,
+		},
+		{
+			scenario: "all item details provided",
+			name:     "Orange",
+			price:    100,
+			quantity: 2,
+			typeItem: "imported",
+			err:      nil,
+		},
+		{
+			scenario: "quantity less than 0",
+			name:     "Orange",
+			price:    100,
+			quantity: -2,
+			typeItem: "imported",
+			err:      NegativeQuantErr,
+		},
+		{
+			scenario: "type of item not matches predefined type",
+			name:     "Mango",
+			price:    100,
+			quantity: 2,
+			typeItem: "exported",
+			err:      invalidTypeErr,
+		},
+		{
+			scenario: "item type not provided",
+			name:     "Mango",
+			price:    100,
+			quantity: 2,
+			err:      emptyTypeErr,
+		},
+		{
+			scenario: "quantity is not provided and mandatory field(item type) is provided",
+			name:     "Mango",
+			price:    100,
+			typeItem: "raw",
+			err:      nil,
+		},
+		{
+			scenario: "price is not provided and mandatory field(item type) is provided",
+			name:     "Mango",
+			quantity: 2,
+			typeItem: "raw",
+			err:      nil,
+		},
+		{
+			scenario: "name is not provided and mandatory field(item type) is provided",
+			price:    100,
+			quantity: 2,
+			typeItem: "raw",
+			err:      nil,
+		},
+		{
+			scenario: "price less than zero",
+			price:    -100,
+			quantity: 2,
+			typeItem: "raw",
+			err:      NegativePriceErr,
+		},
+	}
 
-// 	for _, tc := range tests {
-// 		_, err := New(tc.req.Name, tc.req.Price, tc.req.Quantity, tc.req.Type)
-// 		if err != tc.err {
-// 			t.Errorf("got: %v, expected: %v", err, tc.err)
-// 		}
-// 	}
-// }
+	for _, tc := range tests {
+		_, err := New(tc.name, tc.price, tc.quantity, tc.typeItem)
+		if err != tc.err {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		}
+	}
+}

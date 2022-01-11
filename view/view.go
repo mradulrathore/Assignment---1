@@ -7,6 +7,36 @@ import (
 	itm "github.com/mradulrathore/onboarding-assignments/item"
 )
 
+func Initialize() {
+	name, price, quantity, typeItem, err := getItem()
+	if err != nil {
+		log.Fatal(err)
+	}
+	item, err := itm.New(name, price, quantity, typeItem)
+
+	for err != nil {
+		log.Println(err.Error())
+		name, price, quantity, typeItem, err = getItem()
+		if err != nil {
+			log.Fatal(err)
+		}
+		item, err = itm.New(name, price, quantity, typeItem)
+	}
+
+	fmt.Println(item.String())
+
+	// check whether user wants to add more item
+	moreItem, err := getUserChoice()
+	for err != nil {
+		moreItem, err = getUserChoice()
+	}
+
+	// accept items details from user iteratively
+	if moreItem == Accept {
+		Initialize()
+	}
+}
+
 func getItem() (name string, price float64, quantity int, typeItem string, err error) {
 	fmt.Printf("Item Name: ")
 	_, err = fmt.Scanf("%s", &name)
@@ -37,36 +67,6 @@ func getItem() (name string, price float64, quantity int, typeItem string, err e
 	}
 
 	return
-}
-
-func Initialize() {
-	name, price, quantity, typeItem, err := getItem()
-	if err != nil {
-		log.Fatal(err)
-	}
-	item, err := itm.New(name, price, quantity, typeItem)
-
-	for err != nil {
-		log.Println(err.Error())
-		name, price, quantity, typeItem, err = getItem()
-		if err != nil {
-			log.Fatal(err)
-		}
-		item, err = itm.New(name, price, quantity, typeItem)
-	}
-
-	fmt.Println(item.String())
-
-	// check whether user wants to add more item
-	moreItem, err := getUserChoice()
-	for err != nil {
-		moreItem, err = getUserChoice()
-	}
-
-	// accept items details from user iteratively
-	if moreItem == Accept {
-		Initialize()
-	}
 }
 
 func getUserChoice() (moreItem string, err error) {
