@@ -1,0 +1,23 @@
+- all details mandatory
+- blank data, integer value for age, roll number etc). 
+- Roll Number is a key to identify the uniqueness among the students.
+
+-   Full Name
+    Age 
+    Address
+    Roll Number
+    Set of courses he is interested to enroll. There are a total of 6 courses (Course A, B, C, D, E and F). 
+    It is mandatory for each student to choose 4 out of 6 courses.
+
+- in-memory datastructure
+
+- keep the records sorted in ascending order
+    sorted on full-name (if name same then roll-no)
+
+- option to sort the results (either in ascending or descending order) based on name, roll number, age, address.
+
+- Throw a proper user friendly message in case the roll number entered by the user does not exist.
+
+- If the user terminates the program after choosing this option the user’s data should be saved to disk and next time the user runs the program the in-memory collection should be pre populated with data already stored on the disk.
+
+- if he wants to save his latest changes (additions, deletions of users) to disk.
