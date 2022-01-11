@@ -1,10 +1,11 @@
 package main
 
 import (
-	constant "application/constants"
-	itemFile "application/items"
 	"flag"
 	"log"
+
+	constant "github.com/mradulrathore/onboarding-assignments/constants"
+	itemFile "github.com/mradulrathore/onboarding-assignments/items"
 )
 
 //map command line input (-name, -price, -quantity, -type) to variables

@@ -1,10 +1,11 @@
 package item
 
 import (
-	constant "application/constants"
 	"errors"
 	"fmt"
 	"log"
+
+	constant "github.com/mradulrathore/onboarding-assignments/constants"
 )
 
 type Item struct {
