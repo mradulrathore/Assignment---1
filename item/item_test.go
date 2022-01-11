@@ -5,6 +5,7 @@ package item
 import (
 	"testing"
 
+	"github.com/mradulrathore/onboarding-assignments/constant"
 	custErr "github.com/mradulrathore/onboarding-assignments/error"
 )
 
@@ -23,7 +24,7 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 				Name:     "Mango",
 				Price:    12,
 				Quantity: 1,
-				Type:     "raw",
+				Type:     constant.Raw,
 			},
 			ExpectedSalesTaxLiability: 1.5,
 			err:                       nil,
@@ -33,7 +34,7 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 				Name:     "Mango",
 				Price:    12,
 				Quantity: 1,
-				Type:     "manufactured",
+				Type:     constant.Manufactured,
 			},
 			ExpectedSalesTaxLiability: 1.77,
 			err:                       nil,
@@ -43,7 +44,7 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 				Name:     "Mango",
 				Price:    12,
 				Quantity: 1,
-				Type:     "imported",
+				Type:     constant.Imported,
 			},
 			ExpectedSalesTaxLiability: 6.2,
 			err:                       nil,
@@ -53,7 +54,7 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 				Name:     "Orange",
 				Price:    100,
 				Quantity: 1,
-				Type:     "imported",
+				Type:     constant.Imported,
 			},
 			ExpectedSalesTaxLiability: 20,
 			err:                       nil,
@@ -63,7 +64,7 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 				Name:     "Tomato",
 				Price:    1000,
 				Quantity: 1,
-				Type:     "imported",
+				Type:     constant.Imported,
 			},
 			ExpectedSalesTaxLiability: 155,
 			err:                       nil,
@@ -93,13 +94,13 @@ func TestGetAllItemDetails(t *testing.T) {
 				Name:     "Mango",
 				Price:    100,
 				Quantity: 2,
-				Type:     "raw",
+				Type:     constant.Raw,
 			},
 			{
 				Name:     "Orange",
 				Price:    100,
 				Quantity: 2,
-				Type:     "imported",
+				Type:     constant.Imported,
 			},
 			{
 				Name:     "Orange",
@@ -129,7 +130,7 @@ func TestValidateItemDetails(t *testing.T) {
 				Name:     "Mango",
 				Price:    100,
 				Quantity: 2,
-				Type:     "raw",
+				Type:     constant.Raw,
 			},
 			err: nil,
 		},
@@ -139,7 +140,7 @@ func TestValidateItemDetails(t *testing.T) {
 				Name:     "Orange",
 				Price:    100,
 				Quantity: 2,
-				Type:     "imported",
+				Type:     constant.Imported,
 			},
 			err: nil,
 		},
@@ -149,7 +150,7 @@ func TestValidateItemDetails(t *testing.T) {
 				Name:     "Orange",
 				Price:    100,
 				Quantity: -2,
-				Type:     "imported",
+				Type:     constant.Imported,
 			},
 			err: custErr.NegativeQuantErr,
 		},
@@ -177,7 +178,7 @@ func TestValidateItemDetails(t *testing.T) {
 			req: Item{
 				Name:  "Mango",
 				Price: 100,
-				Type:  "raw",
+				Type:  constant.Raw,
 			},
 			err: nil,
 		},
@@ -186,7 +187,7 @@ func TestValidateItemDetails(t *testing.T) {
 			req: Item{
 				Name:     "Mango",
 				Quantity: 2,
-				Type:     "raw",
+				Type:     constant.Raw,
 			},
 			err: nil,
 		},
@@ -195,7 +196,7 @@ func TestValidateItemDetails(t *testing.T) {
 			req: Item{
 				Price:    100,
 				Quantity: 2,
-				Type:     "raw",
+				Type:     constant.Raw,
 			},
 			err: nil,
 		},
@@ -204,7 +205,7 @@ func TestValidateItemDetails(t *testing.T) {
 			req: Item{
 				Price:    -100,
 				Quantity: 2,
-				Type:     "raw",
+				Type:     constant.Raw,
 			},
 			err: custErr.NegativePriceErr,
 		},

@@ -9,8 +9,10 @@ const (
 	ImportDutyLimit2SurchargeAmt         = 10
 	ExceedeImportDutyLimit2SurchargeRate = 0.05
 	ManufacturedItmTaxRate               = 0.125
-	//Extra =ItemCost +12.5% Item Cost
-	ManufacturedItmExtraTaxRate = 0.02
-	Accept                      = "y"
-	Deny                        = "n"
+	ManufacturedItmExtraTaxRate          = 0.02 //Extra =ItemCost +12.5% Item Cost
+	Accept                               = "y"
+	Deny                                 = "n"
+	Raw                                  = "raw"
+	Manufactured                         = "manufactured"
+	Imported                             = "imported"
 )

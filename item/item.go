@@ -65,7 +65,7 @@ func (item *Item) ApplyImportSurcharge() error {
 
 func (item *Item) CalculateTaxAndPrice() error {
 	switch item.Type {
-	case "raw":
+	case constant.Raw:
 		//raw: 12.5% of the item cost
 		err := item.CalculateRAWTax()
 		if err != nil {
@@ -77,7 +77,7 @@ func (item *Item) CalculateTaxAndPrice() error {
 			return err
 		}
 
-	case "manufactured":
+	case constant.Manufactured:
 		// manufactured: 12.5% of the item cost + 2% of (item cost + 12.5% of the item cost)
 		err := item.CalculateManufcaturedTax()
 		if err != nil {
@@ -87,7 +87,7 @@ func (item *Item) CalculateTaxAndPrice() error {
 		if err != nil {
 			return err
 		}
-	case "imported":
+	case constant.Imported:
 		//imported: 10% import duty on item cost + a surcharge
 		err := item.CalculateImportTax()
 		if err != nil {
@@ -184,7 +184,7 @@ func (item *Item) ValidateItemDetails() error {
 	if item.Price < 0 {
 		return custErr.NegativePriceErr
 	}
-	if item.Type != "raw" && item.Type != "manufactured" && item.Type != "imported" {
+	if item.Type != constant.Raw && item.Type != constant.Manufactured && item.Type != constant.Imported {
 		return custErr.InvalideItmType
 	}
 	return nil
