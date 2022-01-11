@@ -1,4 +1,4 @@
-package error
+package item
 
 import (
 	"errors"

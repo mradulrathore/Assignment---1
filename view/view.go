@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/mradulrathore/onboarding-assignments/constant"
-	custErr "github.com/mradulrathore/onboarding-assignments/error"
 	itm "github.com/mradulrathore/onboarding-assignments/item"
 )
 
 func GetUserChoice() (string, error) {
 
-	fmt.Println("Do you want to enter details of any other item (" + constant.Accept + "/" + constant.Deny + ")")
-	var moreItems string = constant.Accept
+	fmt.Println("Do you want to enter details of any other item (" + Accept + "/" + Deny + ")")
+	var moreItems string = Accept
 	_, err := fmt.Scanf("%s", &moreItems)
 	if err != nil {
 		log.Println(err)
@@ -37,9 +35,9 @@ func GetUserChoice() (string, error) {
 // validate whether userChoice is eiter Accept or Deny
 func ValidateConfirmation(userChoice string) error {
 
-	if userChoice != constant.Accept && userChoice != constant.Deny {
-		log.Println("enter either " + constant.Accept + " or " + constant.Deny)
-		return custErr.InvalidUsrChoice
+	if userChoice != Accept && userChoice != Deny {
+		log.Println(InvalidUsrChoice)
+		return InvalidUsrChoice
 	}
 
 	return nil
@@ -74,7 +72,7 @@ func Initialize(item itm.Item) {
 	}
 
 	// accept items details from user iteratively
-	for moreItems == constant.Accept {
+	for moreItems == Accept {
 
 		err = item.SetItemDetails()
 		if err != nil {

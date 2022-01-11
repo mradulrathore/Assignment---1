@@ -4,8 +4,6 @@ package view
 
 import (
 	"testing"
-
-	custErr "github.com/mradulrathore/onboarding-assignments/error"
 )
 
 func TestValidateConfirmation(t *testing.T) {
@@ -16,9 +14,9 @@ func TestValidateConfirmation(t *testing.T) {
 	}{
 		{userChoice: "y", err: nil},
 		{userChoice: "n", err: nil},
-		{userChoice: "er", err: custErr.InvalidUsrChoice},
-		{userChoice: "yes", err: custErr.InvalidUsrChoice},
-		{userChoice: "no", err: custErr.InvalidUsrChoice},
+		{userChoice: "er", err: InvalidUsrChoice},
+		{userChoice: "yes", err: InvalidUsrChoice},
+		{userChoice: "no", err: InvalidUsrChoice},
 	}
 
 	for _, tc := range tests {

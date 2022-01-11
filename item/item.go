@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	custErr "github.com/mradulrathore/onboarding-assignments/error"
-
 	"github.com/mradulrathore/onboarding-assignments/constant"
 )
 
@@ -176,16 +174,16 @@ func (item *Item) SetItemDetails() error {
 
 func (item *Item) ValidateItemDetails() error {
 	if len(item.Type) == 0 {
-		return custErr.InvalideItmType
+		return InvalideItmType
 	}
 	if item.Quantity < 0 {
-		return custErr.NegativeQuantErr
+		return NegativeQuantErr
 	}
 	if item.Price < 0 {
-		return custErr.NegativePriceErr
+		return NegativePriceErr
 	}
 	if item.Type != constant.Raw && item.Type != constant.Manufactured && item.Type != constant.Imported {
-		return custErr.InvalideItmType
+		return InvalideItmType
 	}
 	return nil
 }

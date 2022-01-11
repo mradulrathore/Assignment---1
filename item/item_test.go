@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/mradulrathore/onboarding-assignments/constant"
-	custErr "github.com/mradulrathore/onboarding-assignments/error"
 )
 
 func TestAddMoreItems(t *testing.T) {
@@ -152,7 +151,7 @@ func TestValidateItemDetails(t *testing.T) {
 				Quantity: -2,
 				Type:     constant.Imported,
 			},
-			err: custErr.NegativeQuantErr,
+			err: NegativeQuantErr,
 		},
 		// type of item not matches predefined type
 		{
@@ -162,7 +161,7 @@ func TestValidateItemDetails(t *testing.T) {
 				Quantity: 2,
 				Type:     "exported",
 			},
-			err: custErr.InvalideItmType,
+			err: InvalideItmType,
 		},
 		// item type missing
 		{
@@ -171,7 +170,7 @@ func TestValidateItemDetails(t *testing.T) {
 				Price:    100,
 				Quantity: 2,
 			},
-			err: custErr.InvalideItmType,
+			err: InvalideItmType,
 		},
 		// Quantity is not provided and mandatory field(item type) is provided
 		{
@@ -207,7 +206,7 @@ func TestValidateItemDetails(t *testing.T) {
 				Quantity: 2,
 				Type:     constant.Raw,
 			},
-			err: custErr.NegativePriceErr,
+			err: NegativePriceErr,
 		},
 	}
 
