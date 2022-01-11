@@ -19,6 +19,7 @@ _obj
 _test
 _testmain.go
 *.out
+*_enumer.go
 
 /VERSION.cache
 /bin/
