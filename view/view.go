@@ -7,33 +7,86 @@ import (
 	itm "github.com/mradulrathore/onboarding-assignments/item"
 )
 
-func GetUserChoice() (string, error) {
+func getItem() (name string, price float64, quantity int, typeItem string, err error) {
+	fmt.Printf("Item Name: ")
+	_, err = fmt.Scanf("%s", &name)
+	if err != nil {
+		log.Println("scan for Item Name failed, due to ", err)
+		return
+	}
+
+	fmt.Printf("Item Price: ")
+	_, err = fmt.Scanf("%g", &price)
+	if err != nil {
+		log.Println("scan for Item Price failed, due to ", err)
+		return
+	}
+
+	fmt.Printf("Item Quantity: ")
+	_, err = fmt.Scanf("%d", &quantity)
+	if err != nil {
+		log.Println("scan for Item Quantity failed, due to ", err)
+		return
+	}
+
+	fmt.Printf("Item Type: ")
+	_, err = fmt.Scanf("%s", &typeItem)
+	if err != nil {
+		log.Println(" scan for Item type failed, due to ", err)
+		return
+	}
+
+	return
+}
+
+func Initialize(name string, price float64, quantity int, typeItem string) {
+
+	item, err := itm.New(name, price, quantity, typeItem)
+
+	for err != nil {
+		log.Println(err.Error())
+		name, price, quantity, typeItem, err = getItem()
+		if err != nil {
+			log.Fatal(err)
+		}
+		item, err = itm.New(name, price, quantity, typeItem)
+	}
+
+	fmt.Println(item.String())
+
+	// check whether user wants to add more item
+	moreItem, err := getUserChoice()
+	for err != nil {
+		moreItem, err = getUserChoice()
+	}
+
+	// accept items details from user iteratively
+	if moreItem == Accept {
+		name, price, quantity, typeItem, err = getItem()
+		if err != nil {
+			log.Fatal(err)
+		}
+		Initialize(name, price, quantity, typeItem)
+	}
+}
+
+func getUserChoice() (moreItem string, err error) {
 
 	fmt.Println("Do you want to enter details of any other item (" + Accept + "/" + Deny + ")")
 	var moreItems string = Accept
-	_, err := fmt.Scanf("%s", &moreItems)
+	_, err = fmt.Scanf("%s", &moreItems)
 	if err != nil {
 		log.Println(err)
-		return "", err
+		return
 	}
 
-	err = ValidateConfirmation(moreItems)
+	err = validateConfirmation(moreItems)
 
-	for err != nil {
-
-		_, err = fmt.Scanf("%s", &moreItems)
-		if err != nil {
-			log.Println(err)
-			return "", err
-		}
-		err = ValidateConfirmation(moreItems)
-	}
-
-	return moreItems, nil
+	return
 }
 
 // validate whether userChoice is eiter Accept or Deny
-func ValidateConfirmation(userChoice string) error {
+func validateConfirmation(userChoice string) error {
 
 	if userChoice != Accept && userChoice != Deny {
 		log.Println(InvalidUsrChoice)
@@ -41,60 +94,4 @@ func ValidateConfirmation(userChoice string) error {
 	}
 
 	return nil
-}
-
-func Initialize(item itm.Item) {
-
-	var items []itm.Item
-
-	err := item.ValidateItemDetails()
-	if err != nil {
-		log.Println(err.Error())
-		err = item.SetItemDetails()
-		if err != nil {
-			//logging is already done in SetItemDetails()
-			log.Fatal(err)
-		}
-	}
-
-	err = item.CalculateTaxAndPrice()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	items = append(items, item)
-
-	// check whether user wants to add more item
-	var moreItems string
-	moreItems, err = GetUserChoice()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// accept items details from user iteratively
-	for moreItems == Accept {
-
-		err = item.SetItemDetails()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = item.CalculateTaxAndPrice()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		items = append(items, item)
-
-		moreItems, err = GetUserChoice()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	err = itm.GetAllItemDetails(items)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(items)
 }

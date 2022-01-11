@@ -4,7 +4,6 @@ import (
 	"flag"
 	"log"
 
-	"github.com/mradulrathore/onboarding-assignments/item"
 	"github.com/mradulrathore/onboarding-assignments/view"
 )
 
@@ -22,11 +21,5 @@ func main() {
 
 	log.Printf("item name: %s \n price of item: %g \n quantity of item: %d \n type of item: %s", *name, *price, *quantity, *typeItem)
 
-	item := item.Item{}
-	item.Name = *name
-	item.Price = *price
-	item.Quantity = *quantity
-	item.Type = *typeItem
-
-	view.Initialize(item)
+	view.Initialize(*name, *price, *quantity, *typeItem)
 }
