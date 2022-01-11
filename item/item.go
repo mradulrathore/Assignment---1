@@ -129,39 +129,3 @@ func (item *Item) ValidateItemDetails() (bool, error) {
 	}
 	return true, nil
 }
-
-func GetUserChoice() (string, error) {
-
-	fmt.Println("Do you want to enter details of any other item (" + constant.Accept + "/" + constant.Deny + ")")
-	var moreItems string = constant.Accept
-	_, err := fmt.Scanf("%s", &moreItems)
-	if err != nil {
-		log.Println(err)
-		return "", err
-	}
-
-	_, err = ValidateConfirmation(moreItems)
-
-	for err != nil {
-
-		_, err = fmt.Scanf("%s", &moreItems)
-		if err != nil {
-			log.Println(err)
-			return "", err
-		}
-		_, err = ValidateConfirmation(moreItems)
-	}
-
-	return moreItems, nil
-}
-
-// validate whether userChoice is eiter Accept or Deny
-func ValidateConfirmation(userChoice string) (bool, error) {
-
-	if userChoice != constant.Accept && userChoice != constant.Deny {
-		log.Println("enter either " + constant.Accept + " or " + constant.Deny)
-		return false, errors.New("enter either " + constant.Accept + " or " + constant.Deny)
-	}
-
-	return true, nil
-}

@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/mradulrathore/onboarding-assignments/constant"
-	itm "github.com/mradulrathore/onboarding-assignments/item"
+	"github.com/mradulrathore/onboarding-assignments/item"
+	"github.com/mradulrathore/onboarding-assignments/view"
 )
 
 //map command line input (-name, -price, -quantity, -type) to variables
@@ -25,62 +25,11 @@ func main() {
 	log.Println("quantity of item: ", *quantity)
 	log.Println("type of item: ", *typeItem)
 
-	var items []itm.Item
-
-	item := itm.Item{}
+	item := item.Item{}
 	item.Name = *name
 	item.Price = *price
 	item.Quantity = *quantity
 	item.Type = *typeItem
 
-	ok, err := item.ValidateItemDetails()
-	if !ok {
-		log.Println(err.Error())
-		_, err = item.SetItemDetails()
-		if err != nil {
-			//logging is already done in SetItemDetails()
-			log.Fatal(err)
-		}
-	}
-
-	err = item.CalculateTaxAndPrice()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	items = append(items, item)
-
-	// check whether user wants to add more item
-	var moreItems string
-	moreItems, err = itm.GetUserChoice()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// accept items details from user iteratively
-	for moreItems == constant.Accept {
-
-		_, err = item.SetItemDetails()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = item.CalculateTaxAndPrice()
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		items = append(items, item)
-
-		moreItems, err = itm.GetUserChoice()
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	err = itm.GetAllItemDetails(items)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(items)
+	view.Initialize(item)
 }
