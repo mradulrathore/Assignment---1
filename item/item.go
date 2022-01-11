@@ -14,7 +14,6 @@ type Item struct {
 }
 
 func New(name string, price float64, quantity int, typeItem string) (item Item, err error) {
-
 	item.Name = name
 	item.Price = price
 	item.Quantity = quantity
@@ -66,7 +65,6 @@ func (item Item) getEffectivePrice() (effectivePrice float64) {
 }
 
 func (item Item) getTax() (tax float64) {
-
 	switch item.Type {
 	case enum.Raw:
 		//raw: 12.5% of the item cost

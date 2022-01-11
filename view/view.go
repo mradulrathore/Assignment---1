@@ -40,7 +40,6 @@ func getItem() (name string, price float64, quantity int, typeItem string, err e
 }
 
 func Initialize() {
-
 	name, price, quantity, typeItem, err := getItem()
 	if err != nil {
 		log.Fatal(err)
@@ -71,7 +70,6 @@ func Initialize() {
 }
 
 func getUserChoice() (moreItem string, err error) {
-
 	fmt.Println("Do you want to enter details of any other item (" + Accept + "/" + Deny + ")")
 	var moreItems string = Accept
 	_, err = fmt.Scanf("%s", &moreItems)
@@ -87,7 +85,6 @@ func getUserChoice() (moreItem string, err error) {
 
 // validate whether userChoice is eiter Accept or Deny
 func validateConfirmation(userChoice string) error {
-
 	if userChoice != Accept && userChoice != Deny {
 		log.Println(InvalidUsrChoice)
 		return InvalidUsrChoice
