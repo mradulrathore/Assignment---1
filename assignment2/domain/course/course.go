@@ -1,4 +1,4 @@
-package models
+package course
 
 import (
 	"encoding/json"

@@ -1,4 +1,4 @@
-package services
+package user
 
 // cmd go test -coverprofile=coverage.out
 
@@ -6,12 +6,12 @@ import (
 	"reflect"
 	"testing"
 
-	"mradulrathore/OnboardingAssignments/assignment2/models"
+	usr "mradulrathore/onboarding-assignments/assignment2/domain/user"
 )
 
 func TestInsertUserDetails(t *testing.T) {
 
-	usersDetails = append(usersDetails, models.User{
+	usersDetails = append(usersDetails, usr.User{
 
 		FullName: "Anshul",
 		Age:      20,
@@ -19,21 +19,21 @@ func TestInsertUserDetails(t *testing.T) {
 		RollNo:   43,
 	})
 
-	usersDetails = append(usersDetails, models.User{
+	usersDetails = append(usersDetails, usr.User{
 		FullName: "Rahul",
 		Age:      20,
 		Address:  "Indore,M.P.",
 		RollNo:   41,
 	})
 
-	usersDetailsInput := models.User{
+	usersDetailsInput := usr.User{
 		FullName: "Mradul",
 		Age:      20,
 		Address:  "Indore,M.P.",
 		RollNo:   42,
 	}
 
-	expectedUserDetails := []models.User{
+	expectedUserDetails := []usr.User{
 		{
 
 			FullName: "Anshul",
@@ -55,7 +55,7 @@ func TestInsertUserDetails(t *testing.T) {
 		},
 	}
 
-	_, err := InsertUserDetails(usersDetailsInput)
+	err := InsertUserDetails(usersDetailsInput)
 	if err != nil {
 		t.Errorf("exception is  occuring: %q", err)
 	}
@@ -67,7 +67,7 @@ func TestInsertUserDetails(t *testing.T) {
 
 func TestValidateUserDetails(t *testing.T) {
 
-	usersDetailsInput := []models.User{
+	usersDetailsInput := []usr.User{
 		{
 			FullName: "Mradul",
 			Age:      20,

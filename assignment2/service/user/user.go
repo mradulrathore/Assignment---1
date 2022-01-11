@@ -1,16 +1,18 @@
-package services
+package user
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"sort"
 	"strings"
 
-	models "mradulrathore/onboarding-assignments/assignment2/models"
+	cours "mradulrathore/onboarding-assignments/assignment2/domain/course"
+	usr "mradulrathore/onboarding-assignments/assignment2/domain/user"
+	e "mradulrathore/onboarding-assignments/assignment2/error"
+	courseService "mradulrathore/onboarding-assignments/assignment2/service/course"
 )
 
-var usersDetails = []models.User{}
+var usersDetails = []usr.User{}
 
 func AddUserDetails() (ok bool, err error) {
 	user, err := GetUserDetails()
@@ -18,7 +20,7 @@ func AddUserDetails() (ok bool, err error) {
 		fmt.Println(err)
 		user, err = GetUserDetails()
 	}
-	_, err = InsertUserDetails(user)
+	err = InsertUserDetails(user)
 
 	if err != nil {
 		return false, err
@@ -26,33 +28,33 @@ func AddUserDetails() (ok bool, err error) {
 	return true, nil
 }
 
-func GetUserDetails() (user models.User, err error) {
+func GetUserDetails() (user usr.User, err error) {
 	fmt.Printf("Full Name: ")
 	_, err = fmt.Scanf("%s", &(user.FullName))
 	if err != nil {
 		log.Println("scan for user's name failed, due to ", err)
-		return models.User{}, err
+		return usr.User{}, err
 	}
 
 	fmt.Printf("Age: ")
 	_, err = fmt.Scanf("%d", &(user.Age))
 	if err != nil {
 		log.Println("scan for user's age failed, due to ", err)
-		return models.User{}, err
+		return usr.User{}, err
 	}
 
 	fmt.Printf("Address: ")
 	_, err = fmt.Scanf("%s", &(user.Address))
 	if err != nil {
 		log.Println("scan for user's address failed, due to ", err)
-		return models.User{}, err
+		return usr.User{}, err
 	}
 
 	fmt.Printf("Roll No : ")
 	_, err = fmt.Scanf("%d", &(user.RollNo))
 	if err != nil {
 		log.Println(" scan for user's rollno failed, due to ", err)
-		return models.User{}, err
+		return usr.User{}, err
 	}
 
 	fmt.Printf("Courses : ")
@@ -60,47 +62,39 @@ func GetUserDetails() (user models.User, err error) {
 	_, err = fmt.Scanf("%s", &coursesEnrol)
 	if err != nil {
 		log.Println(" scan for course choice failed, due to ", err)
-		return models.User{}, err
+		return usr.User{}, err
 	}
 
-	_, err = ValidateCourse(coursesEnrol)
+	_, err = courseService.ValidateCourse(coursesEnrol)
 	if err != nil {
-		return models.User{}, err
+		return usr.User{}, err
 	}
-	user.CoursesEnrol = models.Course{Name: coursesEnrol}
+	user.CoursesEnrol = cours.Course{Name: coursesEnrol}
 
-	ok, err := ValidateUserDetails(user)
+	err = ValidateUserDetails(user)
 
-	if !ok {
+	if err != nil {
 		log.Println(err.Error())
-		return models.User{}, err
+		return usr.User{}, err
 	}
 
 	return user, nil
 }
 
-// insertAt inserts v into s at index i and returns the new slice.
-func InsertAt(index int, user models.User) error {
+func InsertAt(index int, user usr.User) error {
 	if index == len(usersDetails) {
-		// Insert at end is the easy case.
 		usersDetails = append(usersDetails, user)
 		return nil
 	}
 
-	// Make space for the inserted element by shifting
-	// values at the insertion index up one index. The call
-	// to append does not allocate memory when cap(data) is
-	// greater ​than len(data).
 	usersDetails = append(usersDetails[:index+1], usersDetails[index:]...)
 
-	// Insert the new element.
 	usersDetails[index] = user
 
-	// Return the updated slice.
 	return nil
 }
 
-func InsertUserDetails(user models.User) (bool, error) {
+func InsertUserDetails(user usr.User) error {
 
 	index := sort.Search(len(usersDetails), func(i int) bool {
 		if strings.Compare(usersDetails[i].FullName, user.FullName) == 1 {
@@ -114,41 +108,36 @@ func InsertUserDetails(user models.User) (bool, error) {
 	err := InsertAt(index, user)
 	if err != nil {
 		log.Println(err)
-		return false, err
+		return err
 	}
 
-	return true, nil
+	return nil
 
 }
 
-func ValidateUserDetails(user models.User) (ok bool, err error) {
+func ValidateUserDetails(user usr.User) error {
 
 	if user.Address == "" {
-		errorMessage := "address can not be blank"
-		log.Println(errorMessage)
-		return false, errors.New(errorMessage)
+		log.Println(e.EmptyAddr)
+		return e.EmptyAddr
 	}
 	if user.RollNo == 0 {
-		errorMessage := "please provide rollno"
-		log.Println(errorMessage)
-		return false, errors.New(errorMessage)
+		log.Println(e.EmptyRollNo)
+		return e.EmptyRollNo
 	}
 	if user.FullName == "" {
-		errorMessage := "name can not be blank"
-		log.Println(errorMessage)
-		return false, errors.New(errorMessage)
+		log.Println(e.EmptyFullName)
+		return e.EmptyFullName
 	}
 	if user.RollNo < 0 {
-		errorMessage := "roll no can not be negative"
-		log.Println(errorMessage)
-		return false, errors.New(errorMessage)
+		log.Println(e.NegativeRollNoErr)
+		return e.NegativeRollNoErr
 	}
 	if user.Age < 0 {
-		errorMessage := "age no can not be negative"
-		log.Println(errorMessage)
-		return false, errors.New(errorMessage)
+		log.Println(e.NegativeAgeErr)
+		return e.NegativeAgeErr
 	}
-	return true, nil
+	return nil
 }
 
 func DisplayUserDetails() {
