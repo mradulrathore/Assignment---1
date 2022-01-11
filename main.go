@@ -20,10 +20,7 @@ func main() {
 
 	flag.Parse()
 
-	log.Println("item name: ", *name)
-	log.Println("price of item: ", *price)
-	log.Println("quantity of item: ", *quantity)
-	log.Println("type of item: ", *typeItem)
+	log.Printf("item name: %s \n price of item: %g \n quantity of item: %d \n type of item: %s", *name, *price, *quantity, *typeItem)
 
 	item := item.Item{}
 	item.Name = *name
