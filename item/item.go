@@ -18,29 +18,88 @@ type Item struct {
 	FinalPrice        float64
 }
 
+func (item *Item) CalculateRAWTax() error {
+	item.SalesTaxLiability = constant.RAWItmTaxRate * item.Price
+	return nil
+}
+
+func (item *Item) CalculateRAWFinalPrice() error {
+	item.FinalPrice = item.Price + item.SalesTaxLiability
+	return nil
+}
+
+func (item *Item) CalculateManufcaturedTax() error {
+	item.SalesTaxLiability = constant.ManufacturedItmTaxRate*item.Price + constant.ManufacturedItmExtraTaxRate*(item.Price+constant.ManufacturedItmTaxRate*item.Price)
+	return nil
+}
+
+func (item *Item) CalculateManufacturedFinalPrice() error {
+	item.FinalPrice = item.Price + item.SalesTaxLiability
+	return nil
+}
+
+func (item *Item) CalculateImportTax() error {
+	item.SalesTaxLiability = constant.ImportDuty * item.Price
+	return nil
+}
+
+func (item *Item) CalculateImportFinalPrice() error {
+	item.FinalPrice = item.Price + item.SalesTaxLiability
+	return nil
+}
+
+func (item *Item) ApplyImportSurcharge() error {
+	if item.FinalPrice <= constant.ImportDutyLimit1 {
+		item.FinalPrice = item.FinalPrice + constant.ImportDutyLimit1SurchargeAmt
+		item.SalesTaxLiability = item.SalesTaxLiability + constant.ImportDutyLimit1SurchargeAmt
+	} else if item.FinalPrice <= constant.ImportDutyLimit2 {
+		item.FinalPrice = item.FinalPrice + constant.ImportDutyLimit2SurchargeAmt
+		item.SalesTaxLiability = item.SalesTaxLiability + constant.ImportDutyLimit2SurchargeAmt
+	} else {
+		item.SalesTaxLiability = item.SalesTaxLiability + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeRate
+		item.FinalPrice = item.FinalPrice + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeRate
+	}
+
+	return nil
+}
+
 func (item *Item) CalculateTaxAndPrice() error {
 	switch item.Type {
 	case "raw":
 		//raw: 12.5% of the item cost
-		item.SalesTaxLiability = constant.RAWItmTaxRate * item.Price
-		item.FinalPrice = item.Price + item.SalesTaxLiability
+		err := item.CalculateRAWTax()
+		if err != nil {
+			return err
+		}
+
+		err = item.CalculateRAWFinalPrice()
+		if err != nil {
+			return err
+		}
+
 	case "manufactured":
 		// manufactured: 12.5% of the item cost + 2% of (item cost + 12.5% of the item cost)
-		item.SalesTaxLiability = constant.ManufacturedItmTaxRate*item.Price + constant.ManufacturedItmExtraTaxRate*(item.Price+constant.ManufacturedItmTaxRate*item.Price)
-		item.FinalPrice = item.Price + item.SalesTaxLiability
+		err := item.CalculateManufcaturedTax()
+		if err != nil {
+			return err
+		}
+		err = item.CalculateManufacturedFinalPrice()
+		if err != nil {
+			return err
+		}
 	case "imported":
 		//imported: 10% import duty on item cost + a surcharge
-		item.SalesTaxLiability = constant.ImportDuty * item.Price
-		item.FinalPrice = item.Price + item.SalesTaxLiability
-		if item.FinalPrice <= constant.ImportDutyLimit1 {
-			item.FinalPrice = item.FinalPrice + constant.ImportDutyLimit1SurchargeAmt
-			item.SalesTaxLiability = item.SalesTaxLiability + constant.ImportDutyLimit1SurchargeAmt
-		} else if item.FinalPrice <= constant.ImportDutyLimit2 {
-			item.FinalPrice = item.FinalPrice + constant.ImportDutyLimit2SurchargeAmt
-			item.SalesTaxLiability = item.SalesTaxLiability + constant.ImportDutyLimit2SurchargeAmt
-		} else {
-			item.SalesTaxLiability = item.SalesTaxLiability + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeRate
-			item.FinalPrice = item.FinalPrice + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeRate
+		err := item.CalculateImportTax()
+		if err != nil {
+			return err
+		}
+		err = item.CalculateImportFinalPrice()
+		if err != nil {
+			return err
+		}
+		err = item.ApplyImportSurcharge()
+		if err != nil {
+			return err
 		}
 	}
 	return nil
