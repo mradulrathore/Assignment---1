@@ -27,17 +27,27 @@ func New(name string, price float64, quantity int, typeItem string) (item Item, 
 	return
 }
 
-func (item *Item) validate() error {
+// func checkNegativeValue(value interface{}) (err error) {
+
+// 	val, _ := value.(int)
+// 	if val < 0 {
+// 		err = NegativeQuantErr
+// 	}
+// 	return
+// }
+
+func (item Item) validate() (err error) {
 	if item.Quantity < 0 {
-		return NegativeQuantErr
+		err = NegativeQuantErr
 	}
 	if item.Price < 0 {
-		return NegativePriceErr
+		err = NegativePriceErr
 	}
-	return nil
+	return
+	//return validation.ValidateStruct(&item, validation.Field(&item.Quantity, validation.By(checkNegativeValue)))
 }
 
-func (item *Item) getEffectivePrice() (effectivePrice float64) {
+func (item Item) getEffectivePrice() (effectivePrice float64) {
 	surcharge := 0.0
 	tax := item.getTax()
 
@@ -55,7 +65,7 @@ func (item *Item) getEffectivePrice() (effectivePrice float64) {
 	return
 }
 
-func (item *Item) getTax() (tax float64) {
+func (item Item) getTax() (tax float64) {
 
 	switch item.Type {
 	case enum.Raw:
@@ -72,7 +82,7 @@ func (item *Item) getTax() (tax float64) {
 	return
 }
 
-func (item *Item) importSurcharge(price float64) float64 {
+func (item Item) importSurcharge(price float64) float64 {
 	if price <= ImportDutyLimit1 {
 		return ImportDutyLimit1SurchargeAmt
 	} else if price <= ImportDutyLimit2 {
