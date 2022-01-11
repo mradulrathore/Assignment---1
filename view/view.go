@@ -39,8 +39,12 @@ func getItem() (name string, price float64, quantity int, typeItem string, err e
 	return
 }
 
-func Initialize(name string, price float64, quantity int, typeItem string) {
+func Initialize() {
 
+	name, price, quantity, typeItem, err := getItem()
+	if err != nil {
+		log.Fatal(err)
+	}
 	item, err := itm.New(name, price, quantity, typeItem)
 
 	for err != nil {
@@ -62,11 +66,7 @@ func Initialize(name string, price float64, quantity int, typeItem string) {
 
 	// accept items details from user iteratively
 	if moreItem == Accept {
-		name, price, quantity, typeItem, err = getItem()
-		if err != nil {
-			log.Fatal(err)
-		}
-		Initialize(name, price, quantity, typeItem)
+		Initialize()
 	}
 }
 
