@@ -1,9 +1,10 @@
 package item
 
 import (
-	"errors"
 	"fmt"
 	"log"
+
+	custErr "github.com/mradulrathore/onboarding-assignments/error"
 
 	"github.com/mradulrathore/onboarding-assignments/constant"
 )
@@ -116,16 +117,16 @@ func (item *Item) SetItemDetails() error {
 
 func (item *Item) ValidateItemDetails() error {
 	if len(item.Type) == 0 {
-		return errors.New("pleae specify item type")
+		return custErr.InvalideItmType
 	}
 	if item.Quantity < 0 {
-		return errors.New("quantity can not be negative")
+		return custErr.NegativeQuantErr
 	}
 	if item.Price < 0 {
-		return errors.New("price can not be negative")
+		return custErr.NegativePriceErr
 	}
 	if item.Type != "raw" && item.Type != "manufactured" && item.Type != "imported" {
-		return errors.New("item type can only be raw, manufactured or imported")
+		return custErr.InvalideItmType
 	}
 	return nil
 }

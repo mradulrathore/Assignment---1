@@ -1,11 +1,11 @@
 package view
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
 	"github.com/mradulrathore/onboarding-assignments/constant"
+	custErr "github.com/mradulrathore/onboarding-assignments/error"
 	itm "github.com/mradulrathore/onboarding-assignments/item"
 )
 
@@ -39,7 +39,7 @@ func ValidateConfirmation(userChoice string) error {
 
 	if userChoice != constant.Accept && userChoice != constant.Deny {
 		log.Println("enter either " + constant.Accept + " or " + constant.Deny)
-		return errors.New("enter either " + constant.Accept + " or " + constant.Deny)
+		return custErr.InvalidUsrChoice
 	}
 
 	return nil

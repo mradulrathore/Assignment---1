@@ -4,22 +4,26 @@ package view
 
 import (
 	"testing"
+
+	custErr "github.com/mradulrathore/onboarding-assignments/error"
 )
 
 func TestValidateConfirmation(t *testing.T) {
 
-	userChoices := []string{"y", "n", "er", "yes", "no"}
+	var tests = []struct {
+		userChoice string
+		err        error
+	}{
+		{userChoice: "y", err: nil},
+		{userChoice: "n", err: nil},
+		{userChoice: "er", err: custErr.InvalidUsrChoice},
+		{userChoice: "yes", err: custErr.InvalidUsrChoice},
+		{userChoice: "no", err: custErr.InvalidUsrChoice},
+	}
 
-	expected := []bool{true, true, false, false, false}
-
-	for index, choice := range userChoices {
-		if ok, err := ValidateConfirmation(choice); ok != expected[index] {
-			if !expected[index] {
-				t.Errorf("exception is occuring: %q", err)
-			} else {
-				t.Errorf("exception is not occuring: %q", err)
-			}
-
+	for _, tc := range tests {
+		if err := ValidateConfirmation(tc.userChoice); err != tc.err {
+			t.Errorf("got: %v, expected: %v", err, tc.err)
 		}
 	}
 }

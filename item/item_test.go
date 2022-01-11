@@ -4,180 +4,215 @@ package item
 
 import (
 	"testing"
+
+	custErr "github.com/mradulrathore/onboarding-assignments/error"
 )
 
 func TestAddMoreItems(t *testing.T) {
-
 }
 
 func TestCalculateTaxAndPrice(t *testing.T) {
-	var items = []Item{
+	var tests = []struct {
+		req                       Item
+		ExpectedSalesTaxLiability float64
+		err                       error
+	}{
 		// all item details provided
 		{
-			Name:     "Mango",
-			Price:    12,
-			Quantity: 1,
-			Type:     "raw",
+			req: Item{
+				Name:     "Mango",
+				Price:    12,
+				Quantity: 1,
+				Type:     "raw",
+			},
+			ExpectedSalesTaxLiability: 1.5,
+			err:                       nil,
 		},
 		{
-			Name:     "Mango",
-			Price:    12,
-			Quantity: 1,
-			Type:     "manufactured",
+			req: Item{
+				Name:     "Mango",
+				Price:    12,
+				Quantity: 1,
+				Type:     "manufactured",
+			},
+			ExpectedSalesTaxLiability: 1.77,
+			err:                       nil,
 		},
 		{
-			Name:     "Mango",
-			Price:    12,
-			Quantity: 1,
-			Type:     "imported",
+			req: Item{
+				Name:     "Mango",
+				Price:    12,
+				Quantity: 1,
+				Type:     "imported",
+			},
+			ExpectedSalesTaxLiability: 6.2,
+			err:                       nil,
 		},
 		{
-			Name:     "Orange",
-			Price:    100,
-			Quantity: 1,
-			Type:     "imported",
+			req: Item{
+				Name:     "Orange",
+				Price:    100,
+				Quantity: 1,
+				Type:     "imported",
+			},
+			ExpectedSalesTaxLiability: 20,
+			err:                       nil,
 		},
 		{
-			Name:     "Tomato",
-			Price:    1000,
-			Quantity: 1,
-			Type:     "imported",
+			req: Item{
+				Name:     "Tomato",
+				Price:    1000,
+				Quantity: 1,
+				Type:     "imported",
+			},
+			ExpectedSalesTaxLiability: 155,
+			err:                       nil,
 		},
 	}
 
-	expectedSalesTaxLiabilityPerItem := []float64{1.5, 1.77, 6.2, 20, 155}
-	for index, item := range items {
-		err := item.CalculateTaxAndPrice()
-		if err != nil {
-			t.Errorf("exception is occuring: %q", err)
-		} else if item.SalesTaxLiability != expectedSalesTaxLiabilityPerItem[index] {
-			t.Errorf("got %g, wanted %g", item.SalesTaxLiability, expectedSalesTaxLiabilityPerItem[index])
+	for _, tc := range tests {
+		err := tc.req.CalculateTaxAndPrice()
+		if err != tc.err {
+			t.Errorf("got: %v, expected: %v", err, tc.err)
+		} else if tc.req.SalesTaxLiability != tc.ExpectedSalesTaxLiability {
+			t.Errorf("got %g, wanted %g", tc.req.SalesTaxLiability, tc.ExpectedSalesTaxLiability)
 		}
 
 	}
+
 }
 
 func TestGetAllItemDetails(t *testing.T) {
-	var items = []Item{
-		// all item details provided
-		{
-			Name:     "Mango",
-			Price:    12,
-			Quantity: 1,
-			Type:     "raw",
+
+	tests := struct {
+		req []Item
+		err error
+	}{ // all item details provided
+		req: []Item{
+			{
+				Name:     "Mango",
+				Price:    100,
+				Quantity: 2,
+				Type:     "raw",
+			},
+			{
+				Name:     "Orange",
+				Price:    100,
+				Quantity: 2,
+				Type:     "imported",
+			},
+			{
+				Name:     "Orange",
+				Price:    100,
+				Quantity: 2,
+				Type:     "manufactures",
+			},
 		},
-		{
-			Name:     "Mango",
-			Price:    12,
-			Quantity: 1,
-			Type:     "manufactured",
-		},
-		{
-			Name:     "Mango",
-			Price:    12,
-			Quantity: 1,
-			Type:     "imported",
-		},
-		{
-			Name:     "Orange",
-			Price:    100,
-			Quantity: 1,
-			Type:     "imported",
-		},
-		{
-			Name:     "Tomato",
-			Price:    1000,
-			Quantity: 1,
-			Type:     "imported",
-		},
+		err: nil,
 	}
 
-	err := GetAllItemDetails(items)
-	if err != nil {
+	err := GetAllItemDetails(tests.req)
+	if err != tests.err {
 		t.Errorf("exception is occuring: %q", err)
 	}
 }
 
 func TestValidateItemDetails(t *testing.T) {
 
-	var items = []Item{
+	var tests = []struct {
+		req Item
+		err error
+	}{
 		// all item details provided
 		{
-			Name:     "Mango",
-			Price:    100,
-			Quantity: 2,
-			Type:     "raw",
+			req: Item{
+				Name:     "Mango",
+				Price:    100,
+				Quantity: 2,
+				Type:     "raw",
+			},
+			err: nil,
 		},
 		// all item details provided
 		{
-			Name:     "Banana",
-			Price:    100,
-			Quantity: 2,
-			Type:     "manufactured",
-		},
-		// all item details provided
-		{
-			Name:     "Orange",
-			Price:    100,
-			Quantity: 2,
-			Type:     "imported",
+			req: Item{
+				Name:     "Orange",
+				Price:    100,
+				Quantity: 2,
+				Type:     "imported",
+			},
+			err: nil,
 		},
 		// Quantity less than 0
 		{
-			Name:     "Mango",
-			Price:    100,
-			Quantity: -2,
-			Type:     "raw",
+			req: Item{
+				Name:     "Orange",
+				Price:    100,
+				Quantity: -2,
+				Type:     "imported",
+			},
+			err: custErr.NegativeQuantErr,
 		},
 		// type of item not matches predefined type
 		{
-			Name:     "Mango",
-			Price:    100,
-			Quantity: -2,
-			Type:     "exported",
+			req: Item{
+				Name:     "Mango",
+				Price:    100,
+				Quantity: 2,
+				Type:     "exported",
+			},
+			err: custErr.InvalideItmType,
 		},
 		// item type missing
 		{
-			Name:     "Mango",
-			Price:    100,
-			Quantity: 2,
+			req: Item{
+				Name:     "Mango",
+				Price:    100,
+				Quantity: 2,
+			},
+			err: custErr.InvalideItmType,
 		},
 		// Quantity is not provided and mandatory field(item type) is provided
 		{
-			Name:  "Mango",
-			Price: 100,
-			Type:  "raw",
+			req: Item{
+				Name:  "Mango",
+				Price: 100,
+				Type:  "raw",
+			},
+			err: nil,
 		},
 		// Price is not provided and mandatory field(item type) is provided
 		{
-			Name:     "Mango",
-			Quantity: 2,
-			Type:     "raw",
+			req: Item{
+				Name:     "Mango",
+				Quantity: 2,
+				Type:     "raw",
+			},
+			err: nil,
 		},
 		// Name is not provided and mandatory field(item type) is provided
 		{
-			Price:    100,
-			Quantity: 2,
-			Type:     "raw",
+			req: Item{
+				Price:    100,
+				Quantity: 2,
+				Type:     "raw",
+			},
+			err: nil,
 		},
 		// Price less than zero
 		{
-			Price:    -100,
-			Quantity: 2,
-			Type:     "raw",
+			req: Item{
+				Price:    -100,
+				Quantity: 2,
+				Type:     "raw",
+			},
+			err: custErr.NegativePriceErr,
 		},
 	}
 
-	expected := []bool{true, true, true, false, false, false, true, true, true, false}
-
-	for index, item := range items {
-		if ok, err := item.ValidateItemDetails(); ok != expected[index] {
-			if !expected[index] {
-				t.Errorf("exception is occuring: %q", err)
-			} else {
-				t.Errorf("exception is not occuring: %q", err)
-			}
-
+	for _, tc := range tests {
+		if err := tc.req.ValidateItemDetails(); err != tc.err {
+			t.Errorf("got: %v, expected: %v", err, tc.err)
 		}
 	}
 }
