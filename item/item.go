@@ -70,62 +70,62 @@ func (item Item) GetItemDetails() error {
 	return nil
 }
 
-func (item *Item) SetItemDetails() (bool, error) {
+func (item *Item) SetItemDetails() error {
 
 	fmt.Printf("Item Name: ")
 	_, err := fmt.Scanf("%s", &(item.Name))
 	if err != nil {
 		log.Println("scan for Item Name failed, due to ", err)
-		return false, err
+		return err
 	}
 
 	fmt.Printf("Item Price: ")
 	_, err = fmt.Scanf("%g", &(item.Price))
 	if err != nil {
 		log.Println("scan for Item Price failed, due to ", err)
-		return false, err
+		return err
 	}
 
 	fmt.Printf("Item Quantity: ")
 	_, err = fmt.Scanf("%d", &(item.Quantity))
 	if err != nil {
 		log.Println("scan for Item Quantity failed, due to ", err)
-		return false, err
+		return err
 	}
 
 	fmt.Printf("Item Type: ")
 	_, err = fmt.Scanf("%s", &(item.Type))
 	if err != nil {
 		log.Println(" scan for Item type failed, due to ", err)
-		return false, err
+		return err
 	}
 
-	ok, err := item.ValidateItemDetails()
-	if !ok {
+	err = item.ValidateItemDetails()
+	if err != nil {
 		log.Println(err.Error())
-		ok, err = item.SetItemDetails()
+		err = item.SetItemDetails()
 		if err != nil {
 			log.Println(err)
-			return ok, err
+			return err
 		}
 	}
 
-	return true, nil
+	return nil
 
 }
 
-func (item *Item) ValidateItemDetails() (bool, error) {
+func (item *Item) ValidateItemDetails() error {
 	if len(item.Type) == 0 {
-		return false, errors.New("pleae specify item type")
+		return errors.New("pleae specify item type")
 	}
 	if item.Quantity < 0 {
-		return false, errors.New("quantity can not be negative")
+		return errors.New("quantity can not be negative")
 	}
 	if item.Price < 0 {
-		return false, errors.New("price can not be negative")
+		return errors.New("price can not be negative")
 	}
 	if item.Type != "raw" && item.Type != "manufactured" && item.Type != "imported" {
-		return false, errors.New("item type can only be raw, manufactured or imported")
+		return errors.New("item type can only be raw, manufactured or imported")
 	}
-	return true, nil
+	return nil
 }

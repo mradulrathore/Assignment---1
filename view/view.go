@@ -19,7 +19,7 @@ func GetUserChoice() (string, error) {
 		return "", err
 	}
 
-	_, err = ValidateConfirmation(moreItems)
+	err = ValidateConfirmation(moreItems)
 
 	for err != nil {
 
@@ -28,31 +28,31 @@ func GetUserChoice() (string, error) {
 			log.Println(err)
 			return "", err
 		}
-		_, err = ValidateConfirmation(moreItems)
+		err = ValidateConfirmation(moreItems)
 	}
 
 	return moreItems, nil
 }
 
 // validate whether userChoice is eiter Accept or Deny
-func ValidateConfirmation(userChoice string) (bool, error) {
+func ValidateConfirmation(userChoice string) error {
 
 	if userChoice != constant.Accept && userChoice != constant.Deny {
 		log.Println("enter either " + constant.Accept + " or " + constant.Deny)
-		return false, errors.New("enter either " + constant.Accept + " or " + constant.Deny)
+		return errors.New("enter either " + constant.Accept + " or " + constant.Deny)
 	}
 
-	return true, nil
+	return nil
 }
 
 func Initialize(item itm.Item) {
 
 	var items []itm.Item
 
-	ok, err := item.ValidateItemDetails()
-	if !ok {
+	err := item.ValidateItemDetails()
+	if err != nil {
 		log.Println(err.Error())
-		_, err = item.SetItemDetails()
+		err = item.SetItemDetails()
 		if err != nil {
 			//logging is already done in SetItemDetails()
 			log.Fatal(err)
@@ -76,7 +76,7 @@ func Initialize(item itm.Item) {
 	// accept items details from user iteratively
 	for moreItems == constant.Accept {
 
-		_, err = item.SetItemDetails()
+		err = item.SetItemDetails()
 		if err != nil {
 			log.Fatal(err)
 		}
