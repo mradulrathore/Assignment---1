@@ -1,16 +1,16 @@
 package constants
 
 const (
-	RAWItmTaxRate                       = 12.50
-	ImportDuty                          = 10
-	ImportDutyLimit1                    = 100
-	ImportDutyLimit2                    = 200
-	ImportDutyLimit1SurchargeAmt        = 5
-	ImportDutyLimit2SurchargeAmt        = 10
-	ExceedeImportDutyLimit2SurchargeAmt = 5.00
-	ManufacturedItmTaxRate              = 12.50
+	RAWItmTaxRate                        = 0.125
+	ImportDuty                           = 0.100
+	ImportDutyLimit1                     = 100
+	ImportDutyLimit2                     = 200
+	ImportDutyLimit1SurchargeAmt         = 5
+	ImportDutyLimit2SurchargeAmt         = 10
+	ExceedeImportDutyLimit2SurchargeRate = 0.05
+	ManufacturedItmTaxRate               = 0.125
 	//Extra =ItemCost +12.5% Item Cost
-	ManufacturedItmExtraTaxRate = 2.00
+	ManufacturedItmExtraTaxRate = 0.02
 	Accept                      = "y"
 	Deny                        = "n"
 )

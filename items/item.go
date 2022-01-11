@@ -20,15 +20,15 @@ func (item *Item) CalculateTaxAndPrice() error {
 	switch item.TypeItem {
 	case "raw":
 		//raw: 12.5% of the item cost
-		item.SalesTaxLiabilityPerItem = constant.RAWItmTaxRate * item.Price / 100
+		item.SalesTaxLiabilityPerItem = constant.RAWItmTaxRate * item.Price
 		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 	case "manufactured":
 		// manufactured: 12.5% of the item cost + 2% of (item cost + 12.5% of the item cost)
-		item.SalesTaxLiabilityPerItem = constant.ManufacturedItmTaxRate*item.Price/100 + constant.ManufacturedItmExtraTaxRate*(item.Price+constant.ManufacturedItmTaxRate*item.Price/100)/100
+		item.SalesTaxLiabilityPerItem = constant.ManufacturedItmTaxRate*item.Price + constant.ManufacturedItmExtraTaxRate*(item.Price+constant.ManufacturedItmTaxRate*item.Price)
 		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 	case "imported":
 		//imported: 10% import duty on item cost + a surcharge
-		item.SalesTaxLiabilityPerItem = constant.ImportDuty * item.Price / 100
+		item.SalesTaxLiabilityPerItem = constant.ImportDuty * item.Price
 		item.FinalPrice = item.Price + item.SalesTaxLiabilityPerItem
 		if item.FinalPrice <= constant.ImportDutyLimit1 {
 			item.FinalPrice = item.FinalPrice + constant.ImportDutyLimit1SurchargeAmt
@@ -37,8 +37,8 @@ func (item *Item) CalculateTaxAndPrice() error {
 			item.FinalPrice = item.FinalPrice + constant.ImportDutyLimit2SurchargeAmt
 			item.SalesTaxLiabilityPerItem = item.SalesTaxLiabilityPerItem + constant.ImportDutyLimit2SurchargeAmt
 		} else {
-			item.SalesTaxLiabilityPerItem = item.SalesTaxLiabilityPerItem + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeAmt/100
-			item.FinalPrice = item.FinalPrice + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeAmt/100
+			item.SalesTaxLiabilityPerItem = item.SalesTaxLiabilityPerItem + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeRate
+			item.FinalPrice = item.FinalPrice + item.FinalPrice*constant.ExceedeImportDutyLimit2SurchargeRate
 		}
 	}
 	return nil
