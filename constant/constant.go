@@ -1,4 +1,4 @@
-package constants
+package constant
 
 const (
 	RAWItmTaxRate                        = 0.125

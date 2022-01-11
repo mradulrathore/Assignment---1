@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	constant "github.com/mradulrathore/onboarding-assignments/constants"
-	itemFile "github.com/mradulrathore/onboarding-assignments/items"
+	"github.com/mradulrathore/onboarding-assignments/constant"
+	itm "github.com/mradulrathore/onboarding-assignments/item"
 )
 
 //map command line input (-name, -price, -quantity, -type) to variables
@@ -25,13 +25,13 @@ func main() {
 	log.Println("quantity of item: ", *quantity)
 	log.Println("type of item: ", *typeItem)
 
-	var itemsDetails []itemFile.Item
-	item := itemFile.Item{}
+	var items []itm.Item
 
+	item := itm.Item{}
 	item.Name = *name
 	item.Price = *price
 	item.Quantity = *quantity
-	item.TypeItem = *typeItem
+	item.Type = *typeItem
 
 	ok, err := item.ValidateItemDetails()
 	if !ok {
@@ -48,11 +48,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	itemsDetails = append(itemsDetails, item)
+	items = append(items, item)
 
 	// check whether user wants to add more item
 	var moreItems string
-	moreItems, err = itemFile.GetUserChoice()
+	moreItems, err = itm.GetUserChoice()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -70,17 +70,17 @@ func main() {
 			log.Fatal(err)
 		}
 
-		itemsDetails = append(itemsDetails, item)
+		items = append(items, item)
 
-		moreItems, err = itemFile.GetUserChoice()
+		moreItems, err = itm.GetUserChoice()
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	err = itemFile.GetAllItemDetails(itemsDetails)
+	err = itm.GetAllItemDetails(items)
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(itemsDetails)
+	log.Println(items)
 }

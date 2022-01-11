@@ -17,31 +17,31 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 			Name:     "Mango",
 			Price:    12,
 			Quantity: 1,
-			TypeItem: "raw",
+			Type:     "raw",
 		},
 		{
 			Name:     "Mango",
 			Price:    12,
 			Quantity: 1,
-			TypeItem: "manufactured",
+			Type:     "manufactured",
 		},
 		{
 			Name:     "Mango",
 			Price:    12,
 			Quantity: 1,
-			TypeItem: "imported",
+			Type:     "imported",
 		},
 		{
 			Name:     "Orange",
 			Price:    100,
 			Quantity: 1,
-			TypeItem: "imported",
+			Type:     "imported",
 		},
 		{
 			Name:     "Tomato",
 			Price:    1000,
 			Quantity: 1,
-			TypeItem: "imported",
+			Type:     "imported",
 		},
 	}
 
@@ -50,8 +50,8 @@ func TestCalculateTaxAndPrice(t *testing.T) {
 		err := item.CalculateTaxAndPrice()
 		if err != nil {
 			t.Errorf("exception is occuring: %q", err)
-		} else if item.SalesTaxLiabilityPerItem != expectedSalesTaxLiabilityPerItem[index] {
-			t.Errorf("got %g, wanted %g", item.SalesTaxLiabilityPerItem, expectedSalesTaxLiabilityPerItem[index])
+		} else if item.SalesTaxLiability != expectedSalesTaxLiabilityPerItem[index] {
+			t.Errorf("got %g, wanted %g", item.SalesTaxLiability, expectedSalesTaxLiabilityPerItem[index])
 		}
 
 	}
@@ -64,31 +64,31 @@ func TestGetAllItemDetails(t *testing.T) {
 			Name:     "Mango",
 			Price:    12,
 			Quantity: 1,
-			TypeItem: "raw",
+			Type:     "raw",
 		},
 		{
 			Name:     "Mango",
 			Price:    12,
 			Quantity: 1,
-			TypeItem: "manufactured",
+			Type:     "manufactured",
 		},
 		{
 			Name:     "Mango",
 			Price:    12,
 			Quantity: 1,
-			TypeItem: "imported",
+			Type:     "imported",
 		},
 		{
 			Name:     "Orange",
 			Price:    100,
 			Quantity: 1,
-			TypeItem: "imported",
+			Type:     "imported",
 		},
 		{
 			Name:     "Tomato",
 			Price:    1000,
 			Quantity: 1,
-			TypeItem: "imported",
+			Type:     "imported",
 		},
 	}
 
@@ -106,35 +106,35 @@ func TestValidateItemDetails(t *testing.T) {
 			Name:     "Mango",
 			Price:    100,
 			Quantity: 2,
-			TypeItem: "raw",
+			Type:     "raw",
 		},
 		// all item details provided
 		{
 			Name:     "Banana",
 			Price:    100,
 			Quantity: 2,
-			TypeItem: "manufactured",
+			Type:     "manufactured",
 		},
 		// all item details provided
 		{
 			Name:     "Orange",
 			Price:    100,
 			Quantity: 2,
-			TypeItem: "imported",
+			Type:     "imported",
 		},
 		// Quantity less than 0
 		{
 			Name:     "Mango",
 			Price:    100,
 			Quantity: -2,
-			TypeItem: "raw",
+			Type:     "raw",
 		},
 		// type of item not matches predefined type
 		{
 			Name:     "Mango",
 			Price:    100,
 			Quantity: -2,
-			TypeItem: "exported",
+			Type:     "exported",
 		},
 		// item type missing
 		{
@@ -144,27 +144,27 @@ func TestValidateItemDetails(t *testing.T) {
 		},
 		// Quantity is not provided and mandatory field(item type) is provided
 		{
-			Name:     "Mango",
-			Price:    100,
-			TypeItem: "raw",
+			Name:  "Mango",
+			Price: 100,
+			Type:  "raw",
 		},
 		// Price is not provided and mandatory field(item type) is provided
 		{
 			Name:     "Mango",
 			Quantity: 2,
-			TypeItem: "raw",
+			Type:     "raw",
 		},
 		// Name is not provided and mandatory field(item type) is provided
 		{
 			Price:    100,
 			Quantity: 2,
-			TypeItem: "raw",
+			Type:     "raw",
 		},
 		// Price less than zero
 		{
 			Price:    -100,
 			Quantity: 2,
-			TypeItem: "raw",
+			Type:     "raw",
 		},
 	}
 
