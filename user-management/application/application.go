@@ -14,7 +14,6 @@ func Init() error {
 
 	for moreInput {
 		showMenu()
-
 		userChoice, err := getUserChoice()
 		if err != nil {
 			return err
@@ -25,6 +24,7 @@ func Init() error {
 			err = addUser()
 			return err
 		case "2":
+			display()
 		case "3":
 		case "4":
 		case "5":
@@ -114,9 +114,9 @@ func getUser() (name string, age int, address string, rollNo int, coursesEnrol [
 
 func getCourse() (coursesEnrol []string, err error) {
 
-	fmt.Printf("Enter number of courses you want to enrol (atleast %d)", cours.MinCousesEnrol)
+	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", cours.MinCousesEnrol)
 	var numCourse int
-	_, err = fmt.Scanf("%s", &numCourse)
+	_, err = fmt.Scanf("%d", &numCourse)
 	if err != nil {
 		log.Println("scan for number of course failed, due to ", err)
 		return
@@ -158,4 +158,14 @@ func checkDuplicateCourse(courses []string) error {
 		}
 	}
 	return nil
+}
+
+func display() {
+	fmt.Println("Field Name to sort details on")
+	var field string
+	fmt.Scanf("%f", field)
+	fmt.Println("1. Ascending\n2.Descending")
+	var order int
+	fmt.Scanf("%d", order)
+	usrServ.Display(field, order)
 }

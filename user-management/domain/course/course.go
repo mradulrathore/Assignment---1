@@ -44,3 +44,12 @@ func DecodeCourse(courseB []byte) (course Course, err error) {
 	return course, nil
 
 }
+
+func (course Course) String() []string {
+
+	var courses []string
+	for _, c := range course.Enrol {
+		courses = append(courses, c.String())
+	}
+	return courses
+}

@@ -1,69 +1,67 @@
 package user
 
-// // cmd go test -coverprofile=coverage.out
+// cmd go test -coverprofile=coverage.out
 
-// import (
-// 	"reflect"
-// 	"testing"
+import (
+	"reflect"
+	"testing"
 
-// 	usr "mradulrathore/onboarding-assignments/assignment2/domain/user"
-// )
+	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
+)
 
-// func TestInsertUserDetails(t *testing.T) {
+func TestInsertUserDetails(t *testing.T) {
 
-// 	usersDetails = append(usersDetails, usr.User{
+	users = append(users, usr.User{
 
-// 		FullName: "Anshul",
-// 		Age:      20,
-// 		Address:  "Indore,M.P.",
-// 		RollNo:   43,
-// 	})
+		Name:    "Anshul",
+		Age:     20,
+		Address: "Indore,M.P.",
+		RollNo:  43,
+	})
 
-// 	usersDetails = append(usersDetails, usr.User{
-// 		FullName: "Rahul",
-// 		Age:      20,
-// 		Address:  "Indore,M.P.",
-// 		RollNo:   41,
-// 	})
+	users = append(users, usr.User{
+		Name:    "Rahul",
+		Age:     20,
+		Address: "Indore,M.P.",
+		RollNo:  41,
+	})
 
-// 	usersDetailsInput := usr.User{
-// 		FullName: "Mradul",
-// 		Age:      20,
-// 		Address:  "Indore,M.P.",
-// 		RollNo:   42,
-// 	}
+	usersInput := usr.User{
+		Name:    "Mradul",
+		Age:     20,
+		Address: "Indore,M.P.",
+		RollNo:  42,
+	}
 
-// 	expectedUserDetails := []usr.User{
-// 		{
+	expectedUserDetails := []usr.User{
+		{
 
-// 			FullName: "Anshul",
-// 			Age:      20,
-// 			Address:  "Indore,M.P.",
-// 			RollNo:   43,
-// 		},
-// 		{
-// 			FullName: "Mradul",
-// 			Age:      20,
-// 			Address:  "Indore,M.P.",
-// 			RollNo:   42,
-// 		},
-// 		{
-// 			FullName: "Rahul",
-// 			Age:      20,
-// 			Address:  "Indore,M.P.",
-// 			RollNo:   41,
-// 		},
-// 	}
+			Name:    "Anshul",
+			Age:     20,
+			Address: "Indore,M.P.",
+			RollNo:  43,
+		},
+		{
+			Name:    "Mradul",
+			Age:     20,
+			Address: "Indore,M.P.",
+			RollNo:  42,
+		},
+		{
+			Name:    "Rahul",
+			Age:     20,
+			Address: "Indore,M.P.",
+			RollNo:  41,
+		},
+	}
 
-// 	err := InsertUserDetails(usersDetailsInput)
-// 	if err != nil {
-// 		t.Errorf("exception is  occuring: %q", err)
-// 	}
-// 	if !(reflect.DeepEqual(expectedUserDetails, usersDetails)) {
-// 		t.Errorf("Got: %v, Expected: %v", usersDetails, expectedUserDetails)
-// 	}
+	Insert(usersInput)
 
-// }
+	if !(reflect.DeepEqual(expectedUserDetails, expectedUserDetails)) {
+		t.Errorf("Got: %v, Expected: %v", usersInput, expectedUserDetails)
+	}
+
+}
 
 // func TestValidateUserDetails(t *testing.T) {
 

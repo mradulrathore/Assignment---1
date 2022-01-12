@@ -3,11 +3,11 @@ package user
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	cours "mradulrathore/onboarding-assignments/user-management/domain/course"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 type User struct {
@@ -43,9 +43,9 @@ func New(name string, age int, address string, rollNo int, courseEnrol []string)
 func (user User) validate() error {
 	return validation.ValidateStruct(&user,
 		validation.Field(&user.Name, validation.Required),
-		validation.Field(&user.Age, validation.Required, is.Int, validation.By(checkPositive)),
+		validation.Field(&user.Age, validation.Required, validation.By(checkPositive)),
 		validation.Field(&user.Address, validation.Required),
-		validation.Field(&user.RollNo, validation.Required, is.Int, validation.By(checkPositive)),
+		validation.Field(&user.RollNo, validation.Required, validation.By(checkPositive)),
 	)
 }
 
@@ -78,4 +78,8 @@ func DecodeUser(userB []byte) (user User, err error) {
 
 	return user, nil
 
+}
+
+func (user User) String() string {
+	return fmt.Sprintf("[%s, %d, %s,%d,%s]", user.Name, user.Age, user.Address, user.RollNo, user.CoursesEnrol.String())
 }
