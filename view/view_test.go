@@ -70,12 +70,11 @@ func TestInitialize(t *testing.T) {
 		scenario: "all item details provided for imported",
 		req:      setInput(testImported),
 		err:      nil,
+	}, {
+		scenario: "invalid item type, exported",
+		req:      setInput(testInvalidItmType),
+		err:      invalidTypeErr,
 	},
-		{
-			scenario: "invalid item type, exported",
-			req:      setInput(testInvalidItmType),
-			err:      invalidTypeErr,
-		},
 	}
 
 	oldStdin := os.Stdin
