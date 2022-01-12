@@ -3,21 +3,28 @@ package course
 import (
 	"encoding/json"
 	"log"
+	"mradulrathore/onboarding-assignments/user-management/domain/course/enum"
 )
-
-const (
-	TotalCourses           = 6
-	NumberOfCousesRequired = 4
-)
-
-var CourseAvailable = map[string]bool{"A": true, "B": true, "C": true, "D": true, "E": true, "F": true}
 
 type Course struct {
-	Name string `json:"name"`
+	Enrol []enum.Course `json:"enrol"`
+}
+
+func New(courseEnrol []string) (course Course, err error) {
+	for _, c := range courseEnrol {
+		var courseEnum enum.Course
+		courseEnum, err = enum.CourseString(c)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		course.Enrol = append(course.Enrol, courseEnum)
+	}
+
+	return
 }
 
 func (course *Course) EncodeCourse() (courseB []byte, err error) {
-
 	courseB, err = json.Marshal(course)
 
 	if err != nil {
@@ -29,7 +36,6 @@ func (course *Course) EncodeCourse() (courseB []byte, err error) {
 }
 
 func DecodeCourse(courseB []byte) (course Course, err error) {
-
 	if err := json.Unmarshal(courseB, &course); err != nil {
 		log.Println(err)
 		return course, err
