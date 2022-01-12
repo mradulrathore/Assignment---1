@@ -80,6 +80,7 @@ import (
 
 // // }
 
+//Doubt
 func TestNew(t *testing.T) {
 	_, emptyTypeErr := enum.ItemTypeString("")
 	_, invalidTypeErr := enum.ItemTypeString("exported")

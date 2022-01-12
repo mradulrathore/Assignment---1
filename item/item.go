@@ -46,22 +46,8 @@ func (item Item) validate() (err error) {
 	//return validation.ValidateStruct(&item, validation.Field(&item.Quantity, validation.By(checkNegativeValue)))
 }
 
-func (item Item) getEffectivePrice() (effectivePrice float64) {
-	surcharge := 0.0
-	tax := item.getTax()
-
-	switch item.Type {
-	case enum.Raw:
-		effectivePrice = item.Price + tax + surcharge
-	case enum.Manufactured:
-		effectivePrice = item.Price + tax + surcharge
-	case enum.Imported:
-		priceTemp := ImportDuty*item.Price + tax
-		surcharge = item.importSurcharge(priceTemp)
-		effectivePrice = priceTemp + surcharge
-	}
-
-	return
+func (item Item) String() string {
+	return fmt.Sprintf("[%s, %g, %d,%s,%g,%g]", item.Name, item.Price, item.Quantity, item.Type.String(), item.getTax(), item.getEffectivePrice())
 }
 
 func (item Item) getTax() (tax float64) {
@@ -80,6 +66,24 @@ func (item Item) getTax() (tax float64) {
 	return
 }
 
+func (item Item) getEffectivePrice() (effectivePrice float64) {
+	surcharge := 0.0
+	tax := item.getTax()
+
+	switch item.Type {
+	case enum.Raw:
+		effectivePrice = item.Price + tax + surcharge
+	case enum.Manufactured:
+		effectivePrice = item.Price + tax + surcharge
+	case enum.Imported:
+		priceTemp := ImportDuty*item.Price + tax
+		surcharge = item.importSurcharge(priceTemp)
+		effectivePrice = priceTemp + surcharge
+	}
+
+	return
+}
+
 func (item Item) importSurcharge(price float64) float64 {
 	if price <= ImportDutyLimit1 {
 		return ImportDutyLimit1SurchargeAmt
@@ -88,8 +92,4 @@ func (item Item) importSurcharge(price float64) float64 {
 	} else {
 		return price * ExceedeImportDutyLimit2SurchargeRate
 	}
-}
-
-func (item Item) String() string {
-	return fmt.Sprintf("[%s, %g, %d,%s,%g,%g]", item.Name, item.Price, item.Quantity, item.Type.String(), item.getTax(), item.getEffectivePrice())
 }

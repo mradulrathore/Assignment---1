@@ -7,10 +7,11 @@ import (
 	itm "github.com/mradulrathore/onboarding-assignments/item"
 )
 
-func Initialize() {
+func Initialize() (err error) {
 	name, price, quantity, typeItem, err := getItem()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	item, err := itm.New(name, price, quantity, typeItem)
 
@@ -18,7 +19,8 @@ func Initialize() {
 		log.Println(err.Error())
 		name, price, quantity, typeItem, err = getItem()
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
+			return
 		}
 		item, err = itm.New(name, price, quantity, typeItem)
 	}
@@ -33,8 +35,10 @@ func Initialize() {
 
 	// accept items details from user iteratively
 	if moreItem == Accept {
-		Initialize()
+		err = Initialize()
 	}
+
+	return
 }
 
 func getItem() (name string, price float64, quantity int, typeItem string, err error) {
