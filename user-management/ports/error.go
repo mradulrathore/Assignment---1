@@ -5,5 +5,6 @@ import (
 )
 
 var (
-	InvalidUsrChoice = errors.New("enter either " + Accept + " or " + Deny)
+	InvalidUsrChoice   = errors.New("enter either " + Accept + " or " + Deny)
+	DuplicateCourseErr = errors.New("duplicate course")
 )

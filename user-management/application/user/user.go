@@ -1,7 +1,6 @@
 package user
 
 import (
-	"errors"
 	"log"
 	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
 	"sort"
@@ -90,12 +89,10 @@ func sortDescCustom(field string) {
 
 func DeleteByRollNo(rollNo int) (err error) {
 	index := searchRollNo(rollNo)
-	//    return append(slice[:s], slice[s+1:]...)
 
 	if users[index].RollNo != rollNo {
-		errMsg := "roll no doesn't exist"
-		log.Println(errMsg)
-		err = errors.New(errMsg)
+		log.Println(RollNoNotExistsErr)
+		err = RollNoNotExistsErr
 		return
 	}
 

@@ -59,6 +59,22 @@ func Init() error {
 	return nil
 }
 
+func load() (err error) {
+
+	file, err := f.Open()
+	if err != nil {
+		return
+	}
+	defer file.Close()
+
+	users, err := f.Retrieve(file)
+	if err != nil {
+		return
+	}
+	usrApp.Init(users)
+	return
+}
+
 func showMenu() {
 	fmt.Println("-------------------")
 	fmt.Println("1. Add user details")
@@ -69,11 +85,19 @@ func showMenu() {
 	fmt.Println("-------------------")
 }
 
-func addUser() (err error) {
+func getUserChoice() (userChoice string, err error) {
+	_, err = fmt.Scanf("%s", &userChoice)
+	if err != nil {
+		log.Println("scan for user choice failed, due to ", err)
+		return
+	}
+	return
+}
 
+func addUser() (err error) {
 	name, age, address, rollNo, courseEnrol, err := getUser()
 	if err != nil {
-		return err
+		return
 	}
 	user, err := usr.New(name, age, address, rollNo, courseEnrol)
 
@@ -87,17 +111,6 @@ func addUser() (err error) {
 	}
 
 	usrApp.Insert(user)
-
-	return
-}
-
-func getUserChoice() (userChoice string, err error) {
-
-	_, err = fmt.Scanf("%s", &userChoice)
-	if err != nil {
-		log.Println("scan for user choice failed, due to ", err)
-		return
-	}
 	return
 }
 
@@ -131,12 +144,10 @@ func getUser() (name string, age int, address string, rollNo int, coursesEnrol [
 	}
 
 	coursesEnrol, err = getCourse()
-
 	return
 }
 
 func getCourse() (coursesEnrol []string, err error) {
-
 	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", cours.MinCousesEnrol)
 	var numCourse int
 	_, err = fmt.Scanf("%d", &numCourse)
@@ -151,7 +162,7 @@ func getCourse() (coursesEnrol []string, err error) {
 	}
 
 	for i := 1; i <= numCourse; i++ {
-		fmt.Println("Enter ", i, " course")
+		fmt.Println("Enter ", i, "th course")
 		var course string
 		_, err = fmt.Scanf("%s", &course)
 		if err != nil {
@@ -162,22 +173,16 @@ func getCourse() (coursesEnrol []string, err error) {
 	}
 
 	err = checkDuplicateCourse(coursesEnrol)
-
 	return
 }
 
 func checkDuplicateCourse(courses []string) error {
-
 	courseFrequency := make(map[string]int)
-
 	for _, course := range courses {
-
 		_, exist := courseFrequency[course]
-
 		if exist {
-			errMsg := "duplicate course"
-			log.Println(errMsg)
-			return errors.New(errMsg)
+			log.Println(DuplicateCourseErr)
+			return DuplicateCourseErr
 		} else {
 			courseFrequency[course] = 1
 		}
@@ -187,12 +192,14 @@ func checkDuplicateCourse(courses []string) error {
 
 func display() (err error) {
 	fmt.Print("Field Name to sort details on (1. Ascending 2.Descending): ")
+
 	var field string
 	_, err = fmt.Scanf("%s", &field)
 	if err != nil {
 		log.Println(err)
 		return
 	}
+
 	var order int
 	_, err = fmt.Scanf("%d", &order)
 	if err != nil {
@@ -216,22 +223,6 @@ func deleteByRollNo() (err error) {
 		return
 	}
 	err = usrApp.DeleteByRollNo(rollNo)
-	return
-}
-
-func load() (err error) {
-
-	file, err := f.Open()
-	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	users, err := f.Retrieve(file)
-	if err != nil {
-		return
-	}
-	usrApp.Init(users)
 	return
 }
 

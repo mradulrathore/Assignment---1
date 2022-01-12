@@ -1,7 +1,6 @@
 package user
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -55,29 +54,6 @@ func checkPositive(value interface{}) error {
 		return errors.New("must be positive")
 	}
 	return nil
-}
-
-func (user *User) EncodeUser() (userB []byte, err error) {
-
-	userB, err = json.Marshal(user)
-
-	if err != nil {
-		log.Println(err)
-		return userB, err
-	}
-
-	return userB, nil
-}
-
-func DecodeUser(userB []byte) (user User, err error) {
-
-	if err := json.Unmarshal(userB, &user); err != nil {
-		log.Println(err)
-		return user, err
-	}
-
-	return user, nil
-
 }
 
 func (user User) String() string {
