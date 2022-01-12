@@ -22,7 +22,9 @@ func Init() error {
 		switch userChoice {
 		case "1":
 			err = addUser()
-			return err
+			if err != nil {
+				return err
+			}
 		case "2":
 			display()
 		case "3":
@@ -161,11 +163,10 @@ func checkDuplicateCourse(courses []string) error {
 }
 
 func display() {
-	fmt.Println("Field Name to sort details on")
+	fmt.Print("Field Name to sort details on (1. Ascending 2.Descending): ")
 	var field string
-	fmt.Scanf("%f", field)
-	fmt.Println("1. Ascending\n2.Descending")
+	fmt.Scanf("%s", &field)
 	var order int
-	fmt.Scanf("%d", order)
+	fmt.Scanf("%d", &order)
 	usrServ.Display(field, order)
 }

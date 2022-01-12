@@ -49,11 +49,11 @@ func sortAscCustom(field string) {
 	sort.SliceStable(users, func(i, j int) bool {
 		switch field {
 		case "name":
-			return (strings.Compare(users[i].Name, users[j].Name) == 1)
+			return (strings.Compare(users[i].Name, users[j].Name) == -1)
 		case "rollno":
 			return (users[i].RollNo < users[j].RollNo)
 		case "address":
-			return (strings.Compare(users[i].Address, users[j].Address) == 1)
+			return (strings.Compare(users[i].Address, users[j].Address) == -1)
 		case "age":
 			return (users[i].Age < users[j].Age)
 		}
@@ -65,11 +65,11 @@ func sortDescCustom(field string) {
 	sort.SliceStable(users, func(i, j int) bool {
 		switch field {
 		case "name":
-			return (strings.Compare(users[i].Name, users[j].Name) == -1)
+			return (strings.Compare(users[i].Name, users[j].Name) == 1)
 		case "rollno":
 			return (users[i].RollNo > users[j].RollNo)
 		case "address":
-			return (strings.Compare(users[i].Address, users[j].Address) == -1)
+			return (strings.Compare(users[i].Address, users[j].Address) == 1)
 		case "age":
 			return (users[i].Age > users[j].Age)
 		}
