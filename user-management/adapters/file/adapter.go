@@ -23,6 +23,11 @@ func Save(file *os.File, user []usr.User) (err error) {
 		log.Println(err)
 		return
 	}
+	err = file.Truncate(0)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	_, err = file.Write(dataB)
 	if err != nil {
 		log.Println(err)
@@ -31,7 +36,7 @@ func Save(file *os.File, user []usr.User) (err error) {
 	return
 }
 
-func Retrive(file *os.File) (users []usr.User, err error) {
+func Retrieve(file *os.File) (users []usr.User, err error) {
 
 	fs, err := file.Stat()
 	if err != nil {

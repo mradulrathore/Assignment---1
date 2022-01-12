@@ -48,7 +48,10 @@ func Init() error {
 			}
 		case "5":
 			moreInput = false
-
+			err = confirmSave()
+			if err != nil {
+				moreInput = true
+			}
 		default:
 			fmt.Println("Invalid choice")
 		}
@@ -220,14 +223,12 @@ func load() (err error) {
 
 	file, err := f.Open()
 	if err != nil {
-		log.Println(err)
 		return
 	}
 	defer file.Close()
 
-	users, err := f.Retrive(file)
+	users, err := f.Retrieve(file)
 	if err != nil {
-		log.Println(err)
 		return
 	}
 
@@ -238,7 +239,6 @@ func load() (err error) {
 func save() (err error) {
 	file, err := f.Open()
 	if err != nil {
-		log.Println(err)
 		return
 	}
 	defer file.Close()
@@ -246,8 +246,29 @@ func save() (err error) {
 	//saving data in ascending order of name
 	users := usrApp.GetAll("name", 1)
 	err = f.Save(file, users)
+	return
+}
+
+func confirmSave() (err error) {
+	fmt.Println("Do you want to save the data(y/n)?")
+	var userChoice string
+	fmt.Scanf("%s", &userChoice)
+	err = validateConfirmation(userChoice)
 	if err != nil {
-		log.Println(err)
+		return
+	}
+	if userChoice == "y" {
+		err = save()
 	}
 	return
+}
+
+// validate whether userChoice is eiter Accept or Deny
+func validateConfirmation(userChoice string) error {
+	if userChoice != Accept && userChoice != Deny {
+		log.Println(InvalidUsrChoice)
+		return InvalidUsrChoice
+	}
+
+	return nil
 }
