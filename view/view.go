@@ -10,7 +10,6 @@ import (
 func Initialize() (err error) {
 	name, price, quantity, typeItem, err := getItem()
 	if err != nil {
-		log.Println(err)
 		return
 	}
 	item, err := itm.New(name, price, quantity, typeItem)
@@ -19,7 +18,6 @@ func Initialize() (err error) {
 		log.Println(err.Error())
 		name, price, quantity, typeItem, err = getItem()
 		if err != nil {
-			log.Println(err)
 			return
 		}
 		item, err = itm.New(name, price, quantity, typeItem)
