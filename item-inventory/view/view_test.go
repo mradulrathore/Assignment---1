@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mradulrathore/onboarding-assignments/item/enum"
+	"github.com/mradulrathore/onboarding-assignments/item-inventory/item/enum"
 )
 
 type testStr struct {

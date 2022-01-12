@@ -3,7 +3,7 @@ package item
 import (
 	"fmt"
 
-	"github.com/mradulrathore/onboarding-assignments/item/enum"
+	"github.com/mradulrathore/onboarding-assignments/item-inventory/item/enum"
 )
 
 type Item struct {

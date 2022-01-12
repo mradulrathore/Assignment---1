@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	itm "github.com/mradulrathore/onboarding-assignments/item"
+	itm "github.com/mradulrathore/onboarding-assignments/item-inventory/item"
 )
 
 func Initialize() (err error) {
