@@ -87,7 +87,6 @@ func TestNew(t *testing.T) {
 
 	var tests = []struct {
 		scenario string
-		desc     string
 		name     string
 		price    float64
 		quantity int
