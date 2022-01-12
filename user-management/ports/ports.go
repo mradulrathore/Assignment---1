@@ -1,17 +1,23 @@
-package application
+package ports
 
 import (
 	"errors"
 	"fmt"
 	"log"
+	f "mradulrathore/onboarding-assignments/user-management/adapters/file"
+	usrApp "mradulrathore/onboarding-assignments/user-management/application/user"
 	cours "mradulrathore/onboarding-assignments/user-management/domain/course"
 	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
-	usrServ "mradulrathore/onboarding-assignments/user-management/services/user"
 )
 
 func Init() error {
-	var moreInput bool = true
 
+	err := load()
+	if err != nil {
+		return err
+	}
+
+	var moreInput bool = true
 	for moreInput {
 		showMenu()
 		userChoice, err := getUserChoice()
@@ -36,8 +42,13 @@ func Init() error {
 				return err
 			}
 		case "4":
+			err = save()
+			if err != nil {
+				return err
+			}
 		case "5":
 			moreInput = false
+
 		default:
 			fmt.Println("Invalid choice")
 		}
@@ -72,7 +83,7 @@ func addUser() (err error) {
 		user, err = usr.New(name, age, address, rollNo, courseEnrol)
 	}
 
-	usrServ.Insert(user)
+	usrApp.Insert(user)
 
 	return
 }
@@ -161,7 +172,9 @@ func checkDuplicateCourse(courses []string) error {
 		_, exist := courseFrequency[course]
 
 		if exist {
-			return errors.New("duplicate course")
+			errMsg := "duplicate course"
+			log.Println(errMsg)
+			return errors.New(errMsg)
 		} else {
 			courseFrequency[course] = 1
 		}
@@ -173,17 +186,68 @@ func display() (err error) {
 	fmt.Print("Field Name to sort details on (1. Ascending 2.Descending): ")
 	var field string
 	_, err = fmt.Scanf("%s", &field)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	var order int
 	_, err = fmt.Scanf("%d", &order)
-	usrServ.Display(field, order)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	users := usrApp.GetAll(field, order)
+	for _, user := range users {
+		fmt.Println(user.String())
+	}
 	return
 }
 
 func deleteByRollNo() (err error) {
 	fmt.Print("Enter roll no to delete: ")
-	var rollNo string
-	_, err = fmt.Scanf("%s", &rollNo)
+	var rollNo int
+	_, err = fmt.Scanf("%d", &rollNo)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	err = usrApp.DeleteByRollNo(rollNo)
+	return
+}
 
-	err = usrServ.DeleteByRollNo(rollNo)
+func load() (err error) {
+
+	file, err := f.Open()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer file.Close()
+
+	users, err := f.Retrive(file)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	usrApp.Initialize(users)
+	return
+}
+
+func save() (err error) {
+	file, err := f.Open()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer file.Close()
+
+	//saving data in ascending order of name
+	users := usrApp.GetAll("name", 1)
+	err = f.Save(file, users)
+	if err != nil {
+		log.Println(err)
+	}
 	return
 }

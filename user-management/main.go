@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
-	"mradulrathore/onboarding-assignments/user-management/application"
+	"mradulrathore/onboarding-assignments/user-management/ports"
 )
 
 func main() {
-	err := application.Init()
+	err := ports.Init()
 	if err != nil {
 		log.Println(err)
 	}

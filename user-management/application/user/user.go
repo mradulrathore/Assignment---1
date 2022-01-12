@@ -2,13 +2,17 @@ package user
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
 	"sort"
 	"strings"
 )
 
 var users = []usr.User{}
+
+func Initialize(usrs []usr.User) {
+	users = usrs
+}
 
 func Insert(user usr.User) {
 	index := searchName(user)
@@ -40,7 +44,7 @@ func insertAt(index int, user usr.User) {
 	users[index] = user
 }
 
-func Display(field string, order int) {
+func GetAll(field string, order int) (users []usr.User) {
 
 	if order == 1 {
 		sortAscCustom(field)
@@ -48,9 +52,7 @@ func Display(field string, order int) {
 		sortDescCustom(field)
 	}
 
-	for _, user := range users {
-		fmt.Println(user.String())
-	}
+	return
 }
 
 func sortAscCustom(field string) {
@@ -90,7 +92,9 @@ func DeleteByRollNo(rollNo int) (err error) {
 	//    return append(slice[:s], slice[s+1:]...)
 
 	if users[index].RollNo != rollNo {
-		err = errors.New("roll no doesn't exist")
+		errMsg := "roll no doesn't exist"
+		log.Println(errMsg)
+		err = errors.New(errMsg)
 		return
 	}
 
@@ -103,14 +107,4 @@ func searchRollNo(rollNo int) (index int) {
 		return users[i].RollNo >= rollNo
 	})
 	return
-}
-
-//TODO
-func Save() {
-
-}
-
-//TODO
-func Exit() {
-
 }
