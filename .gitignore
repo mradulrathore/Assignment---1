@@ -20,6 +20,7 @@ _test
 _testmain.go
 *.out
 *_enumer.go
+.vscode
 
 /VERSION.cache
 /bin/
