@@ -26,8 +26,15 @@ func Init() error {
 				return err
 			}
 		case "2":
-			display()
+			err = display()
+			if err != nil {
+				return err
+			}
 		case "3":
+			err = deleteByRollNo()
+			if err != nil {
+				return err
+			}
 		case "4":
 		case "5":
 			moreInput = false
@@ -162,11 +169,21 @@ func checkDuplicateCourse(courses []string) error {
 	return nil
 }
 
-func display() {
+func display() (err error) {
 	fmt.Print("Field Name to sort details on (1. Ascending 2.Descending): ")
 	var field string
-	fmt.Scanf("%s", &field)
+	_, err = fmt.Scanf("%s", &field)
 	var order int
-	fmt.Scanf("%d", &order)
+	_, err = fmt.Scanf("%d", &order)
 	usrServ.Display(field, order)
+	return
+}
+
+func deleteByRollNo() (err error) {
+	fmt.Print("Enter roll no to delete: ")
+	var rollNo string
+	_, err = fmt.Scanf("%s", &rollNo)
+
+	err = usrServ.DeleteByRollNo(rollNo)
+	return
 }

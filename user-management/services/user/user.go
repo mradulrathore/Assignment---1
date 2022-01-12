@@ -1,6 +1,7 @@
 package user
 
 import (
+	"errors"
 	"fmt"
 	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
 	"sort"
@@ -10,16 +11,23 @@ import (
 var users = []usr.User{}
 
 func Insert(user usr.User) {
-	index := sort.Search(len(users), func(i int) bool {
+	index := searchName(user)
+	insertAt(index, user)
+}
+
+// return the smallest index i in [0, n) at which user.Name should be inserted to maintain sorted list
+// if user.Name matches with already existing element name then return index according to rollno
+func searchName(user usr.User) (index int) {
+	sort.Search(len(users), func(i int) bool {
 		if strings.Compare(users[i].Name, user.Name) == 1 {
 			return true
 		} else if strings.Compare(users[i].Name, user.Name) == 0 {
-			return users[i].RollNo >= user.RollNo
+			return users[i].RollNo > user.RollNo
 		}
 		return false
 	})
 
-	insertAt(index, user)
+	return
 }
 
 func insertAt(index int, user usr.User) {
@@ -77,9 +85,24 @@ func sortDescCustom(field string) {
 	})
 }
 
-//TODO
-func Delete() {
+func DeleteByRollNo(rollNo int) (err error) {
+	index := searchRollNo(rollNo)
+	//    return append(slice[:s], slice[s+1:]...)
 
+	if users[index].RollNo != rollNo {
+		err = errors.New("roll no doesn't exist")
+		return
+	}
+
+	users = append(users[:index], users[index+1:]...)
+	return
+}
+
+func searchRollNo(rollNo int) (index int) {
+	index = sort.Search(len(users), func(i int) bool {
+		return users[i].RollNo >= rollNo
+	})
+	return
 }
 
 //TODO
