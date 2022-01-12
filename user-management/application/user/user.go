@@ -10,7 +10,7 @@ import (
 
 var users = []usr.User{}
 
-func Initialize(usrs []usr.User) {
+func Init(usrs []usr.User) {
 	users = usrs
 }
 
@@ -44,7 +44,7 @@ func insertAt(index int, user usr.User) {
 	users[index] = user
 }
 
-func GetAll(field string, order int) (users []usr.User) {
+func GetAll(field string, order int) (usrs []usr.User) {
 
 	if order == 1 {
 		sortAscCustom(field)
@@ -52,6 +52,7 @@ func GetAll(field string, order int) (users []usr.User) {
 		sortDescCustom(field)
 	}
 
+	usrs = users
 	return
 }
 

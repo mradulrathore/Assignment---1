@@ -231,8 +231,7 @@ func load() (err error) {
 	if err != nil {
 		return
 	}
-
-	usrApp.Initialize(users)
+	usrApp.Init(users)
 	return
 }
 

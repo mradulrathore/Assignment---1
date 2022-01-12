@@ -9,7 +9,7 @@ import (
 
 // If the file doesn't exist, create it, or append to the file
 func Open() (file *os.File, err error) {
-	file, err = os.OpenFile("user-data", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	file, err = os.OpenFile("user-data", os.O_RDWR, 0644)
 	if err != nil {
 		log.Println(err)
 		return
@@ -44,6 +44,9 @@ func Retrieve(file *os.File) (users []usr.User, err error) {
 		return
 	}
 	len := fs.Size()
+	if len == 0 {
+		return
+	}
 	dataB := make([]byte, len)
 	_, err = file.Read(dataB)
 	if err != nil {
