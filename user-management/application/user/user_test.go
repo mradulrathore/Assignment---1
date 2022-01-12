@@ -9,7 +9,7 @@ import (
 	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
 )
 
-func TestInsertUserDetails(t *testing.T) {
+func TestInsert(t *testing.T) {
 
 	users = append(users, usr.User{
 
@@ -61,62 +61,50 @@ func TestInsertUserDetails(t *testing.T) {
 		t.Errorf("Got: %v, Expected: %v", usersInput, expectedUserDetails)
 	}
 
+	usersDetailsInput := []usr.User{
+		{
+			Name:    "Mradul",
+			Age:     20,
+			Address: "Indore,M.P.",
+			RollNo:  43,
+		},
+		// negative age
+		{
+			Name:    "Rahul",
+			Age:     -20,
+			Address: "Indore,M.P.",
+			RollNo:  43,
+		},
+		//blank Name
+		{
+			Name:    "",
+			Age:     20,
+			Address: "Indore,M.P.",
+			RollNo:  43,
+		},
+		//blank address
+		{
+			Name:    "Mradul",
+			Age:     20,
+			Address: "",
+			RollNo:  43,
+		},
+		//rollno not provided
+		{
+			Name:    "Mradul",
+			Age:     20,
+			Address: "Indore",
+		},
+		//address not provided
+		{
+			Name:   "Mradul",
+			Age:    20,
+			RollNo: 43,
+		},
+	}
+
+	for _, user := range usersDetailsInput {
+		Insert(user)
+	}
+
 }
-
-// func TestValidateUserDetails(t *testing.T) {
-
-// 	usersDetailsInput := []usr.User{
-// 		{
-// 			FullName: "Mradul",
-// 			Age:      20,
-// 			Address:  "Indore,M.P.",
-// 			RollNo:   43,
-// 		},
-// 		// negative age
-// 		{
-// 			FullName: "Rahul",
-// 			Age:      -20,
-// 			Address:  "Indore,M.P.",
-// 			RollNo:   43,
-// 		},
-// 		//blank fullname
-// 		{
-// 			FullName: "",
-// 			Age:      20,
-// 			Address:  "Indore,M.P.",
-// 			RollNo:   43,
-// 		},
-// 		//blank address
-// 		{
-// 			FullName: "Mradul",
-// 			Age:      20,
-// 			Address:  "",
-// 			RollNo:   43,
-// 		},
-// 		//rollno not provided
-// 		{
-// 			FullName: "Mradul",
-// 			Age:      20,
-// 			Address:  "Indore",
-// 		},
-// 		//address not provided
-// 		{
-// 			FullName: "Mradul",
-// 			Age:      20,
-// 			RollNo:   43,
-// 		},
-// 	}
-
-// 	expected := []bool{true, false, false, false, false, false}
-
-// 	for index, user := range usersDetailsInput {
-// 		if ok, err := ValidateUserDetails(user); ok != expected[index] {
-// 			if !expected[index] {
-// 				t.Errorf("exception is occuring: %q", err)
-// 			} else {
-// 				t.Errorf("exception is not occuring: %q", err)
-// 			}
-
-// 		}
-// 	}
-// }
