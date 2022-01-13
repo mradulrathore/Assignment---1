@@ -3,6 +3,8 @@ package ports
 import (
 	"fmt"
 	"log"
+
+	"github.com/mradulrathore/onboarding-assignments/dependency-graph/application"
 )
 
 func Init() error {
@@ -23,6 +25,7 @@ func Init() error {
 		case "6":
 		case "7":
 		case "8":
+			addNode()
 		case "9":
 			moreInput = false
 		default:
@@ -52,5 +55,56 @@ func getUserChoice() (userChoice string, err error) {
 		log.Println("scan for user choice failed, due to ", err)
 		return
 	}
+	return
+}
+
+func addNode() (err error) {
+
+	id, name, metaData, err := getNode()
+	if err != nil {
+		return
+	}
+	application.AddNode(id, name, metaData)
+	return
+}
+
+func getNode() (id int, name string, metaData map[string]string, err error) {
+	fmt.Printf("Id: ")
+	_, err = fmt.Scanf("%d", &id)
+	if err != nil {
+		log.Println("scan for node's id failed, due to ", err)
+		return
+	}
+
+	err = checkDuplicateId(id)
+	if err != nil {
+		return
+	}
+
+	fmt.Printf("Name: ")
+	_, err = fmt.Scanf("%d", &name)
+	if err != nil {
+		log.Println("scan for node's name failed, due to ", err)
+		return
+	}
+
+	metaData = make(map[string]string)
+	fmt.Printf("Additional Info (q to stop): ")
+	var key string
+	var value string
+	for key != "q" {
+		_, err = fmt.Scanf("%s %s", &key, &value)
+		if err != nil {
+			log.Println("scan for node's meta data failed, due to ", err)
+			return
+		}
+		metaData[key] = value
+	}
+
+	return
+}
+
+func checkDuplicateId(id int) (err error) {
+
 	return
 }

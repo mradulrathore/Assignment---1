@@ -25,3 +25,12 @@ func Init() {
 	fmt.Println(g.String())
 
 }
+
+func AddNode(id int, name string, metaData map[string]string) {
+	n := node.Node{
+		Id:       id,
+		Name:     name,
+		MetaData: metaData,
+	}
+	g.AddNode(&n)
+}
