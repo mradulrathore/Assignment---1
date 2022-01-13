@@ -24,12 +24,18 @@ func Init() error {
 		case "5":
 		case "6":
 		case "7":
+			err = addDependency()
+			if err != nil {
+				return err
+			}
 		case "8":
 			err = addNode()
 			if err != nil {
 				return err
 			}
 		case "9":
+			display()
+		case "10":
 			moreInput = false
 		default:
 			fmt.Println("Invalid choice")
@@ -48,7 +54,8 @@ func showMenu() {
 	fmt.Println("6. Delete the node")
 	fmt.Println("7. Add dependency")
 	fmt.Println("8. Add node")
-	fmt.Println("9. Exit")
+	fmt.Println("9. Display graph")
+	fmt.Println("10. Exit")
 	fmt.Println("-------------------")
 }
 
@@ -58,6 +65,18 @@ func getUserChoice() (userChoice string, err error) {
 		log.Println("scan for user choice failed, due to ", err)
 		return
 	}
+	return
+}
+
+func addDependency() (err error) {
+
+	fmt.Println("Enter ids of nodes")
+	var n1 int
+	fmt.Scanf("%d", &n1)
+	var n2 int
+	fmt.Scanf("%d", &n2)
+
+	err = application.AddEdge(n1, n2)
 	return
 }
 
@@ -77,39 +96,52 @@ func getNode() (id int, name string, metaData map[string]string, err error) {
 		log.Println("scan for node's id failed, due to ", err)
 		return
 	}
-	err = checkDuplicateId(id)
-	if err != nil {
+	_, exist := application.IdExist(id)
+	if exist {
+		log.Println(DuplicateIdErr)
 		return
 	}
 
 	fmt.Printf("Name: ")
-	_, err = fmt.Scanf("%d", &name)
+	_, err = fmt.Scanf("%s", &name)
 	if err != nil {
 		log.Println("scan for node's name failed, due to ", err)
 		return
 	}
 
 	metaData = make(map[string]string)
-	fmt.Printf("Additional Info (q to stop): ")
-	var key string
-	var value string
-	for key != "q" {
+	err = getAdditionInfo(metaData)
+
+	return
+}
+
+func getAdditionInfo(metaData map[string]string) (err error) {
+	fmt.Printf("Additional Info (y/n): ")
+	var userChoice string
+	_, err = fmt.Scanf("%s", &userChoice)
+	if err != nil {
+		log.Println("scan for user choice for meta data failed, due to ", err)
+		return
+	}
+
+	if userChoice == "y" {
+		var key string
+		var value string
 		_, err = fmt.Scanf("%s %s", &key, &value)
 		if err != nil {
 			log.Println("scan for node's meta data failed, due to ", err)
 			return
 		}
 		metaData[key] = value
+		err = getAdditionInfo(metaData)
+		if err != nil {
+			return
+		}
 	}
 
 	return
 }
 
-func checkDuplicateId(id int) error {
-	ids := application.GetAllId()
-	index := application.SearchId(id)
-	if ids[index] == id {
-		return DuplicateIdErr
-	}
-	return nil
+func display() {
+	fmt.Println(application.Display())
 }
