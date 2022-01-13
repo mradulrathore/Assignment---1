@@ -25,7 +25,10 @@ func Init() error {
 		case "6":
 		case "7":
 		case "8":
-			addNode()
+			err = addNode()
+			if err != nil {
+				return err
+			}
 		case "9":
 			moreInput = false
 		default:
@@ -59,7 +62,6 @@ func getUserChoice() (userChoice string, err error) {
 }
 
 func addNode() (err error) {
-
 	id, name, metaData, err := getNode()
 	if err != nil {
 		return
@@ -75,7 +77,6 @@ func getNode() (id int, name string, metaData map[string]string, err error) {
 		log.Println("scan for node's id failed, due to ", err)
 		return
 	}
-
 	err = checkDuplicateId(id)
 	if err != nil {
 		return
@@ -104,7 +105,11 @@ func getNode() (id int, name string, metaData map[string]string, err error) {
 	return
 }
 
-func checkDuplicateId(id int) (err error) {
-
-	return
+func checkDuplicateId(id int) error {
+	ids := application.GetAllId()
+	index := application.SearchId(id)
+	if ids[index] == id {
+		return DuplicateIdErr
+	}
+	return nil
 }
