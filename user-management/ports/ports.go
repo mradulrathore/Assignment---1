@@ -142,9 +142,22 @@ func getUser() (name string, age int, address string, rollNo int, coursesEnrol [
 		log.Println(" scan for user's rollno failed, due to ", err)
 		return
 	}
+	err = checkDuplicateRollNo(rollNo)
+	if err != nil {
+		return
+	}
 
 	coursesEnrol, err = getCourse()
 	return
+}
+
+func checkDuplicateRollNo(rollno int) error {
+	users := usrApp.GetAll("age", 1)
+	index := usrApp.SearchRollNo(rollno)
+	if users[index].RollNo == rollno {
+		return DuplicateRollNoErr
+	}
+	return nil
 }
 
 func getCourse() (coursesEnrol []string, err error) {

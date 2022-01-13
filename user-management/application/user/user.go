@@ -88,7 +88,7 @@ func sortDescCustom(field string) {
 }
 
 func DeleteByRollNo(rollNo int) (err error) {
-	index := searchRollNo(rollNo)
+	index := SearchRollNo(rollNo)
 
 	if users[index].RollNo != rollNo {
 		log.Println(RollNoNotExistsErr)
@@ -100,7 +100,7 @@ func DeleteByRollNo(rollNo int) (err error) {
 	return
 }
 
-func searchRollNo(rollNo int) (index int) {
+func SearchRollNo(rollNo int) (index int) {
 	index = sort.Search(len(users), func(i int) bool {
 		return users[i].RollNo >= rollNo
 	})
