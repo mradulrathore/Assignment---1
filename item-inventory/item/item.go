@@ -32,6 +32,13 @@ func New(name string, price float64, quantity int, typeItem string) (Item, error
 	return item, nil
 }
 
+func (item Item) validate() error {
+	return validation.ValidateStruct(&item,
+		validation.Field(&item.Quantity, validation.By(checkNegativeValue)),
+		validation.Field(&item.Price, validation.By(checkNegativeValue)),
+	)
+}
+
 func checkNegativeValue(value interface{}) (err error) {
 
 	val, _ := value.(int)
@@ -39,13 +46,6 @@ func checkNegativeValue(value interface{}) (err error) {
 		err = errors.New("negative value")
 	}
 	return
-}
-
-func (item Item) validate() error {
-	return validation.ValidateStruct(&item,
-		validation.Field(&item.Quantity, validation.By(checkNegativeValue)),
-		validation.Field(&item.Price, validation.By(checkNegativeValue)),
-	)
 }
 
 func (item Item) Invoice() string {
