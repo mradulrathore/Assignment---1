@@ -2,7 +2,8 @@ package main
 
 import (
 	"log"
-	"mradulrathore/onboarding-assignments/user-management/ports"
+
+	"github.com/mradulrathore/user-management/ports"
 )
 
 func main() {

@@ -4,10 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	f "mradulrathore/onboarding-assignments/user-management/adapters/file"
-	usrApp "mradulrathore/onboarding-assignments/user-management/application/user"
-	cours "mradulrathore/onboarding-assignments/user-management/domain/course"
-	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
+
+	f "github.com/mradulrathore/user-management/adapters/file"
+	usrApp "github.com/mradulrathore/user-management/application/user"
+	cours "github.com/mradulrathore/user-management/domain/course"
+	usr "github.com/mradulrathore/user-management/domain/user"
 )
 
 func Init() error {

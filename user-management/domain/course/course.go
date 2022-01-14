@@ -2,7 +2,8 @@ package course
 
 import (
 	"log"
-	"mradulrathore/onboarding-assignments/user-management/domain/course/enum"
+
+	"github.com/mradulrathore/user-management/domain/course/enum"
 )
 
 type Course struct {

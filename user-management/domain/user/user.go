@@ -4,7 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	cours "mradulrathore/onboarding-assignments/user-management/domain/course"
+
+	cours "github.com/mradulrathore/user-management/domain/course"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 )

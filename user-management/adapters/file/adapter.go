@@ -3,8 +3,9 @@ package file
 import (
 	"encoding/json"
 	"log"
-	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
 	"os"
+
+	usr "github.com/mradulrathore/user-management/domain/user"
 )
 
 // If the file doesn't exist, create it, or append to the file

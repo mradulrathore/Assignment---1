@@ -2,9 +2,10 @@ package user
 
 import (
 	"log"
-	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
 	"sort"
 	"strings"
+
+	usr "github.com/mradulrathore/user-management/domain/user"
 )
 
 var users = []usr.User{}
