@@ -7,10 +7,10 @@ import (
 	itm "github.com/mradulrathore/onboarding-assignments/item-inventory/item"
 )
 
-func Initialize() (err error) {
+func Initialize() error {
 	name, price, quantity, typeItem, err := getItem()
 	if err != nil {
-		return
+		return err
 	}
 	item, err := itm.New(name, price, quantity, typeItem)
 
@@ -18,7 +18,7 @@ func Initialize() (err error) {
 		log.Println(err.Error())
 		name, price, quantity, typeItem, err = getItem()
 		if err != nil {
-			return
+			return err
 		}
 		item, err = itm.New(name, price, quantity, typeItem)
 	}
@@ -34,9 +34,10 @@ func Initialize() (err error) {
 	// accept items details from user iteratively
 	if moreItem == Accept {
 		err = Initialize()
+		return err
 	}
 
-	return
+	return nil
 }
 
 func getItem() (name string, price float64, quantity int, typeItem string, err error) {
@@ -71,18 +72,20 @@ func getItem() (name string, price float64, quantity int, typeItem string, err e
 	return
 }
 
-func getUserChoice() (moreItem string, err error) {
+func getUserChoice() (string, error) {
 	fmt.Println("Do you want to enter details of any other item (" + Accept + "/" + Deny + ")")
-	var moreItems string = Accept
-	_, err = fmt.Scanf("%s", &moreItems)
+	moreItems := Accept
+	_, err := fmt.Scanf("%s", &moreItems)
 	if err != nil {
 		log.Println(err)
-		return
+		return moreItems, err
 	}
 
-	err = validateConfirmation(moreItems)
+	if err = validateConfirmation(moreItems); err != nil {
+		return moreItems, err
+	}
 
-	return
+	return moreItems, nil
 }
 
 // validate whether userChoice is eiter Accept or Deny

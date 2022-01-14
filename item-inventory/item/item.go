@@ -13,17 +13,21 @@ type Item struct {
 	Type     enum.ItemType `json:"type"`
 }
 
-func New(name string, price float64, quantity int, typeItem string) (item Item, err error) {
+func New(name string, price float64, quantity int, typeItem string) (Item, error) {
+	var item Item
+	var err error
 	item.Name = name
 	item.Price = price
 	item.Quantity = quantity
 	item.Type, err = enum.ItemTypeString(typeItem)
 	if err != nil {
-		return
+		return Item{}, err
 	}
 
-	err = item.validate()
-	return
+	if err = item.validate(); err != nil {
+		return Item{}, err
+	}
+	return item, nil
 }
 
 // func checkNegativeValue(value interface{}) (err error) {
@@ -35,14 +39,15 @@ func New(name string, price float64, quantity int, typeItem string) (item Item, 
 // 	return
 // }
 
-func (item Item) validate() (err error) {
+func (item Item) validate() error {
+	var err error
 	if item.Quantity < 0 {
 		err = NegativeQuantErr
 	}
 	if item.Price < 0 {
 		err = NegativePriceErr
 	}
-	return
+	return err
 	//return validation.ValidateStruct(&item, validation.Field(&item.Quantity, validation.By(checkNegativeValue)))
 }
 
@@ -50,7 +55,8 @@ func (item Item) String() string {
 	return fmt.Sprintf("[%s, %g, %d,%s,%g,%g]", item.Name, item.Price, item.Quantity, item.Type.String(), item.getTax(), item.getEffectivePrice())
 }
 
-func (item Item) getTax() (tax float64) {
+func (item Item) getTax() float64 {
+	var tax float64
 	switch item.Type {
 	case enum.Raw:
 		//raw: 12.5% of the item cost
@@ -63,10 +69,11 @@ func (item Item) getTax() (tax float64) {
 		tax = ImportDuty * item.Price
 	}
 
-	return
+	return tax
 }
 
-func (item Item) getEffectivePrice() (effectivePrice float64) {
+func (item Item) getEffectivePrice() float64 {
+	var effectivePrice float64
 	surcharge := 0.0
 	tax := item.getTax()
 
@@ -81,7 +88,7 @@ func (item Item) getEffectivePrice() (effectivePrice float64) {
 		effectivePrice = priceTemp + surcharge
 	}
 
-	return
+	return effectivePrice
 }
 
 func (item Item) importSurcharge(price float64) float64 {
