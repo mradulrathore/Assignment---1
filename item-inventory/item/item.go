@@ -51,11 +51,11 @@ func (item Item) validate() error {
 	//return validation.ValidateStruct(&item, validation.Field(&item.Quantity, validation.By(checkNegativeValue)))
 }
 
-func (item Item) String() string {
-	return fmt.Sprintf("[%s, %g, %d,%s,%g,%g]", item.Name, item.Price, item.Quantity, item.Type.String(), item.getTax(), item.getEffectivePrice())
+func (item Item) Invoice() string {
+	return fmt.Sprintf("[%s, %g, %d,%s,%g,%g]", item.Name, item.Price, item.Quantity, item.Type.String(), item.GetTax(), item.GetEffectivePrice())
 }
 
-func (item Item) getTax() float64 {
+func (item Item) GetTax() float64 {
 	var tax float64
 	switch item.Type {
 	case enum.Raw:
@@ -72,10 +72,10 @@ func (item Item) getTax() float64 {
 	return tax
 }
 
-func (item Item) getEffectivePrice() float64 {
+func (item Item) GetEffectivePrice() float64 {
 	var effectivePrice float64
 	surcharge := 0.0
-	tax := item.getTax()
+	tax := item.GetTax()
 
 	switch item.Type {
 	case enum.Raw:

@@ -23,7 +23,7 @@ func Initialize() error {
 		item, err = itm.New(name, price, quantity, typeItem)
 	}
 
-	fmt.Println(item.String())
+	fmt.Println(item.Invoice())
 
 	// check whether user wants to add more item
 	moreItem, err := getUserChoice()
