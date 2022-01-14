@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/mradulrathore/onboarding-assignments/item-inventory/view"
+	"github.com/mradulrathore/item-inventory/view"
 )
 
 func main() {

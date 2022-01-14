@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/mradulrathore/onboarding-assignments/item-inventory/item/enum"
+	"github.com/mradulrathore/item-inventory/item/enum"
 )
 
 type Item struct {
