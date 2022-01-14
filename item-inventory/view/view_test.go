@@ -3,13 +3,12 @@ package view
 // cmd go test -coverprofile=coverage.out
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"testing"
-
-	"github.com/mradulrathore/onboarding-assignments/item-inventory/item/enum"
 )
 
 type testStr struct {
@@ -20,10 +19,7 @@ type testStr struct {
 	userChoice string
 }
 
-// doubt comparing two error
 func TestInitialize(t *testing.T) {
-	_, invalidTypeErr := enum.ItemTypeString("exported")
-
 	testRaw := testStr{
 		name:       "Mango",
 		price:      100,
@@ -73,19 +69,19 @@ func TestInitialize(t *testing.T) {
 	}, {
 		scenario: "invalid item type, exported",
 		req:      setInput(testInvalidItmType),
-		err:      invalidTypeErr,
+		err:      errors.New("invalide type error"),
 	},
 	}
 
 	oldStdin := os.Stdin
-	defer func() { os.Stdin = oldStdin }() // Restore original Stdin
+	defer func() { os.Stdin = oldStdin }()
 
 	for _, tc := range tests {
 		os.Stdin = tc.req
 		err := Initialize()
-		if err != nil && tc.err != nil && err.Error() != tc.err.Error() {
+		if err != nil && tc.err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
-		} else if err != tc.err {
+		} else if err == nil && tc.err != nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		}
 
