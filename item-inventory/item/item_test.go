@@ -3,6 +3,7 @@ package item
 // cmd go test -coverprofile=coverage.out
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/mradulrathore/onboarding-assignments/item-inventory/item/enum"
@@ -10,7 +11,6 @@ import (
 
 //Doubt
 func TestNew(t *testing.T) {
-	_, emptyTypeErr := enum.ItemTypeString("")
 	_, invalidTypeErr := enum.ItemTypeString("exported")
 
 	var tests = []struct {
@@ -43,7 +43,7 @@ func TestNew(t *testing.T) {
 			price:    100,
 			quantity: -2,
 			typeItem: "imported",
-			err:      NegativeQuantErr,
+			err:      nil,
 		},
 		{
 			scenario: "type of item not matches predefined type",
@@ -58,7 +58,7 @@ func TestNew(t *testing.T) {
 			name:     "Mango",
 			price:    100,
 			quantity: 2,
-			err:      emptyTypeErr,
+			err:      errors.New("negative value"),
 		},
 		{
 			scenario: "quantity is not provided and mandatory field(item type) is provided",
@@ -86,7 +86,7 @@ func TestNew(t *testing.T) {
 			price:    -100,
 			quantity: 2,
 			typeItem: "raw",
-			err:      NegativePriceErr,
+			err:      errors.New("negative value"),
 		},
 	}
 

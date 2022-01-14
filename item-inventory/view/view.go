@@ -1,10 +1,16 @@
 package view
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
 	itm "github.com/mradulrathore/onboarding-assignments/item-inventory/item"
+)
+
+const (
+	Accept = "y"
+	Deny   = "n"
 )
 
 func Initialize() error {
@@ -25,13 +31,11 @@ func Initialize() error {
 
 	fmt.Println(item.Invoice())
 
-	// check whether user wants to add more item
 	moreItem, err := getUserChoice()
 	for err != nil {
 		moreItem, err = getUserChoice()
 	}
 
-	// accept items details from user iteratively
 	if moreItem == Accept {
 		err = Initialize()
 		return err
@@ -88,7 +92,10 @@ func getUserChoice() (string, error) {
 	return moreItems, nil
 }
 
-// validate whether userChoice is eiter Accept or Deny
+var (
+	InvalidUsrChoice = errors.New("enter either " + Accept + " or " + Deny)
+)
+
 func validateConfirmation(userChoice string) error {
 	if userChoice != Accept && userChoice != Deny {
 		log.Println(InvalidUsrChoice)
