@@ -6,7 +6,7 @@ import (
 	"log"
 
 	usr "github.com/mradulrathore/user-management/domain/user"
-	f "github.com/mradulrathore/user-management/repository/file"
+	"github.com/mradulrathore/user-management/repository"
 	usrApp "github.com/mradulrathore/user-management/service"
 )
 
@@ -58,13 +58,13 @@ func Init() error {
 }
 
 func load() error {
-	file, err := f.Open()
+	file, err := repository.Open()
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	users, err := f.Retrieve(file)
+	users, err := repository.Retrieve(file)
 	if err != nil {
 		return err
 	}
@@ -257,7 +257,7 @@ func deleteByRollNo() error {
 }
 
 func save() error {
-	file, err := f.Open()
+	file, err := repository.Open()
 	if err != nil {
 		return err
 	}
@@ -265,7 +265,7 @@ func save() error {
 
 	//saving data in ascending order of name
 	users := usrApp.GetAll("name", 1)
-	if err = f.Save(file, users); err != nil {
+	if err = repository.Save(file, users); err != nil {
 		return err
 	}
 	return nil
