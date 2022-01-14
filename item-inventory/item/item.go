@@ -1,8 +1,10 @@
 package item
 
 import (
+	"errors"
 	"fmt"
 
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/mradulrathore/onboarding-assignments/item-inventory/item/enum"
 )
 
@@ -30,25 +32,20 @@ func New(name string, price float64, quantity int, typeItem string) (Item, error
 	return item, nil
 }
 
-// func checkNegativeValue(value interface{}) (err error) {
+func checkNegativeValue(value interface{}) (err error) {
 
-// 	val, _ := value.(int)
-// 	if val < 0 {
-// 		err = NegativeQuantErr
-// 	}
-// 	return
-// }
+	val, _ := value.(int)
+	if val < 0 {
+		err = errors.New("negative value")
+	}
+	return
+}
 
 func (item Item) validate() error {
-	var err error
-	if item.Quantity < 0 {
-		err = NegativeQuantErr
-	}
-	if item.Price < 0 {
-		err = NegativePriceErr
-	}
-	return err
-	//return validation.ValidateStruct(&item, validation.Field(&item.Quantity, validation.By(checkNegativeValue)))
+	return validation.ValidateStruct(&item,
+		validation.Field(&item.Quantity, validation.By(checkNegativeValue)),
+		validation.Field(&item.Price, validation.By(checkNegativeValue)),
+	)
 }
 
 func (item Item) Invoice() string {
