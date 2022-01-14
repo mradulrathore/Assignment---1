@@ -18,45 +18,46 @@ func Open() (file *os.File, err error) {
 	return
 }
 
-func Save(file *os.File, user []usr.User) (err error) {
+func Save(file *os.File, user []usr.User) error {
 	dataB, err := json.Marshal(user)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
-	err = file.Truncate(0)
-	if err != nil {
+	if err = file.Truncate(0); err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 	_, err = file.Write(dataB)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
-	return
+	return nil
 }
 
-func Retrieve(file *os.File) (users []usr.User, err error) {
+func Retrieve(file *os.File) ([]usr.User, error) {
+	var users []usr.User
 	fs, err := file.Stat()
 	if err != nil {
 		log.Println(err)
-		return
+		return []usr.User{}, err
 	}
 	len := fs.Size()
 	if len == 0 {
-		return
+		return []usr.User{}, err
 	}
 	dataB := make([]byte, len)
 	_, err = file.Read(dataB)
 	if err != nil {
 		log.Println(err)
-		return
+		return []usr.User{}, err
 	}
 
 	err = json.Unmarshal(dataB, &users)
 	if err != nil {
 		log.Println(err)
+		return []usr.User{}, err
 	}
-	return
+	return users, nil
 }

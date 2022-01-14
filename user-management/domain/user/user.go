@@ -18,8 +18,10 @@ type User struct {
 	CoursesEnrol cours.Course `json:"coursesenrol"`
 }
 
-func New(name string, age int, address string, rollNo int, courseEnrol []string) (user User, err error) {
+func New(name string, age int, address string, rollNo int, courseEnrol []string) (User, error) {
 
+	var user User
+	var err error
 	user.Name = name
 	user.Age = age
 	user.Address = address
@@ -27,17 +29,15 @@ func New(name string, age int, address string, rollNo int, courseEnrol []string)
 	user.CoursesEnrol, err = cours.New(courseEnrol)
 
 	if err != nil {
-		return
+		return User{}, err
 	}
 
-	err = user.validate()
-
-	if err != nil {
+	if err = user.validate(); err != nil {
 		log.Println(err)
-		return
+		return User{}, err
 	}
 
-	return
+	return user, nil
 }
 
 func (user User) validate() error {

@@ -1,31 +1,28 @@
-package ports
+package view
 
 import (
 	"errors"
 	"fmt"
 	"log"
 
-	f "github.com/mradulrathore/user-management/adapters/file"
-	usrApp "github.com/mradulrathore/user-management/application/user"
-	cours "github.com/mradulrathore/user-management/domain/course"
 	usr "github.com/mradulrathore/user-management/domain/user"
+	f "github.com/mradulrathore/user-management/repository/file"
+	usrApp "github.com/mradulrathore/user-management/service"
 )
 
 func Init() error {
-
-	err := load()
-	if err != nil {
+	if err := load(); err != nil {
 		return err
 	}
 
 	var moreInput bool = true
 	for moreInput {
 		showMenu()
+
 		userChoice, err := getUserChoice()
 		if err != nil {
 			return err
 		}
-
 		switch userChoice {
 		case "1":
 			err = addUser()
@@ -60,20 +57,21 @@ func Init() error {
 	return nil
 }
 
-func load() (err error) {
-
+func load() error {
 	file, err := f.Open()
 	if err != nil {
-		return
+		return err
 	}
 	defer file.Close()
 
 	users, err := f.Retrieve(file)
 	if err != nil {
-		return
+		return err
 	}
+
 	usrApp.Init(users)
-	return
+
+	return nil
 }
 
 func showMenu() {
@@ -86,33 +84,35 @@ func showMenu() {
 	fmt.Println("-------------------")
 }
 
-func getUserChoice() (userChoice string, err error) {
-	_, err = fmt.Scanf("%s", &userChoice)
+func getUserChoice() (string, error) {
+	var userChoice string
+	_, err := fmt.Scanf("%s", &userChoice)
 	if err != nil {
 		log.Println("scan for user choice failed, due to ", err)
-		return
+		return "", err
 	}
-	return
+	return userChoice, nil
 }
 
-func addUser() (err error) {
+func addUser() error {
 	name, age, address, rollNo, courseEnrol, err := getUser()
 	if err != nil {
-		return
+		return err
 	}
-	user, err := usr.New(name, age, address, rollNo, courseEnrol)
 
+	user, err := usr.New(name, age, address, rollNo, courseEnrol)
 	for err != nil {
 		log.Println(err.Error())
 		name, age, address, rollNo, courseEnrol, err = getUser()
 		if err != nil {
-			return
+			return err
 		}
 		user, err = usr.New(name, age, address, rollNo, courseEnrol)
 	}
 
 	usrApp.Insert(user)
-	return
+
+	return nil
 }
 
 func getUser() (name string, age int, address string, rollNo int, coursesEnrol []string, err error) {
@@ -143,14 +143,19 @@ func getUser() (name string, age int, address string, rollNo int, coursesEnrol [
 		log.Println(" scan for user's rollno failed, due to ", err)
 		return
 	}
-	err = checkDuplicateRollNo(rollNo)
-	if err != nil {
+	if err = checkDuplicateRollNo(rollNo); err != nil {
 		return
 	}
 
 	coursesEnrol, err = getCourse()
 	return
 }
+
+var (
+	InvalidUsrChoice   = errors.New("enter either " + Accept + " or " + Deny)
+	DuplicateCourseErr = errors.New("duplicate course")
+	DuplicateRollNoErr = errors.New("duplicate rollno")
+)
 
 func checkDuplicateRollNo(rollno int) error {
 	users := usrApp.GetAll("age", 1)
@@ -161,18 +166,24 @@ func checkDuplicateRollNo(rollno int) error {
 	return nil
 }
 
-func getCourse() (coursesEnrol []string, err error) {
-	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", cours.MinCousesEnrol)
+const (
+	TotalCourses   = 6
+	MinCousesEnrol = 4
+)
+
+func getCourse() ([]string, error) {
+	var coursesEnrol []string
+	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", MinCousesEnrol)
 	var numCourse int
-	_, err = fmt.Scanf("%d", &numCourse)
+	_, err := fmt.Scanf("%d", &numCourse)
 	if err != nil {
 		log.Println("scan for number of course failed, due to ", err)
-		return
+		return []string{}, err
 	}
-	if numCourse < cours.MinCousesEnrol {
-		errMsg := fmt.Sprintf("select atleast %d", cours.MinCousesEnrol)
+	if numCourse < MinCousesEnrol {
+		errMsg := fmt.Sprintf("select atleast %d", MinCousesEnrol)
 		err = errors.New(errMsg)
-		return
+		return []string{}, err
 	}
 
 	for i := 1; i <= numCourse; i++ {
@@ -181,13 +192,16 @@ func getCourse() (coursesEnrol []string, err error) {
 		_, err = fmt.Scanf("%s", &course)
 		if err != nil {
 			log.Printf("scan for course %d failed, due to %g \n ", i, err)
-			return
+			return []string{}, err
 		}
 		coursesEnrol = append(coursesEnrol, course)
 	}
 
-	err = checkDuplicateCourse(coursesEnrol)
-	return
+	if err = checkDuplicateCourse(coursesEnrol); err != nil {
+		return []string{}, err
+	}
+
+	return coursesEnrol, nil
 }
 
 func checkDuplicateCourse(courses []string) error {
@@ -204,68 +218,78 @@ func checkDuplicateCourse(courses []string) error {
 	return nil
 }
 
-func display() (err error) {
+func display() error {
 	fmt.Print("Field Name to sort details on (1. Ascending 2.Descending): ")
 
 	var field string
-	_, err = fmt.Scanf("%s", &field)
+	_, err := fmt.Scanf("%s", &field)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 
 	var order int
 	_, err = fmt.Scanf("%d", &order)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
 
 	users := usrApp.GetAll(field, order)
 	for _, user := range users {
 		fmt.Println(user.String())
 	}
-	return
+	return nil
 }
 
-func deleteByRollNo() (err error) {
+func deleteByRollNo() error {
 	fmt.Print("Enter roll no to delete: ")
 	var rollNo int
-	_, err = fmt.Scanf("%d", &rollNo)
+	_, err := fmt.Scanf("%d", &rollNo)
 	if err != nil {
 		log.Println(err)
-		return
+		return err
 	}
-	err = usrApp.DeleteByRollNo(rollNo)
-	return
+	if err = usrApp.DeleteByRollNo(rollNo); err != nil {
+		return err
+	}
+	return nil
 }
 
-func save() (err error) {
+func save() error {
 	file, err := f.Open()
 	if err != nil {
-		return
+		return err
 	}
 	defer file.Close()
 
 	//saving data in ascending order of name
 	users := usrApp.GetAll("name", 1)
-	err = f.Save(file, users)
-	return
+	if err = f.Save(file, users); err != nil {
+		return err
+	}
+	return nil
 }
 
-func confirmSave() (err error) {
+func confirmSave() error {
 	fmt.Println("Do you want to save the data(y/n)?")
 	var userChoice string
 	fmt.Scanf("%s", &userChoice)
-	err = validateConfirmation(userChoice)
-	if err != nil {
-		return
+	if err := validateConfirmation(userChoice); err != nil {
+		return err
 	}
 	if userChoice == "y" {
-		err = save()
+		if err := save(); err != nil {
+			return err
+		}
 	}
-	return
+	return nil
 }
+
+const (
+	Accept = "y"
+	Deny   = "n"
+)
 
 // validate whether userChoice is eiter Accept or Deny
 func validateConfirmation(userChoice string) error {

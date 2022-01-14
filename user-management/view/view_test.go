@@ -1,4 +1,4 @@
-package ports
+package view
 
 import (
 	"os"

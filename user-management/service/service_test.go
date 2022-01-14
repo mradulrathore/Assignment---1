@@ -1,4 +1,4 @@
-package user
+package service
 
 // cmd go test -coverprofile=coverage.out
 
@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"testing"
 
-	usr "mradulrathore/onboarding-assignments/user-management/domain/user"
+	usr "github.com/mradulrathore/user-management/domain/user"
 )
 
 func TestInsert(t *testing.T) {

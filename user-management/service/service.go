@@ -1,6 +1,7 @@
-package user
+package service
 
 import (
+	"errors"
 	"log"
 	"sort"
 	"strings"
@@ -9,6 +10,8 @@ import (
 )
 
 var users = []usr.User{}
+
+var RollNoNotExistsErr = errors.New("roll no doesn't exist")
 
 func Init(usrs []usr.User) {
 	users = usrs
@@ -21,8 +24,8 @@ func Insert(user usr.User) {
 
 // return the smallest index i in [0, n) at which user.Name should be inserted to maintain sorted list
 // if user.Name matches with already existing element name then return index according to rollno
-func searchName(user usr.User) (index int) {
-	sort.Search(len(users), func(i int) bool {
+func searchName(user usr.User) int {
+	index := sort.Search(len(users), func(i int) bool {
 		if strings.Compare(users[i].Name, user.Name) == 1 {
 			return true
 		} else if strings.Compare(users[i].Name, user.Name) == 0 {
@@ -31,7 +34,7 @@ func searchName(user usr.User) (index int) {
 		return false
 	})
 
-	return
+	return index
 }
 
 func insertAt(index int, user usr.User) {
@@ -44,7 +47,9 @@ func insertAt(index int, user usr.User) {
 	users[index] = user
 }
 
-func GetAll(field string, order int) (usrs []usr.User) {
+func GetAll(field string, order int) []usr.User {
+
+	var usrs []usr.User
 
 	if order == 1 {
 		sortAscCustom(field)
@@ -53,7 +58,7 @@ func GetAll(field string, order int) (usrs []usr.User) {
 	}
 
 	usrs = users
-	return
+	return usrs
 }
 
 func sortAscCustom(field string) {
@@ -88,22 +93,22 @@ func sortDescCustom(field string) {
 	})
 }
 
-func DeleteByRollNo(rollNo int) (err error) {
+func DeleteByRollNo(rollNo int) error {
 	index := SearchRollNo(rollNo)
 
 	if users[index].RollNo != rollNo {
 		log.Println(RollNoNotExistsErr)
-		err = RollNoNotExistsErr
-		return
+		return RollNoNotExistsErr
+
 	}
 
 	users = append(users[:index], users[index+1:]...)
-	return
+	return nil
 }
 
-func SearchRollNo(rollNo int) (index int) {
-	index = sort.Search(len(users), func(i int) bool {
+func SearchRollNo(rollNo int) int {
+	index := sort.Search(len(users), func(i int) bool {
 		return users[i].RollNo >= rollNo
 	})
-	return
+	return index
 }

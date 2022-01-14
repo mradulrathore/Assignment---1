@@ -3,12 +3,11 @@ package main
 import (
 	"log"
 
-	"github.com/mradulrathore/user-management/ports"
+	"github.com/mradulrathore/user-management/view"
 )
 
 func main() {
-	err := ports.Init()
-	if err != nil {
+	if err := view.Init(); err != nil {
 		log.Println(err)
 	}
 }
