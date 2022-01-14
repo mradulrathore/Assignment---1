@@ -55,7 +55,7 @@ func getItem() (name string, price float64, quantity int, typeItem string, err e
 	}
 
 	fmt.Printf("Item Price: ")
-	_, err = fmt.Scanf("%g", &price)
+	_, err = fmt.Scanf("%f", &price)
 	if err != nil {
 		err = errors.Wrap(err, "scan for Item Price failed")
 		log.Println(err)

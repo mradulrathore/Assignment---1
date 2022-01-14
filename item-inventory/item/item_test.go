@@ -5,13 +5,9 @@ package item
 import (
 	"errors"
 	"testing"
-
-	"github.com/mradulrathore/onboarding-assignments/item-inventory/item/enum"
 )
 
-//Doubt
 func TestNew(t *testing.T) {
-	_, invalidTypeErr := enum.ItemTypeString("exported")
 
 	var tests = []struct {
 		scenario string
@@ -43,7 +39,7 @@ func TestNew(t *testing.T) {
 			price:    100,
 			quantity: -2,
 			typeItem: "imported",
-			err:      nil,
+			err:      errors.New("negative value"),
 		},
 		{
 			scenario: "type of item not matches predefined type",
@@ -51,7 +47,7 @@ func TestNew(t *testing.T) {
 			price:    100,
 			quantity: 2,
 			typeItem: "exported",
-			err:      invalidTypeErr,
+			err:      errors.New("invalid item type"),
 		},
 		{
 			scenario: "item type not provided",
@@ -92,8 +88,162 @@ func TestNew(t *testing.T) {
 
 	for _, tc := range tests {
 		_, err := New(tc.name, tc.price, tc.quantity, tc.typeItem)
-		if err != tc.err {
+		if tc.err != nil && err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		} else if tc.err == nil && err != nil {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		}
+	}
+}
+
+func TestGetTax(t *testing.T) {
+
+	var tests = []struct {
+		scenario string
+		req      Item
+		tax      float64
+		err      error
+	}{
+		{
+			scenario: "tax calculation for raw",
+			req: Item{
+				Name:     "Mango",
+				Price:    12,
+				Quantity: 1,
+				Type:     0,
+			},
+			tax: 1.5,
+			err: nil,
+		},
+		{
+			scenario: "tax calculation for manufactured",
+			req: Item{
+				Name:     "Mango",
+				Price:    12,
+				Quantity: 1,
+				Type:     1,
+			},
+			tax: 1.77,
+			err: nil,
+		},
+		{
+			scenario: "tax calculation for imported",
+			req: Item{
+				Name:     "Mango",
+				Price:    12.0,
+				Quantity: 1,
+				Type:     2,
+			},
+			tax: float64(0.1) * 12,
+			err: nil,
+		},
+		{
+			scenario: "tax calculation for imported",
+			req: Item{
+				Name:     "Orange",
+				Price:    100,
+				Quantity: 1,
+				Type:     2,
+			},
+			tax: 10,
+			err: nil,
+		},
+		{
+			scenario: "tax calculation for imported",
+			req: Item{
+				Name:     "Tomato",
+				Price:    1000,
+				Quantity: 1,
+				Type:     2,
+			},
+			tax: 100,
+			err: nil,
+		},
+	}
+
+	for _, tc := range tests {
+		tax := tc.req.GetTax()
+		if tc.tax != tax {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, tax, tc.tax)
+		}
+	}
+
+}
+
+func TestGetEffectivePrice(t *testing.T) {
+	var tests = []struct {
+		scenario string
+		req      Item
+		tax      float64
+		price    float64
+		err      error
+	}{
+		{
+			scenario: "final price calculation for raw",
+			req: Item{
+				Name:     "Mango",
+				Price:    12,
+				Quantity: 1,
+				Type:     0,
+			},
+			tax:   1.5,
+			price: 13.5,
+			err:   nil,
+		},
+		{
+			scenario: "final price calculation for manufactured",
+			req: Item{
+				Name:     "Mango",
+				Price:    12,
+				Quantity: 1,
+				Type:     1,
+			},
+			tax:   1.77,
+			price: 13.77,
+			err:   nil,
+		},
+		{
+			scenario: "final price calculation for imported ( under ImportDutyLimit1)",
+			req: Item{
+				Name:     "Mango",
+				Price:    12.0,
+				Quantity: 1,
+				Type:     2,
+			},
+			tax:   float64(0.1) * 12,
+			price: 18.2,
+			err:   nil,
+		},
+		{
+			scenario: "final price calculation for imported (under ImportDutyLimit2)",
+			req: Item{
+				Name:     "Orange",
+				Price:    100,
+				Quantity: 1,
+				Type:     2,
+			},
+			tax:   10,
+			price: 120,
+			err:   nil,
+		},
+		{
+			scenario: "final price calculation for imported (ExceedeImportDutyLimit2)",
+			req: Item{
+				Name:     "Tomato",
+				Price:    1000,
+				Quantity: 1,
+				Type:     2,
+			},
+			tax:   100,
+			price: 1155,
+			err:   nil,
+		},
+	}
+
+	for _, tc := range tests {
+		price := tc.req.GetEffectivePrice()
+		if tc.price != price {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, price, tc.price)
 		}
 	}
 }

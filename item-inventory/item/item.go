@@ -39,16 +39,23 @@ func (item Item) validate() error {
 }
 
 func checkNegativeValue(value interface{}) error {
-	val, _ := value.(int)
-	if val < 0 {
-		err := fmt.Errorf("%v", "negative value")
-		return err
+	err := fmt.Errorf("%v", "negative value")
+	switch t := value.(type) {
+	case int:
+		if t < 0 {
+			return err
+		}
+	case float64:
+		if t < 0.0 {
+			return err
+		}
 	}
+
 	return nil
 }
 
 func (item Item) Invoice() string {
-	return fmt.Sprintf("[%s, %g, %d,%s,%g,%g]", item.Name, item.Price, item.Quantity, item.Type.String(), item.GetTax(), item.GetEffectivePrice())
+	return fmt.Sprintf("[%s, %f, %d,%s,%.2f,%.2f]", item.Name, item.Price, item.Quantity, item.Type.String(), item.GetTax(), item.GetEffectivePrice())
 }
 
 const (
@@ -73,7 +80,7 @@ func (item Item) GetTax() float64 {
 		// manufactured: 12.5% of the item cost + 2% of (item cost + 12.5% of the item cost)
 		tax = ManufacturedItmTaxRate*item.Price + ManufacturedItmExtraTaxRate*(item.Price+ManufacturedItmTaxRate*item.Price)
 	case enum.Imported:
-		//imported: 10% import duty on item cost + a surcharge
+		//imported: 10% import duty on item cost
 		tax = ImportDuty * item.Price
 	}
 
@@ -91,7 +98,7 @@ func (item Item) GetEffectivePrice() float64 {
 	case enum.Manufactured:
 		effectivePrice = item.Price + tax + surcharge
 	case enum.Imported:
-		priceTemp := ImportDuty*item.Price + tax
+		priceTemp := item.Price + tax
 		surcharge = item.importSurcharge(priceTemp)
 		effectivePrice = priceTemp + surcharge
 	}
