@@ -5,3 +5,4 @@ build:
 run:
 	go generate ./item/enum/item.go
 	go run main.go
+	
