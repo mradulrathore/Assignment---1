@@ -1,7 +1,6 @@
 package item
 
 import (
-	"errors"
 	"fmt"
 
 	validation "github.com/go-ozzo/ozzo-validation"
@@ -39,13 +38,13 @@ func (item Item) validate() error {
 	)
 }
 
-func checkNegativeValue(value interface{}) (err error) {
-
+func checkNegativeValue(value interface{}) error {
 	val, _ := value.(int)
 	if val < 0 {
-		err = errors.New("negative value")
+		err := fmt.Errorf("%v", "negative value")
+		return err
 	}
-	return
+	return nil
 }
 
 func (item Item) Invoice() string {

@@ -1,9 +1,10 @@
 package view
 
 import (
-	"errors"
 	"fmt"
 	"log"
+
+	"github.com/pkg/errors"
 
 	itm "github.com/mradulrathore/onboarding-assignments/item-inventory/item"
 )
@@ -48,28 +49,32 @@ func getItem() (name string, price float64, quantity int, typeItem string, err e
 	fmt.Printf("Item Name: ")
 	_, err = fmt.Scanf("%s", &name)
 	if err != nil {
-		log.Println("scan for Item Name failed, due to ", err)
+		err = errors.Wrap(err, "scan for Item Name failed")
+		log.Println(err)
 		return
 	}
 
 	fmt.Printf("Item Price: ")
 	_, err = fmt.Scanf("%g", &price)
 	if err != nil {
-		log.Println("scan for Item Price failed, due to ", err)
+		err = errors.Wrap(err, "scan for Item Price failed")
+		log.Println(err)
 		return
 	}
 
 	fmt.Printf("Item Quantity: ")
 	_, err = fmt.Scanf("%d", &quantity)
 	if err != nil {
-		log.Println("scan for Item Quantity failed, due to ", err)
+		err = errors.Wrap(err, "scan for Item Quantity failed")
+		log.Println(err)
 		return
 	}
 
 	fmt.Printf("Item Type: ")
 	_, err = fmt.Scanf("%s", &typeItem)
 	if err != nil {
-		log.Println(" scan for Item type failed, due to ", err)
+		err = errors.Wrap(err, "scan for Item Type failed")
+		log.Println(err)
 		return
 	}
 
@@ -81,25 +86,24 @@ func getUserChoice() (string, error) {
 	moreItems := Accept
 	_, err := fmt.Scanf("%s", &moreItems)
 	if err != nil {
+		err = errors.Wrap(err, "scan for user choice to enter more item failed")
 		log.Println(err)
 		return moreItems, err
 	}
 
 	if err = validateConfirmation(moreItems); err != nil {
+		err = errors.Wrap(err, "user choice validation failed")
 		return moreItems, err
 	}
 
 	return moreItems, nil
 }
 
-var (
-	InvalidUsrChoice = errors.New("enter either " + Accept + " or " + Deny)
-)
-
 func validateConfirmation(userChoice string) error {
 	if userChoice != Accept && userChoice != Deny {
-		log.Println(InvalidUsrChoice)
-		return InvalidUsrChoice
+		err := fmt.Errorf("%v", "invalide choice")
+		log.Println(err)
+		return err
 	}
 
 	return nil
