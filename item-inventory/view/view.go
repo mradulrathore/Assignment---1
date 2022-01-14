@@ -101,7 +101,7 @@ func getUserChoice() (string, error) {
 
 func validateConfirmation(userChoice string) error {
 	if userChoice != Accept && userChoice != Deny {
-		err := fmt.Errorf("%v", "invalide choice")
+		err := fmt.Errorf("%v", "invalid choice")
 		log.Println(err)
 		return err
 	}
