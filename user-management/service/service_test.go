@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"testing"
 )
 
@@ -79,6 +80,27 @@ func TestGetAll(t *testing.T) {
 
 	for _, tc := range tests {
 		_, err := GetAll(tc.field, tc.order)
+		if err != nil && tc.err == nil {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		} else if err == nil && tc.err != nil {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		}
+	}
+}
+
+func TestDeleteByRollNo(t *testing.T) {
+	tests := []struct {
+		scenario string
+		rollno   int
+		err      error
+	}{{
+		scenario: "delete by rollno",
+		rollno:   15,
+		err:      errors.New("rollno doesn't exist"),
+	}}
+
+	for _, tc := range tests {
+		err := DeleteByRollNo(tc.rollno)
 		if err != nil && tc.err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		} else if err == nil && tc.err != nil {
