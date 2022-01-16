@@ -1,13 +1,30 @@
 package service
 
-// // cmd go test -coverprofile=coverage.out
+import (
+	"testing"
+)
 
-// import (
-// 	"reflect"
-// 	"testing"
+// cmd go test -coverprofile=coverage.out
 
-// 	usr "github.com/mradulrathore/user-management/domain/user"
-// )
+func TestLoadData(t *testing.T) {
+	tests := []struct {
+		scenario string
+		err      error
+	}{{
+		scenario: "load data",
+		err:      nil,
+	}}
+
+	for _, tc := range tests {
+		err := LoadData()
+		if err != nil && tc.err == nil {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		} else if err == nil && tc.err != nil {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		}
+	}
+
+}
 
 // func TestInsert(t *testing.T) {
 
