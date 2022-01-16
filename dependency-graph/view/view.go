@@ -19,20 +19,24 @@ func Init() error {
 		}
 		switch userChoice {
 		case "1":
+			if err = getParent(); err != nil {
+				log.Println(err)
+			}
 		case "2":
+			if err = getChild(); err != nil {
+				log.Println(err)
+			}
 		case "3":
 		case "4":
 		case "5":
 		case "6":
 		case "7":
-			err = addDependency()
-			if err != nil {
-				return err
+			if err = addDependency(); err != nil {
+				log.Println(err)
 			}
 		case "8":
-			err = addNode()
-			if err != nil {
-				return err
+			if err = addNode(); err != nil {
+				log.Println(err)
 			}
 		case "9":
 			display()
@@ -60,6 +64,54 @@ func showMenu() {
 	fmt.Println("-------------------")
 }
 
+var (
+	IdNotExist = "id doesn't exist"
+)
+
+func getParent() error {
+	var id int
+	fmt.Printf("Enter id: ")
+	_, err := fmt.Scanf("%d", &id)
+	if err != nil {
+		err = errors.Wrap(err, "scan for node's id (get immediate parent) failed")
+		log.Println(err)
+		return err
+	}
+
+	n, err := service.GetParent(id)
+	if err != nil {
+		return err
+	}
+
+	for _, node := range n {
+		fmt.Printf("%v\n", node)
+	}
+
+	return nil
+}
+
+func getChild() error {
+	var id int
+	fmt.Printf("Enter id: ")
+	_, err := fmt.Scanf("%d", &id)
+	if err != nil {
+		err = errors.Wrap(err, "scan for node's id (get immediate child) failed")
+		log.Println(err)
+		return err
+	}
+
+	n, err := service.GetChild(id)
+	if err != nil {
+		return err
+	}
+
+	for _, node := range n {
+		fmt.Printf("%v\n", node)
+	}
+
+	return nil
+}
+
 func getUserChoice() (string, error) {
 	var userChoice string
 	_, err := fmt.Scanf("%s", &userChoice)
@@ -75,14 +127,14 @@ func addDependency() error {
 
 	fmt.Println("Enter ids of nodes")
 	var n1 int
-	_, err := fmt.Scanf("%s", &n1)
+	_, err := fmt.Scanf("%d", &n1)
 	if err != nil {
 		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
 		log.Println(err)
 		return err
 	}
 	var n2 int
-	_, err = fmt.Scanf("%s", &n2)
+	_, err = fmt.Scanf("%d", &n2)
 	if err != nil {
 		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
 		log.Println(err)

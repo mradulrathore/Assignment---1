@@ -11,6 +11,22 @@ import (
 
 var g graph.Graph
 
+func GetParent(id int) ([]*node.Node, error) {
+	n, err := getNodeById(id)
+	if err != nil {
+		return nil, err
+	}
+	return n.Parent, nil
+}
+
+func GetChild(id int) ([]*node.Node, error) {
+	n, err := getNodeById(id)
+	if err != nil {
+		return nil, err
+	}
+	return n.Child, nil
+}
+
 func AddNode(id int, name string, metaData map[string]string) {
 	n := node.Node{
 		Id:       id,
@@ -74,8 +90,8 @@ func AddEdge(id1, id2 int) error {
 		g.Edges = make(map[*node.Node][]*node.Node)
 	}
 
-	n1.Child = n2
-	n2.Parent = n1
+	n1.Child = append(n1.Child, n2)
+	n2.Parent = append(n2.Parent, n1)
 	g.Edges[n1] = append(g.Edges[n1], n2)
 
 	return nil

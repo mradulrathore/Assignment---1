@@ -8,8 +8,8 @@ type Node struct {
 	Id       int
 	Name     string
 	MetaData map[string]string
-	Parent   *Node
-	Child    *Node
+	Parent   []*Node
+	Child    []*Node
 }
 
 func (n *Node) String() string {
@@ -17,15 +17,19 @@ func (n *Node) String() string {
 		return ""
 	}
 
-	parentId := -1
+	ancestorsId := []int{}
 	if n.Parent != nil {
-		parentId = n.Parent.Id
+		for _, node := range n.Parent {
+			ancestorsId = append(ancestorsId, node.Id)
+		}
 	}
 
-	childId := -1
+	descendantsId := []int{}
 	if n.Child != nil {
-		parentId = n.Child.Id
+		for _, node := range n.Child {
+			descendantsId = append(descendantsId, node.Id)
+		}
 	}
 
-	return fmt.Sprintf("[%d, %s, %v, %d, %d", n.Id, n.Name, n.MetaData, parentId, childId)
+	return fmt.Sprintf("[%d, %s, %v, %v, %v", n.Id, n.Name, n.MetaData, ancestorsId, descendantsId)
 }
