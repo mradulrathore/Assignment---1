@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/mradulrathore/onboarding-assignments/dependency-graph/view"
 )
 
 func main() {
-	view.Init()
+	if err := view.Init(); err != nil {
+		fmt.Println(err)
+	}
 }

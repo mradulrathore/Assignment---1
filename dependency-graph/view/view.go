@@ -1,15 +1,15 @@
 package view
 
 import (
-	"errors"
 	"fmt"
 	"log"
+
+	"github.com/pkg/errors"
 
 	"github.com/mradulrathore/onboarding-assignments/dependency-graph/service"
 )
 
 func Init() error {
-
 	var moreInput bool = true
 	for moreInput {
 		showMenu()
@@ -60,73 +60,98 @@ func showMenu() {
 	fmt.Println("-------------------")
 }
 
-func getUserChoice() (userChoice string, err error) {
-	_, err = fmt.Scanf("%s", &userChoice)
+func getUserChoice() (string, error) {
+	var userChoice string
+	_, err := fmt.Scanf("%s", &userChoice)
 	if err != nil {
-		log.Println("scan for user choice failed, due to ", err)
-		return
+		err := errors.Wrap(err, "scan for user's choice failed")
+		log.Println(err)
+		return "", err
 	}
-	return
+	return userChoice, nil
 }
 
-func addDependency() (err error) {
+func addDependency() error {
 
 	fmt.Println("Enter ids of nodes")
 	var n1 int
-	fmt.Scanf("%d", &n1)
+	_, err := fmt.Scanf("%s", &n1)
+	if err != nil {
+		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
+		log.Println(err)
+		return err
+	}
 	var n2 int
-	fmt.Scanf("%d", &n2)
+	_, err = fmt.Scanf("%s", &n2)
+	if err != nil {
+		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
+		log.Println(err)
+		return err
+	}
 
-	err = service.AddEdge(n1, n2)
-	return
+	if err = service.AddEdge(n1, n2); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func addNode() (err error) {
+func addNode() error {
 	id, name, metaData, err := getNode()
 	if err != nil {
-		return
+		return err
 	}
+
 	service.AddNode(id, name, metaData)
-	return
+
+	return nil
 }
 
 var (
-	DuplicateIdErr = errors.New("duplicate id")
+	DuplicateIdMsg = "duplicate id"
 )
 
 func getNode() (id int, name string, metaData map[string]string, err error) {
 	fmt.Printf("Id: ")
 	_, err = fmt.Scanf("%d", &id)
 	if err != nil {
-		log.Println("scan for node's id failed, due to ", err)
+		err = errors.Wrap(err, "scan for node's id failed")
+		log.Println(err)
 		return
 	}
 	_, exist := service.IdExist(id)
 	if exist {
-		log.Println(DuplicateIdErr)
+		err = fmt.Errorf(DuplicateIdMsg)
+		log.Println(err)
 		return
 	}
 
 	fmt.Printf("Name: ")
 	_, err = fmt.Scanf("%s", &name)
 	if err != nil {
-		log.Println("scan for node's name failed, due to ", err)
+		err = errors.Wrap(err, "scan for node's name failed")
+		log.Println(err)
 		return
 	}
 
 	metaData = make(map[string]string)
-	err = getAdditionInfo(metaData)
+	if err = getAdditionInfo(metaData); err != nil {
+		err = errors.Wrap(err, "scan for node's metadata failed")
+		log.Println(err)
+		return
+	}
 
 	return
 }
 
-func getAdditionInfo(metaData map[string]string) (err error) {
+func getAdditionInfo(metaData map[string]string) error {
 	fmt.Printf("Additional Info (y/n): ")
 	var userChoice string
-	_, err = fmt.Scanf("%s", &userChoice)
+	_, err := fmt.Scanf("%s", &userChoice)
 	if err != nil {
-		log.Println("scan for user choice for meta data failed, due to ", err)
-		return
+		err = errors.Wrap(err, "scan for user's choice for meta data failed")
+		log.Println(err)
+		return err
 	}
 
 	if userChoice == "y" {
@@ -134,17 +159,17 @@ func getAdditionInfo(metaData map[string]string) (err error) {
 		var value string
 		_, err = fmt.Scanf("%s %s", &key, &value)
 		if err != nil {
-			log.Println("scan for node's meta data failed, due to ", err)
-			return
+			err = errors.Wrap(err, "scan for node's meta data failed")
+			log.Println(err)
+			return err
 		}
 		metaData[key] = value
-		err = getAdditionInfo(metaData)
-		if err != nil {
-			return
+		if err = getAdditionInfo(metaData); err != nil {
+			return err
 		}
 	}
 
-	return
+	return nil
 }
 
 func display() {
