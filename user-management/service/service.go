@@ -1,7 +1,7 @@
 package service
 
 import (
-	"errors"
+	"fmt"
 	"log"
 	"sort"
 	"strings"
@@ -11,7 +11,7 @@ import (
 
 var users = []usr.User{}
 
-var RollNoNotExistsErr = errors.New("roll no doesn't exist")
+var RollNoNotExistsMsg = "roll no doesn't exist"
 
 func Init(usrs []usr.User) {
 	users = usrs
@@ -48,7 +48,6 @@ func insertAt(index int, user usr.User) {
 }
 
 func GetAll(field string, order int) []usr.User {
-
 	var usrs []usr.User
 
 	if order == 1 {
@@ -95,11 +94,10 @@ func sortDescCustom(field string) {
 
 func DeleteByRollNo(rollNo int) error {
 	index := SearchRollNo(rollNo)
-
 	if users[index].RollNo != rollNo {
-		log.Println(RollNoNotExistsErr)
-		return RollNoNotExistsErr
-
+		err := fmt.Errorf("%s", RollNoNotExistsMsg)
+		log.Println(err)
+		return err
 	}
 
 	users = append(users[:index], users[index+1:]...)

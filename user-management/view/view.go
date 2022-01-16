@@ -1,13 +1,14 @@
 package view
 
 import (
-	"errors"
 	"fmt"
 	"log"
 
+	"github.com/pkg/errors"
+
 	usr "github.com/mradulrathore/user-management/domain/user"
 	"github.com/mradulrathore/user-management/repository"
-	usrApp "github.com/mradulrathore/user-management/service"
+	"github.com/mradulrathore/user-management/service"
 )
 
 func Init() error {
@@ -25,35 +26,31 @@ func Init() error {
 		}
 		switch userChoice {
 		case "1":
-			err = addUser()
-			if err != nil {
+			if err = add(); err != nil {
 				return err
 			}
 		case "2":
-			err = display()
-			if err != nil {
+			if err = display(); err != nil {
 				return err
 			}
 		case "3":
-			err = deleteByRollNo()
-			if err != nil {
+			if err = deleteByRollNo(); err != nil {
 				return err
 			}
 		case "4":
-			err = save()
-			if err != nil {
+			if err = save(); err != nil {
 				return err
 			}
 		case "5":
 			moreInput = false
-			err = confirmSave()
-			if err != nil {
+			if err = confirmSave(); err != nil {
 				moreInput = true
 			}
 		default:
 			fmt.Println("Invalid choice")
 		}
 	}
+
 	return nil
 }
 
@@ -64,12 +61,12 @@ func load() error {
 	}
 	defer file.Close()
 
-	users, err := repository.Retrieve(file)
+	users, err := repository.Get(file)
 	if err != nil {
 		return err
 	}
 
-	usrApp.Init(users)
+	service.Init(users)
 
 	return nil
 }
@@ -88,13 +85,13 @@ func getUserChoice() (string, error) {
 	var userChoice string
 	_, err := fmt.Scanf("%s", &userChoice)
 	if err != nil {
-		log.Println("scan for user choice failed, due to ", err)
+		err = errors.Wrap(err, "scan for user choice failed")
 		return "", err
 	}
 	return userChoice, nil
 }
 
-func addUser() error {
+func add() error {
 	name, age, address, rollNo, courseEnrol, err := getUser()
 	if err != nil {
 		return err
@@ -102,7 +99,6 @@ func addUser() error {
 
 	user, err := usr.New(name, age, address, rollNo, courseEnrol)
 	for err != nil {
-		log.Println(err.Error())
 		name, age, address, rollNo, courseEnrol, err = getUser()
 		if err != nil {
 			return err
@@ -110,7 +106,7 @@ func addUser() error {
 		user, err = usr.New(name, age, address, rollNo, courseEnrol)
 	}
 
-	usrApp.Insert(user)
+	service.Insert(user)
 
 	return nil
 }
@@ -119,28 +115,32 @@ func getUser() (name string, age int, address string, rollNo int, coursesEnrol [
 	fmt.Printf("Full Name: ")
 	_, err = fmt.Scanf("%s", &name)
 	if err != nil {
-		log.Println("scan for user's name failed, due to ", err)
+		err = errors.Wrap(err, "scan for user's name failed")
+		log.Println(err)
 		return
 	}
 
 	fmt.Printf("Age: ")
 	_, err = fmt.Scanf("%d", &age)
 	if err != nil {
-		log.Println("scan for user's age failed, due to ", err)
+		err = errors.Wrap(err, "scan for user's age failed")
+		log.Println(err)
 		return
 	}
 
 	fmt.Printf("Address: ")
 	_, err = fmt.Scanf("%s", &address)
 	if err != nil {
-		log.Println("scan for user's address failed, due to ", err)
+		err = errors.Wrap(err, "scan for user's address failed")
+		log.Println(err)
 		return
 	}
 
 	fmt.Printf("Roll No : ")
 	_, err = fmt.Scanf("%d", &rollNo)
 	if err != nil {
-		log.Println(" scan for user's rollno failed, due to ", err)
+		err = errors.Wrap(err, "scan for user's rollno failed")
+		log.Println(err)
 		return
 	}
 	if err = checkDuplicateRollNo(rollNo); err != nil {
@@ -148,20 +148,26 @@ func getUser() (name string, age int, address string, rollNo int, coursesEnrol [
 	}
 
 	coursesEnrol, err = getCourse()
+	if err != nil {
+		return
+	}
+
 	return
 }
 
 var (
-	InvalidUsrChoice   = errors.New("enter either " + Accept + " or " + Deny)
-	DuplicateCourseErr = errors.New("duplicate course")
-	DuplicateRollNoErr = errors.New("duplicate rollno")
+	DuplicateCourseMsg = "duplicate course"
+	DuplicateRollNoMsg = "duplicate rollno"
 )
 
 func checkDuplicateRollNo(rollno int) error {
-	users := usrApp.GetAll("age", 1)
-	index := usrApp.SearchRollNo(rollno)
+	//sorted by Age in ascending order(1)
+	users := service.GetAll("age", 1)
+	index := service.SearchRollNo(rollno)
 	if users[index].RollNo == rollno {
-		return DuplicateRollNoErr
+		err := fmt.Errorf("%s", DuplicateRollNoMsg)
+		log.Println(err)
+		return err
 	}
 	return nil
 }
@@ -177,21 +183,22 @@ func getCourse() ([]string, error) {
 	var numCourse int
 	_, err := fmt.Scanf("%d", &numCourse)
 	if err != nil {
-		log.Println("scan for number of course failed, due to ", err)
+		err = errors.Wrap(err, "scan for number of course failed")
+		log.Println(err)
 		return []string{}, err
 	}
 	if numCourse < MinCousesEnrol {
-		errMsg := fmt.Sprintf("select atleast %d", MinCousesEnrol)
-		err = errors.New(errMsg)
+		err := fmt.Errorf("select atleast %d", MinCousesEnrol)
 		return []string{}, err
 	}
 
 	for i := 1; i <= numCourse; i++ {
-		fmt.Println("Enter ", i, "th course")
+		fmt.Printf("Enter course - %d: ", i)
 		var course string
 		_, err = fmt.Scanf("%s", &course)
 		if err != nil {
-			log.Printf("scan for course %d failed, due to %g \n ", i, err)
+			err = errors.Wrapf(err, "scan for course %d failed", i)
+			log.Println(err)
 			return []string{}, err
 		}
 		coursesEnrol = append(coursesEnrol, course)
@@ -209,8 +216,9 @@ func checkDuplicateCourse(courses []string) error {
 	for _, course := range courses {
 		_, exist := courseFrequency[course]
 		if exist {
-			log.Println(DuplicateCourseErr)
-			return DuplicateCourseErr
+			err := fmt.Errorf("%s", DuplicateCourseMsg)
+			log.Println(err)
+			return err
 		} else {
 			courseFrequency[course] = 1
 		}
@@ -224,6 +232,7 @@ func display() error {
 	var field string
 	_, err := fmt.Scanf("%s", &field)
 	if err != nil {
+		err = errors.Wrap(err, "scan for field name to sort details on failed")
 		log.Println(err)
 		return err
 	}
@@ -231,14 +240,16 @@ func display() error {
 	var order int
 	_, err = fmt.Scanf("%d", &order)
 	if err != nil {
+		err = errors.Wrap(err, "scan for sorting order failed")
 		log.Println(err)
 		return err
 	}
 
-	users := usrApp.GetAll(field, order)
+	users := service.GetAll(field, order)
 	for _, user := range users {
 		fmt.Println(user.String())
 	}
+
 	return nil
 }
 
@@ -247,10 +258,11 @@ func deleteByRollNo() error {
 	var rollNo int
 	_, err := fmt.Scanf("%d", &rollNo)
 	if err != nil {
+		err = errors.Wrap(err, "scan for rollno to delete failed")
 		log.Println(err)
 		return err
 	}
-	if err = usrApp.DeleteByRollNo(rollNo); err != nil {
+	if err = service.DeleteByRollNo(rollNo); err != nil {
 		return err
 	}
 	return nil
@@ -264,25 +276,34 @@ func save() error {
 	defer file.Close()
 
 	//saving data in ascending order of name
-	users := usrApp.GetAll("name", 1)
+	users := service.GetAll("name", 1)
 	if err = repository.Save(file, users); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func confirmSave() error {
 	fmt.Println("Do you want to save the data(y/n)?")
 	var userChoice string
-	fmt.Scanf("%s", &userChoice)
+	_, err := fmt.Scanf("%d", &userChoice)
+	if err != nil {
+		err = errors.Wrap(err, "scan for user choice to save details on exit failed")
+		log.Println(err)
+		return err
+	}
+
 	if err := validateConfirmation(userChoice); err != nil {
 		return err
 	}
+
 	if userChoice == "y" {
 		if err := save(); err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -291,11 +312,11 @@ const (
 	Deny   = "n"
 )
 
-// validate whether userChoice is eiter Accept or Deny
 func validateConfirmation(userChoice string) error {
 	if userChoice != Accept && userChoice != Deny {
-		log.Println(InvalidUsrChoice)
-		return InvalidUsrChoice
+		err := fmt.Errorf("%v", "invalid choice")
+		log.Println(err)
+		return err
 	}
 
 	return nil

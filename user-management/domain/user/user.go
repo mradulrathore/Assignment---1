@@ -19,15 +19,14 @@ type User struct {
 }
 
 func New(name string, age int, address string, rollNo int, courseEnrol []string) (User, error) {
-
 	var user User
 	var err error
+
 	user.Name = name
 	user.Age = age
 	user.Address = address
 	user.RollNo = rollNo
 	user.CoursesEnrol, err = cours.New(courseEnrol)
-
 	if err != nil {
 		return User{}, err
 	}
