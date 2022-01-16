@@ -26,6 +26,25 @@ func TestLoadData(t *testing.T) {
 
 }
 
+func TestCheckDataExistence(t *testing.T) {
+	tests := []struct {
+		scenario string
+		rollno   int
+		exist    bool
+	}{{
+		scenario: "check data existence",
+		rollno:   14,
+		exist:    false,
+	}}
+
+	for _, tc := range tests {
+		exist := CheckDataExistence(tc.rollno)
+		if tc.exist != exist {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, exist, tc.exist)
+		}
+	}
+}
+
 // func TestInsert(t *testing.T) {
 
 // 	users = append(users, usr.User{
