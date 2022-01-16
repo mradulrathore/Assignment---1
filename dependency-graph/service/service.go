@@ -27,6 +27,15 @@ func GetChild(id int) ([]*node.Node, error) {
 	return n.Child, nil
 }
 
+func GetAncestors(id int) ([]*node.Node, error) {
+
+	return nil, nil
+}
+func GetDescendants(id int) ([]*node.Node, error) {
+
+	return nil, nil
+}
+
 func AddNode(id int, name string, metaData map[string]string) {
 	n := node.Node{
 		Id:       id,

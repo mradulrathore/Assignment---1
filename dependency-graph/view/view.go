@@ -27,7 +27,13 @@ func Init() error {
 				log.Println(err)
 			}
 		case "3":
+			if err = getAncestors(); err != nil {
+				log.Println(err)
+			}
 		case "4":
+			if err = getDescendants(); err != nil {
+				log.Println(err)
+			}
 		case "5":
 		case "6":
 		case "7":
@@ -101,6 +107,50 @@ func getChild() error {
 	}
 
 	n, err := service.GetChild(id)
+	if err != nil {
+		return err
+	}
+
+	for _, node := range n {
+		fmt.Printf("%v\n", node)
+	}
+
+	return nil
+}
+
+func getAncestors() error {
+	var id int
+	fmt.Printf("Enter id: ")
+	_, err := fmt.Scanf("%d", &id)
+	if err != nil {
+		err = errors.Wrap(err, "scan for node's id (get ancestors) failed")
+		log.Println(err)
+		return err
+	}
+
+	n, err := service.GetAncestors(id)
+	if err != nil {
+		return err
+	}
+
+	for _, node := range n {
+		fmt.Printf("%v\n", node)
+	}
+
+	return nil
+}
+
+func getDescendants() error {
+	var id int
+	fmt.Printf("Enter id: ")
+	_, err := fmt.Scanf("%d", &id)
+	if err != nil {
+		err = errors.Wrap(err, "scan for node's id (get descendants) failed")
+		log.Println(err)
+		return err
+	}
+
+	n, err := service.GetDescendants(id)
 	if err != nil {
 		return err
 	}
