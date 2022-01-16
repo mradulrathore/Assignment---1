@@ -99,6 +99,10 @@ func TestInit(t *testing.T) {
 			scenario: "delete user by rollno",
 			req:      setInputDelete("3", testDelete),
 			err:      nil,
+		}, {
+			scenario: "save user",
+			req:      setInputSave("4"),
+			err:      nil,
 		},
 	}
 
@@ -174,6 +178,29 @@ func setInputDisplay(userChoice string, display displayTest) *os.File {
 func setInputDelete(userChoice string, delete deleteTest) *os.File {
 	content := fmt.Sprintf("%s\n%d", userChoice, delete.rollNo)
 	content = fmt.Sprintf("%s\n%s\n%s\n", content, "5", delete.userChoice)
+
+	contentB := []byte(content)
+
+	tmpfile, err := ioutil.TempFile("", "temp")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer os.Remove(tmpfile.Name())
+
+	if _, err := tmpfile.Write(contentB); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := tmpfile.Seek(0, 0); err != nil {
+		log.Fatal(err)
+	}
+
+	return tmpfile
+}
+
+func setInputSave(userChoice string) *os.File {
+	content := fmt.Sprintf("%s\n%s\n%s\n", userChoice, "5", "n")
 
 	contentB := []byte(content)
 
