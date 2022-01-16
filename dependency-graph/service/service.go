@@ -1,6 +1,7 @@
-package application
+package service
 
 import (
+	"errors"
 	"sort"
 
 	"github.com/mradulrathore/onboarding-assignments/dependency-graph/domain/graph"
@@ -73,6 +74,10 @@ func AddEdge(id1, id2 int) (err error) {
 
 	return
 }
+
+var (
+	IdNotExistErr = errors.New("id doesn't exist")
+)
 
 func getNodeById(id int) (n *node.Node, err error) {
 	index, exist := IdExist(id)

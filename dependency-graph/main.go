@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/mradulrathore/onboarding-assignments/dependency-graph/ports"
+	"github.com/mradulrathore/onboarding-assignments/dependency-graph/view"
 )
 
 func main() {
-	ports.Init()
+	view.Init()
 }

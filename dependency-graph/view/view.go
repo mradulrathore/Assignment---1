@@ -1,10 +1,11 @@
-package ports
+package view
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
-	"github.com/mradulrathore/onboarding-assignments/dependency-graph/application"
+	"github.com/mradulrathore/onboarding-assignments/dependency-graph/service"
 )
 
 func Init() error {
@@ -76,7 +77,7 @@ func addDependency() (err error) {
 	var n2 int
 	fmt.Scanf("%d", &n2)
 
-	err = application.AddEdge(n1, n2)
+	err = service.AddEdge(n1, n2)
 	return
 }
 
@@ -85,9 +86,13 @@ func addNode() (err error) {
 	if err != nil {
 		return
 	}
-	application.AddNode(id, name, metaData)
+	service.AddNode(id, name, metaData)
 	return
 }
+
+var (
+	DuplicateIdErr = errors.New("duplicate id")
+)
 
 func getNode() (id int, name string, metaData map[string]string, err error) {
 	fmt.Printf("Id: ")
@@ -96,7 +101,7 @@ func getNode() (id int, name string, metaData map[string]string, err error) {
 		log.Println("scan for node's id failed, due to ", err)
 		return
 	}
-	_, exist := application.IdExist(id)
+	_, exist := service.IdExist(id)
 	if exist {
 		log.Println(DuplicateIdErr)
 		return
@@ -143,5 +148,5 @@ func getAdditionInfo(metaData map[string]string) (err error) {
 }
 
 func display() {
-	fmt.Println(application.Display())
+	fmt.Println(service.Display())
 }
