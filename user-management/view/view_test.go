@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-type user struct {
+type userTest struct {
 	name         string
 	age          int
 	address      string
@@ -18,9 +18,15 @@ type user struct {
 	userChoice   string
 }
 
+type displayTest struct {
+	field      string
+	order      int
+	userChoice string
+}
+
 func TestInit(t *testing.T) {
 
-	testAddUser := user{
+	testAddUser := userTest{
 		name:         "Mradul",
 		age:          21,
 		address:      "Indore",
@@ -30,6 +36,12 @@ func TestInit(t *testing.T) {
 		userChoice:   "n",
 	}
 
+	testDisplay := displayTest{
+		field:      "name",
+		order:      1,
+		userChoice: "n",
+	}
+
 	tests := []struct {
 		scenario string
 		req      *os.File
@@ -37,9 +49,14 @@ func TestInit(t *testing.T) {
 	}{
 		{
 			scenario: "add user",
-			req:      setInput("1", testAddUser),
+			req:      setInputAdd("1", testAddUser),
 			err:      nil,
-		}}
+		}, {
+			scenario: "display user",
+			req:      setInputDisplay("2", testDisplay),
+			err:      nil,
+		},
+	}
 
 	oldStdin := os.Stdin
 	defer func() { os.Stdin = oldStdin }()
@@ -59,12 +76,36 @@ func TestInit(t *testing.T) {
 	}
 }
 
-func setInput(userChoice string, user user) *os.File {
+func setInputAdd(userChoice string, user userTest) *os.File {
 	content := fmt.Sprintf("%s\n%s\n%d\n%s\n%d\n%d", userChoice, user.name, user.age, user.address, user.rollNo, user.courseNum)
 	for i := 0; i < user.courseNum; i++ {
 		content = fmt.Sprintf("%s\n%s", content, user.coursesEnrol[i])
 	}
 	content = fmt.Sprintf("%s\n%s\n%s\n", content, "5", user.userChoice)
+
+	contentB := []byte(content)
+
+	tmpfile, err := ioutil.TempFile("", "temp")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer os.Remove(tmpfile.Name())
+
+	if _, err := tmpfile.Write(contentB); err != nil {
+		log.Fatal(err)
+	}
+
+	if _, err := tmpfile.Seek(0, 0); err != nil {
+		log.Fatal(err)
+	}
+
+	return tmpfile
+}
+
+func setInputDisplay(userChoice string, display displayTest) *os.File {
+	content := fmt.Sprintf("%s\n%s\n%d", userChoice, display.field, display.order)
+	content = fmt.Sprintf("%s\n%s\n%s\n", content, "5", display.userChoice)
 
 	contentB := []byte(content)
 
