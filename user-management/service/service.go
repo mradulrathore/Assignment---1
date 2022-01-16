@@ -7,106 +7,94 @@ import (
 	"strings"
 
 	usr "github.com/mradulrathore/user-management/domain/user"
+	"github.com/mradulrathore/user-management/repository"
 )
 
-var users = []usr.User{}
+var users = make(map[int]usr.User)
 
-var RollNoNotExistsMsg = "roll no doesn't exist"
+func LoadData() error {
+	file, err := repository.Open()
+	if err != nil {
+		return err
+	}
+	defer file.Close()
 
-func Init(usrs []usr.User) {
-	users = usrs
-}
-
-func Insert(user usr.User) {
-	index := searchName(user)
-	insertAt(index, user)
-}
-
-// return the smallest index i in [0, n) at which user.Name should be inserted to maintain sorted list
-// if user.Name matches with already existing element name then return index according to rollno
-func searchName(user usr.User) int {
-	index := sort.Search(len(users), func(i int) bool {
-		if strings.Compare(users[i].Name, user.Name) == 1 {
-			return true
-		} else if strings.Compare(users[i].Name, user.Name) == 0 {
-			return users[i].RollNo > user.RollNo
-		}
-		return false
-	})
-
-	return index
-}
-
-func insertAt(index int, user usr.User) {
-	if index == len(users) {
-		users = append(users, user)
-		return
+	usersDisk, err := repository.RetrieveData(file)
+	if err != nil {
+		return err
 	}
 
-	users = append(users[:index+1], users[index:]...)
-	users[index] = user
+	for _, userDisk := range usersDisk {
+		users[userDisk.RollNo] = userDisk
+	}
+
+	return nil
 }
 
-func GetAll(field string, order int) []usr.User {
-	var usrs []usr.User
+func Add(user usr.User) {
+	users[user.RollNo] = user
+}
+
+func CheckDataExistence(rollno int) bool {
+	_, exists := users[rollno]
+	return exists
+}
+
+func GetAll(field string, order int) ([]usr.User, error) {
+
+	var usersTemp []usr.User
+	for _, user := range users {
+		usersTemp = append(usersTemp, user)
+	}
 
 	if order == 1 {
-		sortAscCustom(field)
+		sortAscCustom(usersTemp, field)
 	} else {
-		sortDescCustom(field)
+		sortDescCustom(usersTemp, field)
 	}
 
-	usrs = users
-	return usrs
+	return usersTemp, nil
 }
 
-func sortAscCustom(field string) {
-	sort.SliceStable(users, func(i, j int) bool {
+func sortAscCustom(usersDisk []usr.User, field string) {
+	sort.SliceStable(usersDisk, func(i, j int) bool {
 		switch field {
 		case "name":
-			return (strings.Compare(users[i].Name, users[j].Name) == -1)
+			return (strings.Compare(usersDisk[i].Name, usersDisk[j].Name) == -1)
 		case "rollno":
-			return (users[i].RollNo < users[j].RollNo)
+			return (usersDisk[i].RollNo < usersDisk[j].RollNo)
 		case "address":
-			return (strings.Compare(users[i].Address, users[j].Address) == -1)
+			return (strings.Compare(usersDisk[i].Address, usersDisk[j].Address) == -1)
 		case "age":
-			return (users[i].Age < users[j].Age)
+			return (usersDisk[i].Age < usersDisk[j].Age)
 		}
 		return true
 	})
 }
 
-func sortDescCustom(field string) {
-	sort.SliceStable(users, func(i, j int) bool {
+func sortDescCustom(usersDisk []usr.User, field string) {
+	sort.SliceStable(usersDisk, func(i, j int) bool {
 		switch field {
 		case "name":
-			return (strings.Compare(users[i].Name, users[j].Name) == 1)
+			return (strings.Compare(usersDisk[i].Name, usersDisk[j].Name) == 1)
 		case "rollno":
-			return (users[i].RollNo > users[j].RollNo)
+			return (usersDisk[i].RollNo > usersDisk[j].RollNo)
 		case "address":
-			return (strings.Compare(users[i].Address, users[j].Address) == 1)
+			return (strings.Compare(usersDisk[i].Address, usersDisk[j].Address) == 1)
 		case "age":
-			return (users[i].Age > users[j].Age)
+			return (usersDisk[i].Age > usersDisk[j].Age)
 		}
 		return true
 	})
 }
 
-func DeleteByRollNo(rollNo int) error {
-	index := SearchRollNo(rollNo)
-	if users[index].RollNo != rollNo {
-		err := fmt.Errorf("%s", RollNoNotExistsMsg)
+func DeleteByRollNo(rollno int) error {
+	if _, exists := users[rollno]; !exists {
+		err := fmt.Errorf("%s", "rollno doesn't exist")
 		log.Println(err)
 		return err
 	}
 
-	users = append(users[:index], users[index+1:]...)
+	delete(users, rollno)
 	return nil
-}
-
-func SearchRollNo(rollNo int) int {
-	index := sort.Search(len(users), func(i int) bool {
-		return users[i].RollNo >= rollNo
-	})
-	return index
 }

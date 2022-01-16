@@ -12,7 +12,7 @@ import (
 )
 
 func Init() error {
-	if err := load(); err != nil {
+	if err := service.LoadData(); err != nil {
 		return err
 	}
 
@@ -27,19 +27,19 @@ func Init() error {
 		switch userChoice {
 		case "1":
 			if err = add(); err != nil {
-				return err
+				fmt.Println(err)
 			}
 		case "2":
 			if err = display(); err != nil {
-				return err
+				fmt.Println(err)
 			}
 		case "3":
 			if err = deleteByRollNo(); err != nil {
-				return err
+				fmt.Println(err)
 			}
 		case "4":
 			if err = save(); err != nil {
-				return err
+				fmt.Println(err)
 			}
 		case "5":
 			moreInput = false
@@ -50,23 +50,6 @@ func Init() error {
 			fmt.Println("Invalid choice")
 		}
 	}
-
-	return nil
-}
-
-func load() error {
-	file, err := repository.Open()
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	users, err := repository.Get(file)
-	if err != nil {
-		return err
-	}
-
-	service.Init(users)
 
 	return nil
 }
@@ -106,7 +89,7 @@ func add() error {
 		user, err = usr.New(name, age, address, rollNo, courseEnrol)
 	}
 
-	service.Insert(user)
+	service.Add(user)
 
 	return nil
 }
@@ -161,10 +144,7 @@ var (
 )
 
 func checkDuplicateRollNo(rollno int) error {
-	//sorted by Age in ascending order(1)
-	users := service.GetAll("age", 1)
-	index := service.SearchRollNo(rollno)
-	if users[index].RollNo == rollno {
+	if exist := service.CheckDataExistence(rollno); exist {
 		err := fmt.Errorf("%s", DuplicateRollNoMsg)
 		log.Println(err)
 		return err
@@ -245,7 +225,10 @@ func display() error {
 		return err
 	}
 
-	users := service.GetAll(field, order)
+	users, err := service.GetAll(field, order)
+	if err != nil {
+		return err
+	}
 	for _, user := range users {
 		fmt.Println(user.String())
 	}
@@ -276,7 +259,10 @@ func save() error {
 	defer file.Close()
 
 	//saving data in ascending order of name
-	users := service.GetAll("name", 1)
+	users, err := service.GetAll("name", 1)
+	if err != nil {
+		return err
+	}
 	if err = repository.Save(file, users); err != nil {
 		return err
 	}
@@ -287,7 +273,7 @@ func save() error {
 func confirmSave() error {
 	fmt.Println("Do you want to save the data(y/n)?")
 	var userChoice string
-	_, err := fmt.Scanf("%d", &userChoice)
+	_, err := fmt.Scanf("%s", &userChoice)
 	if err != nil {
 		err = errors.Wrap(err, "scan for user choice to save details on exit failed")
 		log.Println(err)
@@ -314,7 +300,7 @@ const (
 
 func validateConfirmation(userChoice string) error {
 	if userChoice != Accept && userChoice != Deny {
-		err := fmt.Errorf("%v", "invalid choice")
+		err := fmt.Errorf("%s", "invalid choice")
 		log.Println(err)
 		return err
 	}

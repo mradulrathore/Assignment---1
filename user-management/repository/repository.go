@@ -1,29 +1,28 @@
 package repository
 
 import (
-	"encoding/json"
 	"log"
 	"os"
 
 	usr "github.com/mradulrathore/user-management/domain/user"
 )
 
+const dataFilePath = "user-data"
+
 func Open() (*os.File, error) {
-	file, err := os.OpenFile("user-data", os.O_RDWR, 0644)
+	var err error
+	file, err := os.OpenFile(dataFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Println(err)
 		return nil, err
 	}
-	return file, nil
+	return file, err
 }
 
-func Save(file *os.File, user []usr.User) error {
-	dataB, err := json.Marshal(user)
+func Save(file *os.File, users []usr.User) error {
+
+	dataB, err := usr.EncodeUser(users)
 	if err != nil {
-		log.Println(err)
-		return err
-	}
-	if err = file.Truncate(0); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -32,11 +31,11 @@ func Save(file *os.File, user []usr.User) error {
 		log.Println(err)
 		return err
 	}
+
 	return nil
 }
 
-func Get(file *os.File) ([]usr.User, error) {
-	var users []usr.User
+func RetrieveData(file *os.File) ([]usr.User, error) {
 
 	fs, err := file.Stat()
 	if err != nil {
@@ -55,10 +54,10 @@ func Get(file *os.File) ([]usr.User, error) {
 		return []usr.User{}, err
 	}
 
-	if err = json.Unmarshal(dataB, &users); err != nil {
-		log.Println(err)
+	usersDisk, err := usr.DecodeUser(dataB)
+	if err != nil {
 		return []usr.User{}, err
 	}
 
-	return users, nil
+	return usersDisk, nil
 }
