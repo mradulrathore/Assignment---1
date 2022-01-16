@@ -16,6 +16,7 @@ func Open() (*os.File, error) {
 		log.Println(err)
 		return nil, err
 	}
+
 	return file, err
 }
 

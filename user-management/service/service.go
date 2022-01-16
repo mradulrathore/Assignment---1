@@ -10,22 +10,24 @@ import (
 	"github.com/mradulrathore/user-management/repository"
 )
 
-var users = make(map[int]usr.User)
+var users map[int]usr.User
 
 func LoadData() error {
+	users = make(map[int]usr.User)
+
 	file, err := repository.Open()
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	usersDisk, err := repository.RetrieveData(file)
+	usersTemp, err := repository.RetrieveData(file)
 	if err != nil {
 		return err
 	}
 
-	for _, userDisk := range usersDisk {
-		users[userDisk.RollNo] = userDisk
+	for _, user := range usersTemp {
+		users[user.RollNo] = user
 	}
 
 	return nil

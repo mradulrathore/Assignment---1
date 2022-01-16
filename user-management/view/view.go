@@ -245,9 +245,11 @@ func deleteByRollNo() error {
 		log.Println(err)
 		return err
 	}
+
 	if err = service.DeleteByRollNo(rollNo); err != nil {
 		return err
 	}
+
 	return nil
 }
 

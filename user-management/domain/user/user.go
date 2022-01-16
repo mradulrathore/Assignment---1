@@ -46,6 +46,7 @@ func (user User) validate() error {
 		validation.Field(&user.Age, validation.Required, validation.By(checkPositive)),
 		validation.Field(&user.Address, validation.Required),
 		validation.Field(&user.RollNo, validation.Required, validation.By(checkPositive)),
+		validation.Field(&user.CoursesEnrol, validation.Required),
 	)
 }
 

@@ -1,7 +1,6 @@
 package course
 
 import (
-	"encoding/json"
 	"log"
 
 	"github.com/mradulrathore/user-management/domain/course/enum"
@@ -34,24 +33,4 @@ func (course Course) String() []string {
 	}
 
 	return courses
-}
-
-func (course *Course) EncodeCourse() ([]byte, error) {
-	courseB, err := json.Marshal(course)
-	if err != nil {
-		log.Println(err)
-		return []byte{}, err
-	}
-
-	return courseB, nil
-}
-
-func DecodeCourse(courseB []byte) (Course, error) {
-	var course Course
-	if err := json.Unmarshal(courseB, &course); err != nil {
-		log.Println(err)
-		return course, err
-	}
-
-	return course, nil
 }
