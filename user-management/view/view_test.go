@@ -41,8 +41,26 @@ func TestInit(t *testing.T) {
 		userChoice:   "n",
 	}
 
-	testDisplay := displayTest{
+	testDisplayByName := displayTest{
 		field:      "name",
+		order:      1,
+		userChoice: "n",
+	}
+
+	testDisplayByRollNo := displayTest{
+		field:      "rollno",
+		order:      1,
+		userChoice: "n",
+	}
+
+	testDisplayByAge := displayTest{
+		field:      "age",
+		order:      1,
+		userChoice: "n",
+	}
+
+	testDisplayByAddress := displayTest{
+		field:      "address",
 		order:      1,
 		userChoice: "n",
 	}
@@ -63,7 +81,19 @@ func TestInit(t *testing.T) {
 			err:      nil,
 		}, {
 			scenario: "display user",
-			req:      setInputDisplay("2", testDisplay),
+			req:      setInputDisplay("2", testDisplayByName),
+			err:      nil,
+		}, {
+			scenario: "display user",
+			req:      setInputDisplay("2", testDisplayByRollNo),
+			err:      nil,
+		}, {
+			scenario: "display user",
+			req:      setInputDisplay("2", testDisplayByAge),
+			err:      nil,
+		}, {
+			scenario: "display user",
+			req:      setInputDisplay("2", testDisplayByAddress),
 			err:      nil,
 		}, {
 			scenario: "delete user by rollno",
