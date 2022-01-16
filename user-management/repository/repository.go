@@ -21,7 +21,6 @@ func Open() (*os.File, error) {
 }
 
 func Save(file *os.File, users []usr.User) error {
-
 	dataB, err := usr.EncodeUser(users)
 	if err != nil {
 		log.Println(err)
