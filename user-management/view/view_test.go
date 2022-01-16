@@ -80,19 +80,19 @@ func TestInit(t *testing.T) {
 			req:      setInputAdd("1", testAddUser),
 			err:      nil,
 		}, {
-			scenario: "display user",
+			scenario: "display user sorted by name",
 			req:      setInputDisplay("2", testDisplayByName),
 			err:      nil,
 		}, {
-			scenario: "display user",
+			scenario: "display user sorted by rollno",
 			req:      setInputDisplay("2", testDisplayByRollNo),
 			err:      nil,
 		}, {
-			scenario: "display user",
+			scenario: "display user sorted by age",
 			req:      setInputDisplay("2", testDisplayByAge),
 			err:      nil,
 		}, {
-			scenario: "display user",
+			scenario: "display user sorted by address",
 			req:      setInputDisplay("2", testDisplayByAddress),
 			err:      nil,
 		}, {
