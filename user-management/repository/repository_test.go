@@ -7,7 +7,6 @@ import (
 )
 
 func TestOpen(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		err      error
