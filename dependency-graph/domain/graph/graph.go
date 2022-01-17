@@ -5,17 +5,20 @@ import (
 )
 
 type Graph struct {
-	Nodes []*node.Node
-	Edges map[*node.Node][]*node.Node
+	Nodes map[int]*node.Node
 }
 
 func (g *Graph) String() string {
 	s := ""
-	for i := 0; i < len(g.Nodes); i++ {
-		s += g.Nodes[i].String() + " -> "
-		neigh := g.Edges[g.Nodes[i]]
-		for j := 0; j < len(neigh); j++ {
-			s += neigh[j].String() + " "
+	for _, node := range g.Nodes {
+		s += node.String() + " -> "
+		parent := node.Parent
+		for _, parentNode := range parent {
+			s += parentNode.String() + " "
+		}
+		child := node.Child
+		for _, childNode := range child {
+			s += childNode.String() + " "
 		}
 		s += "\n"
 	}

@@ -35,7 +35,13 @@ func Init() error {
 				fmt.Println(err)
 			}
 		case "5":
+			if err = deleteDependency(); err != nil {
+				fmt.Println(err)
+			}
 		case "6":
+			if err = deleteNode(); err != nil {
+				fmt.Println(err)
+			}
 		case "7":
 			if err = addDependency(); err != nil {
 				fmt.Println(err)
@@ -68,6 +74,17 @@ func showMenu() {
 	fmt.Println("9. Display graph")
 	fmt.Println("10. Exit")
 	fmt.Println("-------------------")
+}
+
+func getUserChoice() (string, error) {
+	var userChoice string
+	_, err := fmt.Scanf("%s", &userChoice)
+	if err != nil {
+		err := errors.Wrap(err, "scan for user's choice failed")
+		log.Println(err)
+		return "", err
+	}
+	return userChoice, nil
 }
 
 var (
@@ -162,19 +179,7 @@ func getDescendants() error {
 	return nil
 }
 
-func getUserChoice() (string, error) {
-	var userChoice string
-	_, err := fmt.Scanf("%s", &userChoice)
-	if err != nil {
-		err := errors.Wrap(err, "scan for user's choice failed")
-		log.Println(err)
-		return "", err
-	}
-	return userChoice, nil
-}
-
-func addDependency() error {
-
+func deleteDependency() error {
 	fmt.Println("Enter ids of nodes")
 	var n1 int
 	_, err := fmt.Scanf("%d", &n1)
@@ -186,7 +191,48 @@ func addDependency() error {
 	var n2 int
 	_, err = fmt.Scanf("%d", &n2)
 	if err != nil {
+		err := errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
+		log.Println(err)
+		return err
+	}
+
+	if err := service.DeleteEdge(n1, n2); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func deleteNode() error {
+	fmt.Println("Enter id of node")
+	var id int
+	_, err := fmt.Scanf("%d", &id)
+	if err != nil {
+		err := errors.Wrap(err, "scan for node's id failed while deleting")
+		log.Println(err)
+		return err
+	}
+
+	if err := service.DeleteNode(id); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func addDependency() error {
+	fmt.Println("Enter ids of nodes")
+	var n1 int
+	_, err := fmt.Scanf("%d", &n1)
+	if err != nil {
 		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
+		log.Println(err)
+		return err
+	}
+	var n2 int
+	_, err = fmt.Scanf("%d", &n2)
+	if err != nil {
+		err := errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
 		log.Println(err)
 		return err
 	}
@@ -203,9 +249,7 @@ func addDependency() error {
 		}
 	}
 
-	if err = service.AddEdge(n1, n2); err != nil {
-		return err
-	}
+	service.AddEdge(n1, n2)
 
 	return nil
 }
@@ -233,7 +277,7 @@ func getNode() (id int, name string, metaData map[string]string, err error) {
 		log.Println(err)
 		return
 	}
-	_, exist := service.IdExist(id)
+	_, exist := service.CheckIdExist(id)
 	if exist {
 		err = fmt.Errorf(DuplicateIdMsg)
 		log.Println(err)

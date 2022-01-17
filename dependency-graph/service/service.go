@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"log"
-	"sort"
 
 	"github.com/mradulrathore/onboarding-assignments/dependency-graph/domain/graph"
 	"github.com/mradulrathore/onboarding-assignments/dependency-graph/domain/node"
@@ -11,25 +10,30 @@ import (
 
 var g graph.Graph
 
-func GetParent(id int) ([]*node.Node, error) {
-	n, err := getNodeById(id)
-	if err != nil {
+var NodeNotExistMsg = "node doesn't exist"
+
+func GetParent(id int) (map[int]*node.Node, error) {
+	n, exist := g.Nodes[id]
+	if !exist {
+		err := fmt.Errorf(NodeNotExistMsg)
 		return nil, err
 	}
 	return n.Parent, nil
 }
 
-func GetChild(id int) ([]*node.Node, error) {
-	n, err := getNodeById(id)
-	if err != nil {
+func GetChild(id int) (map[int]*node.Node, error) {
+	n, exist := g.Nodes[id]
+	if !exist {
+		err := fmt.Errorf(NodeNotExistMsg)
 		return nil, err
 	}
 	return n.Child, nil
 }
 
 func GetAncestors(id int) ([]int, error) {
-	n, err := getNodeById(id)
-	if err != nil {
+	n, exist := g.Nodes[id]
+	if !exist {
+		err := fmt.Errorf(NodeNotExistMsg)
 		return nil, err
 	}
 
@@ -49,19 +53,20 @@ func ancestorsDFS(n *node.Node, visitCb func(int)) {
 		return
 	}
 
-	for _, ancestor := range n.Parent {
-		if visited[ancestor.Id] {
+	for id, ancestor := range n.Parent {
+		if visited[id] {
 			continue
 		}
-		visited[n.Id] = true
-		visitCb(n.Id)
+		visited[id] = true
+		visitCb(id)
 		ancestorsDFS(ancestor, visitCb)
 	}
 }
 
 func GetDescendants(id int) ([]int, error) {
-	n, err := getNodeById(id)
-	if err != nil {
+	n, exist := g.Nodes[id]
+	if !exist {
+		err := fmt.Errorf(NodeNotExistMsg)
 		return nil, err
 	}
 
@@ -81,103 +86,87 @@ func descendantsDFS(n *node.Node, visitCb func(int)) {
 		return
 	}
 
-	for _, descendants := range n.Child {
-		if visited[descendants.Id] {
+	for id, descendants := range n.Child {
+		if visited[id] {
 			continue
 		}
-		visited[n.Id] = true
-		visitCb(n.Id)
+		visited[id] = true
+		visitCb(id)
 		descendantsDFS(descendants, visitCb)
 	}
 }
 
+func DeleteEdge(id1 int, id2 int) error {
+	_, exist := g.Nodes[id1].Child[id2]
+	if !exist {
+		err := fmt.Errorf("dependency doesn't exist")
+		log.Println(err)
+		return err
+	}
+
+	delete(g.Nodes[id1].Child, id2)
+	delete(g.Nodes[id2].Parent, id1)
+
+	return nil
+}
+
+func DeleteNode(id int) error {
+	_, exist := g.Nodes[id]
+	if !exist {
+		err := fmt.Errorf(NodeNotExistMsg)
+		return err
+	}
+	delete(g.Nodes, id)
+
+	parent, err := GetParent(id)
+	if err != nil {
+		return err
+	}
+	for _, node := range parent {
+		delete(node.Child, id)
+	}
+
+	child, err := GetChild(id)
+	if err != nil {
+		return err
+	}
+	for _, node := range child {
+		delete(node.Child, id)
+	}
+
+	return nil
+}
+
+func AddEdge(id1, id2 int) {
+	if g.Nodes[id1].Child == nil {
+		g.Nodes[id1].Child = make(map[int]*node.Node)
+	}
+	g.Nodes[id1].Child[id2] = g.Nodes[id2]
+
+	if g.Nodes[id2].Parent == nil {
+		g.Nodes[id2].Parent = make(map[int]*node.Node)
+	}
+	g.Nodes[id2].Parent[id1] = g.Nodes[id1]
+}
+
 func AddNode(id int, name string, metaData map[string]string) {
+	if g.Nodes == nil {
+		g.Nodes = make(map[int]*node.Node)
+	}
+
 	n := node.Node{
 		Id:       id,
 		Name:     name,
 		MetaData: metaData,
 	}
-	index := SearchNode(&n)
-	insertAt(index, &n)
-}
-
-func SearchNode(n *node.Node) int {
-	if g.Nodes == nil {
-		return 0
-	}
-
-	index := sort.Search(len(g.Nodes), func(i int) bool {
-		return g.Nodes[i].Id >= n.Id
-	})
-
-	return index
-}
-
-//return index of id if it exists
-func IdExist(id int) (int, bool) {
-	if g.Nodes == nil {
-		return -1, false
-	}
-
-	index := sort.Search(len(g.Nodes), func(i int) bool {
-		return g.Nodes[i].Id >= id
-	})
-	if index == len(g.Nodes) {
-		return -1, false
-	}
-
-	return index, g.Nodes[index].Id == id
-}
-
-func insertAt(index int, n *node.Node) {
-	if index == len(g.Nodes) {
-		g.Nodes = append(g.Nodes, n)
-		return
-	}
-
-	g.Nodes = append(g.Nodes[:index+1], g.Nodes[index:]...)
-	g.Nodes[index] = n
-}
-
-func AddEdge(id1, id2 int) error {
-	n1, err := getNodeById(id1)
-	if err != nil {
-		return err
-	}
-
-	n2, err := getNodeById(id2)
-	if err != nil {
-		return err
-	}
-
-	if g.Edges == nil {
-		g.Edges = make(map[*node.Node][]*node.Node)
-	}
-
-	n1.Child = append(n1.Child, n2)
-	n2.Parent = append(n2.Parent, n1)
-	g.Edges[n1] = append(g.Edges[n1], n2)
-
-	return nil
-}
-
-var (
-	IdNotExistMsg = "id doesn't exist"
-)
-
-func getNodeById(id int) (*node.Node, error) {
-	index, exist := IdExist(id)
-	if !exist {
-		err := fmt.Errorf("%s", IdNotExistMsg)
-		log.Println(err)
-		return nil, err
-	}
-
-	n := g.Nodes[index]
-
-	return n, nil
+	g.Nodes[id] = &n
 }
 
 func Display() string {
 	return g.String()
+}
+
+func CheckIdExist(id int) (*node.Node, bool) {
+	n, exist := g.Nodes[id]
+	return n, exist
 }
