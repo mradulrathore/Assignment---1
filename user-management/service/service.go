@@ -43,7 +43,6 @@ func CheckDataExistence(rollno int) bool {
 }
 
 func GetAll(field string, order int) ([]usr.User, error) {
-
 	var usersTemp []usr.User
 	for _, user := range users {
 		usersTemp = append(usersTemp, user)
