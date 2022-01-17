@@ -162,10 +162,6 @@ func AddNode(id int, name string, metaData map[string]string) {
 	g.Nodes[id] = &n
 }
 
-func Display() string {
-	return g.String()
-}
-
 func CheckIdExist(id int) (*node.Node, bool) {
 	n, exist := g.Nodes[id]
 	return n, exist

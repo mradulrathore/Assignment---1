@@ -13,6 +13,7 @@ func Init() error {
 	var moreInput bool = true
 	for moreInput {
 		showMenu()
+
 		userChoice, err := getUserChoice()
 		if err != nil {
 			return err
@@ -51,8 +52,6 @@ func Init() error {
 				fmt.Println(err)
 			}
 		case "9":
-			display()
-		case "10":
 			moreInput = false
 		default:
 			fmt.Println("Invalid choice")
@@ -71,8 +70,7 @@ func showMenu() {
 	fmt.Println("6. Delete the node")
 	fmt.Println("7. Add dependency")
 	fmt.Println("8. Add node")
-	fmt.Println("9. Display graph")
-	fmt.Println("10. Exit")
+	fmt.Println("9. Exit")
 	fmt.Println("-------------------")
 }
 
@@ -328,8 +326,4 @@ func getAdditionInfo(metaData map[string]string) error {
 	}
 
 	return nil
-}
-
-func display() {
-	fmt.Println(service.Display())
 }
