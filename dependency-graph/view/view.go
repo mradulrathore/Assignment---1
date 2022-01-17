@@ -20,29 +20,29 @@ func Init() error {
 		switch userChoice {
 		case "1":
 			if err = getParent(); err != nil {
-				log.Println(err)
+				fmt.Println(err)
 			}
 		case "2":
 			if err = getChild(); err != nil {
-				log.Println(err)
+				fmt.Println(err)
 			}
 		case "3":
 			if err = getAncestors(); err != nil {
-				log.Println(err)
+				fmt.Println(err)
 			}
 		case "4":
 			if err = getDescendants(); err != nil {
-				log.Println(err)
+				fmt.Println(err)
 			}
 		case "5":
 		case "6":
 		case "7":
 			if err = addDependency(); err != nil {
-				log.Println(err)
+				fmt.Println(err)
 			}
 		case "8":
 			if err = addNode(); err != nil {
-				log.Println(err)
+				fmt.Println(err)
 			}
 		case "9":
 			display()
@@ -189,6 +189,18 @@ func addDependency() error {
 		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
 		log.Println(err)
 		return err
+	}
+
+	ancestors, err := service.GetAncestors(n1)
+	if err != nil {
+		return err
+	}
+	for _, a := range ancestors {
+		if a == n2 {
+			err := fmt.Errorf("cyclic dependency")
+			log.Println(err)
+			return err
+		}
 	}
 
 	if err = service.AddEdge(n1, n2); err != nil {

@@ -48,13 +48,13 @@ func ancestorsDFS(n *node.Node, visitCb func(int)) {
 	if n == nil {
 		return
 	}
-	visited[n.Id] = true
-	visitCb(n.Id)
 
 	for _, ancestor := range n.Parent {
 		if visited[ancestor.Id] {
 			continue
 		}
+		visited[n.Id] = true
+		visitCb(n.Id)
 		ancestorsDFS(ancestor, visitCb)
 	}
 }
@@ -80,13 +80,13 @@ func descendantsDFS(n *node.Node, visitCb func(int)) {
 	if n == nil {
 		return
 	}
-	visited[n.Id] = true
-	visitCb(n.Id)
 
 	for _, descendants := range n.Child {
 		if visited[descendants.Id] {
 			continue
 		}
+		visited[n.Id] = true
+		visitCb(n.Id)
 		descendantsDFS(descendants, visitCb)
 	}
 }
