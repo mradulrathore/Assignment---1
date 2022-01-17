@@ -30,7 +30,6 @@ type deleteTest struct {
 }
 
 func TestInit(t *testing.T) {
-
 	testAddUser := userTest{
 		name:         "Mradul",
 		age:          21,
@@ -111,16 +110,20 @@ func TestInit(t *testing.T) {
 
 	for _, tc := range tests {
 		os.Stdin = tc.req
-		err := Init()
-		if err != nil && tc.err == nil {
-			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
-		} else if err == nil && tc.err != nil {
-			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
-		}
+		func() {
+			err := Init()
+			if err != nil && tc.err == nil {
+				t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+			} else if err == nil && tc.err != nil {
+				t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+			}
 
-		if err := tc.req.Close(); err != nil {
-			log.Fatal(err)
-		}
+			if err := tc.req.Close(); err != nil {
+				log.Fatal(err)
+			}
+
+			defer os.Remove(tc.req.Name())
+		}()
 	}
 }
 
@@ -137,8 +140,6 @@ func setInputAdd(userChoice string, user userTest) *os.File {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer os.Remove(tmpfile.Name())
 
 	if _, err := tmpfile.Write(contentB); err != nil {
 		log.Fatal(err)
@@ -162,8 +163,6 @@ func setInputDisplay(userChoice string, display displayTest) *os.File {
 		log.Fatal(err)
 	}
 
-	defer os.Remove(tmpfile.Name())
-
 	if _, err := tmpfile.Write(contentB); err != nil {
 		log.Fatal(err)
 	}
@@ -186,8 +185,6 @@ func setInputDelete(userChoice string, delete deleteTest) *os.File {
 		log.Fatal(err)
 	}
 
-	defer os.Remove(tmpfile.Name())
-
 	if _, err := tmpfile.Write(contentB); err != nil {
 		log.Fatal(err)
 	}
@@ -208,8 +205,6 @@ func setInputSave(userChoice string) *os.File {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	defer os.Remove(tmpfile.Name())
 
 	if _, err := tmpfile.Write(contentB); err != nil {
 		log.Fatal(err)
