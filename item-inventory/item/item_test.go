@@ -8,7 +8,6 @@ import (
 )
 
 func TestNew(t *testing.T) {
-
 	var tests = []struct {
 		scenario string
 		name     string
@@ -97,7 +96,6 @@ func TestNew(t *testing.T) {
 }
 
 func TestGetTax(t *testing.T) {
-
 	var tests = []struct {
 		scenario string
 		req      Item
