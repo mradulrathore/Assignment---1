@@ -27,13 +27,68 @@ func GetChild(id int) ([]*node.Node, error) {
 	return n.Child, nil
 }
 
-func GetAncestors(id int) ([]*node.Node, error) {
+func GetAncestors(id int) ([]int, error) {
+	n, err := getNodeById(id)
+	if err != nil {
+		return nil, err
+	}
 
-	return nil, nil
+	var ancestors []int
+	cb := func(i int) {
+		ancestors = append(ancestors, i)
+	}
+	ancestorsDFS(n, cb)
+
+	return ancestors, nil
 }
-func GetDescendants(id int) ([]*node.Node, error) {
 
-	return nil, nil
+func ancestorsDFS(n *node.Node, visitCb func(int)) {
+	visited := map[int]bool{}
+
+	if n == nil {
+		return
+	}
+	visited[n.Id] = true
+	visitCb(n.Id)
+
+	for _, ancestor := range n.Parent {
+		if visited[ancestor.Id] {
+			continue
+		}
+		ancestorsDFS(ancestor, visitCb)
+	}
+}
+
+func GetDescendants(id int) ([]int, error) {
+	n, err := getNodeById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	var descendants []int
+	cb := func(i int) {
+		descendants = append(descendants, i)
+	}
+	descendantsDFS(n, cb)
+
+	return descendants, nil
+}
+
+func descendantsDFS(n *node.Node, visitCb func(int)) {
+	visited := map[int]bool{}
+
+	if n == nil {
+		return
+	}
+	visited[n.Id] = true
+	visitCb(n.Id)
+
+	for _, descendants := range n.Child {
+		if visited[descendants.Id] {
+			continue
+		}
+		descendantsDFS(descendants, visitCb)
+	}
 }
 
 func AddNode(id int, name string, metaData map[string]string) {
