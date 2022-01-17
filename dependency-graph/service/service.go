@@ -134,8 +134,6 @@ func DeleteNode(id int) error {
 		return err
 	}
 
-	delete(g.Nodes, id)
-
 	parent, err := GetParent(id)
 	if err != nil {
 		return err
@@ -149,8 +147,10 @@ func DeleteNode(id int) error {
 		return err
 	}
 	for _, node := range child {
-		delete(node.Child, id)
+		delete(node.Parent, id)
 	}
+
+	delete(g.Nodes, id)
 
 	return nil
 }
