@@ -19,8 +19,8 @@ func Initialize() error {
 	if err != nil {
 		return err
 	}
-	item, err := itm.New(name, price, quantity, typeItem)
 
+	item, err := itm.New(name, price, quantity, typeItem)
 	for err != nil {
 		log.Println(err.Error())
 		name, price, quantity, typeItem, err = getItem()
