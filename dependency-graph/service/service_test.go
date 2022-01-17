@@ -6,7 +6,6 @@ import (
 )
 
 func TestGetParent(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		req      int
@@ -30,7 +29,6 @@ func TestGetParent(t *testing.T) {
 }
 
 func TestGetChild(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		req      int
@@ -78,7 +76,6 @@ func TestGetAncestors(t *testing.T) {
 }
 
 func TestGetDescendants(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		req      int
@@ -102,7 +99,6 @@ func TestGetDescendants(t *testing.T) {
 }
 
 func TestDeleteEdge(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		req      []int
@@ -126,7 +122,6 @@ func TestDeleteEdge(t *testing.T) {
 }
 
 func TestDeleteNode(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		req      int
@@ -150,7 +145,6 @@ func TestDeleteNode(t *testing.T) {
 }
 
 func TestAddEdge(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		req      []int
@@ -174,7 +168,6 @@ func TestAddEdge(t *testing.T) {
 }
 
 func TestInit(t *testing.T) {
-
 	type testStruct struct {
 		id       int
 		name     string
@@ -208,7 +201,6 @@ func TestInit(t *testing.T) {
 }
 
 func TestCheckIdExist(t *testing.T) {
-
 	tests := []struct {
 		scenario string
 		req      int
