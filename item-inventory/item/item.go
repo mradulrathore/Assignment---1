@@ -59,15 +59,15 @@ func (item Item) Invoice() string {
 }
 
 const (
-	RAWItmTaxRate                        = 0.125
-	ImportDuty                           = 0.100
-	ImportDutyLimit1                     = 100
-	ImportDutyLimit2                     = 200
-	FirstImportDutySurchargeAmt          = 5
-	SecondImportDutySurchargeAmt         = 10
-	ExceedeImportDutyLimit2SurchargeRate = 0.05
-	ManufacturedItmTaxRate               = 0.125
-	ManufacturedItmExtraTaxRate          = 0.02 //Extra =ItemCost +12.5% Item Cost
+	RAWItmTaxRate                       = 0.125
+	ImportDuty                          = 0.100
+	ImportDutyLimit1                    = 100
+	ImportDutyLimit2                    = 200
+	FirstImportDutySurchargeAmt         = 5
+	SecondImportDutySurchargeAmt        = 10
+	ExceedSecondImportDutySurchargeRate = 0.05
+	ManufacturedItmTaxRate              = 0.125
+	ManufacturedItmExtraTaxRate         = 0.02 //Extra =ItemCost +12.5% Item Cost
 )
 
 func (item Item) GetTax() float64 {
@@ -112,6 +112,6 @@ func (item Item) importSurcharge(price float64) float64 {
 	} else if price <= ImportDutyLimit2 {
 		return SecondImportDutySurchargeAmt
 	} else {
-		return price * ExceedeImportDutyLimit2SurchargeRate
+		return price * ExceedSecondImportDutySurchargeRate
 	}
 }
