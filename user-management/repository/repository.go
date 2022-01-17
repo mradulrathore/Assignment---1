@@ -36,7 +36,6 @@ func Save(file *os.File, users []usr.User) error {
 }
 
 func RetrieveData(file *os.File) ([]usr.User, error) {
-
 	fs, err := file.Stat()
 	if err != nil {
 		log.Println(err)
