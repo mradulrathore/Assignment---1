@@ -82,11 +82,12 @@ func getUserChoice() (string, error) {
 		log.Println(err)
 		return "", err
 	}
+
 	return userChoice, nil
 }
 
 var (
-	IdNotExist = "id doesn't exist"
+	IdNotExist = "id:%d doesn't exist"
 )
 
 func getParent() error {
@@ -247,7 +248,9 @@ func addDependency() error {
 		}
 	}
 
-	service.AddEdge(n1, n2)
+	if err = service.AddEdge(n1, n2); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -258,7 +261,9 @@ func addNode() error {
 		return err
 	}
 
-	service.AddNode(id, name, metaData)
+	if err := service.AddNode(id, name, metaData); err != nil {
+		return err
+	}
 
 	return nil
 }
