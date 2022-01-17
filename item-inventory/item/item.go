@@ -63,8 +63,8 @@ const (
 	ImportDuty                           = 0.100
 	ImportDutyLimit1                     = 100
 	ImportDutyLimit2                     = 200
-	ImportDutyLimit1SurchargeAmt         = 5
-	ImportDutyLimit2SurchargeAmt         = 10
+	FirstImportDutySurchargeAmt          = 5
+	SecondImportDutySurchargeAmt         = 10
 	ExceedeImportDutyLimit2SurchargeRate = 0.05
 	ManufacturedItmTaxRate               = 0.125
 	ManufacturedItmExtraTaxRate          = 0.02 //Extra =ItemCost +12.5% Item Cost
@@ -108,9 +108,9 @@ func (item Item) GetEffectivePrice() float64 {
 
 func (item Item) importSurcharge(price float64) float64 {
 	if price <= ImportDutyLimit1 {
-		return ImportDutyLimit1SurchargeAmt
+		return FirstImportDutySurchargeAmt
 	} else if price <= ImportDutyLimit2 {
-		return ImportDutyLimit2SurchargeAmt
+		return SecondImportDutySurchargeAmt
 	} else {
 		return price * ExceedeImportDutyLimit2SurchargeRate
 	}
