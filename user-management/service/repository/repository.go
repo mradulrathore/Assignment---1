@@ -1,5 +1,6 @@
 package repository
 
+//go:generate mockgen -source=repository.go -destination=repository_mock.go -package=repository
 import (
 	"fmt"
 	"log"
@@ -10,11 +11,6 @@ import (
 	usr "github.com/mradulrathore/user-management/service/user"
 )
 
-var (
-	users map[int]usr.User
-	file  *os.File
-)
-
 const (
 	dataFilePath    = "user-data.json"
 	UserExistErr    = "user exist with id:%d"
@@ -22,6 +18,8 @@ const (
 )
 
 type repository struct {
+	users map[int]usr.User
+	file  *os.File
 }
 
 type RepositoryI interface {
@@ -34,34 +32,34 @@ type RepositoryI interface {
 	Close() error
 }
 
-func NewRepo() repository {
-	return repository{}
+func NewRepo() *repository {
+	return &repository{}
 }
 
-func (r repository) Load() error {
-	if err := open(); err != nil {
+func (r *repository) Load() error {
+	if err := open(r); err != nil {
 		return err
 	}
-	users = make(map[int]usr.User)
+	r.users = make(map[int]usr.User)
 
-	usersTemp, err := retrieveData()
+	usersTemp, err := retrieveData(r)
 	if err != nil {
 		return err
 	}
 
 	for _, user := range usersTemp {
-		users[user.RollNo] = user
+		r.users[user.RollNo] = user
 	}
 
 	return nil
 }
 
-func open() error {
-	if file != nil {
+func open(r *repository) error {
+	if r.file != nil {
 		return nil
 	}
 	var err error
-	file, err = os.OpenFile(dataFilePath, os.O_RDWR|os.O_CREATE, 0755)
+	r.file, err = os.OpenFile(dataFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -70,19 +68,19 @@ func open() error {
 	return err
 }
 
-func retrieveData() ([]usr.User, error) {
-	fs, err := file.Stat()
+func retrieveData(r *repository) ([]usr.User, error) {
+	fs, err := r.file.Stat()
 	if err != nil {
 		log.Println(err)
 		return []usr.User{}, err
 	}
+
 	len := fs.Size()
 	if len == 0 {
 		return []usr.User{}, err
 	}
-
 	dataB := make([]byte, len)
-	_, err = file.Read(dataB)
+	_, err = r.file.Read(dataB)
 	if err != nil {
 		log.Println(err)
 		return []usr.User{}, err
@@ -96,25 +94,25 @@ func retrieveData() ([]usr.User, error) {
 	return usersDisk, nil
 }
 
-func (r repository) Add(user usr.User) error {
+func (r *repository) Add(user usr.User) error {
 	if exist := r.CheckDataExistence(user.RollNo); exist {
 		err := fmt.Errorf(UserExistErr, user.RollNo)
 		log.Println(err)
 		return err
 	}
 
-	users[user.RollNo] = user
+	r.users[user.RollNo] = user
 	return nil
 }
 
-func (r repository) CheckDataExistence(rollno int) bool {
-	_, exists := users[rollno]
+func (r *repository) CheckDataExistence(rollno int) bool {
+	_, exists := r.users[rollno]
 	return exists
 }
 
-func (r repository) GetAll(field string, order int) ([]usr.User, error) {
+func (r *repository) GetAll(field string, order int) ([]usr.User, error) {
 	var usersTemp []usr.User
-	for _, user := range users {
+	for _, user := range r.users {
 		usersTemp = append(usersTemp, user)
 	}
 
@@ -159,31 +157,31 @@ func sortDescCustom(usersDisk []usr.User, field string) {
 	})
 }
 
-func (r repository) DeleteByRollNo(rollno int) error {
+func (r *repository) DeleteByRollNo(rollno int) error {
 	if exist := r.CheckDataExistence(rollno); !exist {
 		err := fmt.Errorf(UserNotExistErr, rollno)
 		log.Println(err)
 		return err
 	}
 
-	delete(users, rollno)
+	delete(r.users, rollno)
 	return nil
 }
 
-func (r repository) Save(users []usr.User) error {
+func (r *repository) Save(users []usr.User) error {
 	dataB, err := usr.EncodeUser(users)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
-	if err = file.Truncate(0); err != nil {
+	if err = r.file.Truncate(0); err != nil {
 		return err
 	}
-	_, err = file.Seek(0, 0)
+	_, err = r.file.Seek(0, 0)
 	if err != nil {
 		return err
 	}
-	_, err = file.Write(dataB)
+	_, err = r.file.Write(dataB)
 	if err != nil {
 		log.Println(err)
 		return err
@@ -192,6 +190,6 @@ func (r repository) Save(users []usr.User) error {
 	return nil
 }
 
-func (r repository) Close() error {
-	return file.Close()
+func (r *repository) Close() error {
+	return r.file.Close()
 }
