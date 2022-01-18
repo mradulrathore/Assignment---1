@@ -94,19 +94,19 @@ func getUserChoice() (string, error) {
 }
 
 func add() error {
-	name, age, address, rollNo, courseEnrol, err := getUser()
+	name, age, address, rollNo, courses, err := getUser()
 	if err != nil {
 		return err
 	}
 
-	user, err := usr.New(name, age, address, rollNo, courseEnrol)
+	user, err := usr.New(name, age, address, rollNo, courses)
 	for err != nil {
 		fmt.Println(err)
-		name, age, address, rollNo, courseEnrol, err = getUser()
+		name, age, address, rollNo, courses, err = getUser()
 		if err != nil {
 			return err
 		}
-		user, err = usr.New(name, age, address, rollNo, courseEnrol)
+		user, err = usr.New(name, age, address, rollNo, courses)
 	}
 
 	if err := repository.Add(user); err != nil {

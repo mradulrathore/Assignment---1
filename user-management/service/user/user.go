@@ -19,7 +19,7 @@ type User struct {
 	Courses []enum.Course `json:"courses"`
 }
 
-func New(name string, age int, address string, rollNo int, courseEnrol []string) (User, error) {
+func New(name string, age int, address string, rollNo int, courses []string) (User, error) {
 	var user User
 	var err error
 
@@ -27,7 +27,7 @@ func New(name string, age int, address string, rollNo int, courseEnrol []string)
 	user.Age = age
 	user.Address = address
 	user.RollNo = rollNo
-	user.Courses, err = getCourse(courseEnrol)
+	user.Courses, err = getCourse(courses)
 	if err != nil {
 		return User{}, err
 	}
@@ -40,11 +40,11 @@ func New(name string, age int, address string, rollNo int, courseEnrol []string)
 	return user, nil
 }
 
-func getCourse(courseEnrol []string) ([]enum.Course, error) {
+func getCourse(courses []string) ([]enum.Course, error) {
 	var courseEnum []enum.Course
 	var err error
 	var course enum.Course
-	for _, c := range courseEnrol {
+	for _, c := range courses {
 		course, err = enum.CourseString(c)
 		if err != nil {
 			log.Println(err)
