@@ -1,13 +1,13 @@
-# Run Local
+# ASSIGNMENT- 1
+
+## Run Local
 
 To run the application locally,
 - `cd item-inventory`
-- `make run`  
-  
-# ASSIGNMENT- 1
- 
-### Topics Covered: Go I/O, String.
- 
+- `make run` 
+
+### Topics Covered: Go I/O, String.  
+   
 Write a go program that accepts details (item name, item type, item prize) of different items from
 Command line and outputs the item name, item prize, sales tax liability per item, final prize (sales tax + item prize) to the console. The input should be accepted with following command line options:
 
