@@ -1,6 +1,5 @@
 package repository
 
-//go:generate mockgen -source=repository.go -destination=repository_mock.go -package=repository
 import (
 	"fmt"
 	"log"
@@ -17,11 +16,7 @@ const (
 	UserNotExistErr = "user does not exist with id:%d"
 )
 
-type Repository struct {
-	users map[int]usr.User
-	file  *os.File
-}
-
+//go:generate mockgen -source=repository.go -destination=repository_mock.go -package=repository
 type RepositoryI interface {
 	Load() error
 	Add(usr.User) error
@@ -30,6 +25,11 @@ type RepositoryI interface {
 	DeleteByRollNo(int) error
 	Save([]usr.User) error
 	Close() error
+}
+
+type Repository struct {
+	users map[int]usr.User
+	file  *os.File
 }
 
 func NewRepo() *Repository {
@@ -95,7 +95,7 @@ func retrieveData(r *Repository) ([]usr.User, error) {
 }
 
 func (r *Repository) Add(user usr.User) error {
-	if exist := r.CheckDataExistence(user.RollNo); exist {
+	if exist := r.checkDataExistence(user.RollNo); exist {
 		err := fmt.Errorf(UserExistErr, user.RollNo)
 		log.Println(err)
 		return err
@@ -105,7 +105,7 @@ func (r *Repository) Add(user usr.User) error {
 	return nil
 }
 
-func (r *Repository) CheckDataExistence(rollno int) bool {
+func (r *Repository) checkDataExistence(rollno int) bool {
 	_, exists := r.users[rollno]
 	return exists
 }
@@ -158,7 +158,7 @@ func sortDescCustom(usersDisk []usr.User, field string) {
 }
 
 func (r *Repository) DeleteByRollNo(rollno int) error {
-	if exist := r.CheckDataExistence(rollno); !exist {
+	if exist := r.checkDataExistence(rollno); !exist {
 		err := fmt.Errorf(UserNotExistErr, rollno)
 		log.Println(err)
 		return err

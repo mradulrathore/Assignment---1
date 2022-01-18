@@ -1,13 +1,13 @@
 package main
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/mradulrathore/user-management/view"
 )
 
 func main() {
 	if err := view.Init(); err != nil {
-		log.Println(err)
+		fmt.Println(err)
 	}
 }
