@@ -22,7 +22,7 @@ const (
 	MinCousesEnrol = 4
 )
 
-var repository repo.RepositoryI
+var repository *repo.Repository
 
 func Init() error {
 
