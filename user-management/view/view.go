@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"log"
 
+	repo "github.com/mradulrathore/user-management/service/repository"
 	"github.com/pkg/errors"
 
-	"github.com/mradulrathore/user-management/service/repository"
 	usr "github.com/mradulrathore/user-management/service/user"
 )
 
@@ -22,8 +22,13 @@ const (
 	MinCousesEnrol = 4
 )
 
+var repository repo.RepositoryI
+
 func Init() error {
-	if err := repository.LoadData(); err != nil {
+
+	repository = repo.NewRepo()
+
+	if err := repository.Load(); err != nil {
 		return err
 	}
 	defer repository.Close()
@@ -67,6 +72,7 @@ func Init() error {
 }
 
 func showMenu() {
+	fmt.Println()
 	fmt.Println("-------------------")
 	fmt.Println("1. Add user details")
 	fmt.Println("2. Display user details")
@@ -74,6 +80,7 @@ func showMenu() {
 	fmt.Println("4. Save user details")
 	fmt.Println("5. Exit")
 	fmt.Println("-------------------")
+	fmt.Println()
 }
 
 func getUserChoice() (string, error) {
@@ -106,7 +113,7 @@ func add() error {
 		return err
 	}
 
-	fmt.Println("user added successfully")
+	fmt.Print("\nuser added successfully\n")
 	return nil
 }
 
@@ -236,7 +243,7 @@ func display() error {
 		return err
 	}
 
-	fmt.Println("	Name	|	Age	|	Address	|	RollNo	|	Courses	|")
+	fmt.Print("\n	Name	|	Age	|	Address	|	RollNo	|	Courses	|\n")
 	fmt.Println()
 	for _, user := range users {
 		fmt.Println(user.String())
@@ -259,7 +266,7 @@ func deleteByRollNo() error {
 		return err
 	}
 
-	fmt.Println("user deleted successfully")
+	fmt.Print("\nuser deleted successfully\n")
 	return nil
 }
 

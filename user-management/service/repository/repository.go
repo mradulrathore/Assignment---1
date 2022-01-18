@@ -21,7 +21,24 @@ const (
 	UserNotExistErr = "user does not exist with id:%d"
 )
 
-func LoadData() error {
+type repository struct {
+}
+
+type RepositoryI interface {
+	Load() error
+	Add(usr.User) error
+	CheckDataExistence(int) bool
+	GetAll(string, int) ([]usr.User, error)
+	DeleteByRollNo(int) error
+	Save([]usr.User) error
+	Close() error
+}
+
+func NewRepo() repository {
+	return repository{}
+}
+
+func (r repository) Load() error {
 	if err := open(); err != nil {
 		return err
 	}
@@ -79,8 +96,8 @@ func retrieveData() ([]usr.User, error) {
 	return usersDisk, nil
 }
 
-func Add(user usr.User) error {
-	if exist := CheckDataExistence(user.RollNo); exist {
+func (r repository) Add(user usr.User) error {
+	if exist := r.CheckDataExistence(user.RollNo); exist {
 		err := fmt.Errorf(UserExistErr, user.RollNo)
 		log.Println(err)
 		return err
@@ -90,12 +107,12 @@ func Add(user usr.User) error {
 	return nil
 }
 
-func CheckDataExistence(rollno int) bool {
+func (r repository) CheckDataExistence(rollno int) bool {
 	_, exists := users[rollno]
 	return exists
 }
 
-func GetAll(field string, order int) ([]usr.User, error) {
+func (r repository) GetAll(field string, order int) ([]usr.User, error) {
 	var usersTemp []usr.User
 	for _, user := range users {
 		usersTemp = append(usersTemp, user)
@@ -142,8 +159,8 @@ func sortDescCustom(usersDisk []usr.User, field string) {
 	})
 }
 
-func DeleteByRollNo(rollno int) error {
-	if exist := CheckDataExistence(rollno); !exist {
+func (r repository) DeleteByRollNo(rollno int) error {
+	if exist := r.CheckDataExistence(rollno); !exist {
 		err := fmt.Errorf(UserNotExistErr, rollno)
 		log.Println(err)
 		return err
@@ -153,7 +170,7 @@ func DeleteByRollNo(rollno int) error {
 	return nil
 }
 
-func Save(users []usr.User) error {
+func (r repository) Save(users []usr.User) error {
 	dataB, err := usr.EncodeUser(users)
 	if err != nil {
 		log.Println(err)
@@ -175,6 +192,6 @@ func Save(users []usr.User) error {
 	return nil
 }
 
-func Close() error {
+func (r repository) Close() error {
 	return file.Close()
 }
