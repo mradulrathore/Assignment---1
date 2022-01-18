@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/mradulrathore/onboarding-assignments/dependency-graph/service"
+	"github.com/mradulrathore/dependency-graph/service/graph"
 )
 
 func Init() error {
@@ -100,7 +100,7 @@ func getParent() error {
 		return err
 	}
 
-	n, err := service.GetParent(id)
+	n, err := graph.GetParent(id)
 	if err != nil {
 		return err
 	}
@@ -122,7 +122,7 @@ func getChild() error {
 		return err
 	}
 
-	n, err := service.GetChild(id)
+	n, err := graph.GetChild(id)
 	if err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func getAncestors() error {
 		return err
 	}
 
-	n, err := service.GetAncestors(id)
+	n, err := graph.GetAncestors(id)
 	if err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func getDescendants() error {
 		return err
 	}
 
-	n, err := service.GetDescendants(id)
+	n, err := graph.GetDescendants(id)
 	if err != nil {
 		return err
 	}
@@ -195,7 +195,7 @@ func deleteDependency() error {
 		return err
 	}
 
-	if err := service.DeleteEdge(n1, n2); err != nil {
+	if err := graph.DeleteEdge(n1, n2); err != nil {
 		return err
 	}
 
@@ -212,7 +212,7 @@ func deleteNode() error {
 		return err
 	}
 
-	if err := service.DeleteNode(id); err != nil {
+	if err := graph.DeleteNode(id); err != nil {
 		return err
 	}
 
@@ -236,7 +236,7 @@ func addDependency() error {
 		return err
 	}
 
-	ancestors, err := service.GetAncestors(n1)
+	ancestors, err := graph.GetAncestors(n1)
 	if err != nil {
 		return err
 	}
@@ -248,7 +248,7 @@ func addDependency() error {
 		}
 	}
 
-	if err = service.AddEdge(n1, n2); err != nil {
+	if err = graph.AddEdge(n1, n2); err != nil {
 		return err
 	}
 
@@ -261,7 +261,7 @@ func addNode() error {
 		return err
 	}
 
-	if err := service.AddNode(id, name, metaData); err != nil {
+	if err := graph.AddNode(id, name, metaData); err != nil {
 		return err
 	}
 
@@ -280,7 +280,7 @@ func getNode() (id int, name string, metaData map[string]string, err error) {
 		log.Println(err)
 		return
 	}
-	_, exist := service.CheckIdExist(id)
+	_, exist := graph.CheckIdExist(id)
 	if exist {
 		err = fmt.Errorf(DuplicateIdMsg)
 		log.Println(err)

@@ -1,20 +1,27 @@
-package service
+package graph
 
 import (
 	"fmt"
 	"log"
 
-	"github.com/mradulrathore/onboarding-assignments/dependency-graph/domain/graph"
-	"github.com/mradulrathore/onboarding-assignments/dependency-graph/domain/node"
+	"github.com/mradulrathore/dependency-graph/service/node"
 )
 
-var g graph.Graph
-var NodeNotExistMsg = "node doesn't exist, id:%d"
+type Graph struct {
+	Nodes map[int]*node.Node
+}
+
+var g Graph
+
+const (
+	NodeNotExistErr = "node doesn't exist, id:%d"
+	NodeExistMsg    = "node exists (id: %d)"
+)
 
 func GetParent(id int) (map[int]*node.Node, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id)
+		err := fmt.Errorf(NodeNotExistErr, id)
 		return nil, err
 	}
 
@@ -24,7 +31,7 @@ func GetParent(id int) (map[int]*node.Node, error) {
 func GetChild(id int) (map[int]*node.Node, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id)
+		err := fmt.Errorf(NodeNotExistErr, id)
 		return nil, err
 	}
 
@@ -34,72 +41,70 @@ func GetChild(id int) (map[int]*node.Node, error) {
 func GetAncestors(id int) ([]int, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id)
+		err := fmt.Errorf(NodeNotExistErr, id)
 		return nil, err
 	}
 
 	var ancestors []int
-	cb := func(i int) {
+	ancestorsDFS(n, func(i int) {
 		ancestors = append(ancestors, i)
-	}
-	ancestorsDFS(n, cb)
+	})
 
 	return ancestors, nil
 }
 
-func ancestorsDFS(n *node.Node, visitCb func(int)) {
+func ancestorsDFS(n *node.Node, visitCallback func(int)) {
 	if n == nil {
 		return
 	}
 
 	for id, ancestor := range n.Parent {
-		visitCb(id)
-		ancestorsDFS(ancestor, visitCb)
+		visitCallback(id)
+		ancestorsDFS(ancestor, visitCallback)
 	}
 }
 
 func GetDescendants(id int) ([]int, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id)
+		err := fmt.Errorf(NodeNotExistErr, id)
 		return nil, err
 	}
 
 	var descendants []int
-	cb := func(i int) {
+	descendantsDFS(n, func(i int) {
 		descendants = append(descendants, i)
-	}
-	descendantsDFS(n, cb)
+	})
 
 	return descendants, nil
 }
 
-func descendantsDFS(n *node.Node, visitCb func(int)) {
+func descendantsDFS(n *node.Node, visitCallback func(int)) {
 	if n == nil {
 		return
 	}
 
 	for id, descendants := range n.Child {
-		visitCb(id)
-		descendantsDFS(descendants, visitCb)
+		visitCallback(id)
+		descendantsDFS(descendants, visitCallback)
 	}
 }
 
 func DeleteEdge(id1 int, id2 int) error {
 	if g.Nodes == nil {
-		err := fmt.Errorf(NodeNotExistMsg, id1)
+		err := fmt.Errorf(NodeNotExistErr, id1)
 		return err
 	}
 
 	_, exist := g.Nodes[id1]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id1)
+		err := fmt.Errorf(NodeNotExistErr, id1)
 		return err
 	}
 
 	_, exist = g.Nodes[id2]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id2)
+		err := fmt.Errorf(NodeNotExistErr, id2)
 		return err
 	}
 
@@ -124,13 +129,13 @@ func DeleteEdge(id1 int, id2 int) error {
 
 func DeleteNode(id int) error {
 	if g.Nodes == nil {
-		err := fmt.Errorf(NodeNotExistMsg, id)
+		err := fmt.Errorf(NodeNotExistErr, id)
 		return err
 	}
 
 	_, exist := g.Nodes[id]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id)
+		err := fmt.Errorf(NodeNotExistErr, id)
 		return err
 	}
 
@@ -162,13 +167,13 @@ func AddEdge(id1, id2 int) error {
 
 	_, exist := g.Nodes[id1]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id1)
+		err := fmt.Errorf(NodeNotExistErr, id1)
 		return err
 	}
 
 	_, exist = g.Nodes[id2]
 	if !exist {
-		err := fmt.Errorf(NodeNotExistMsg, id2)
+		err := fmt.Errorf(NodeNotExistErr, id2)
 		return err
 	}
 
@@ -184,8 +189,6 @@ func AddEdge(id1, id2 int) error {
 
 	return nil
 }
-
-var NodeExistMsg = "node exists (id: %d)"
 
 func AddNode(id int, name string, metaData map[string]string) error {
 	if g.Nodes == nil {

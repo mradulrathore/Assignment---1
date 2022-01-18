@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/mradulrathore/onboarding-assignments/dependency-graph/view"
+	"github.com/mradulrathore/dependency-graph/view"
 )
 
 func main() {
