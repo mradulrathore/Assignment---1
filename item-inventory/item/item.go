@@ -55,14 +55,14 @@ func checkNegativeValue(value interface{}) error {
 }
 
 func (item Item) Invoice() string {
-	return fmt.Sprintf("[%s, %f, %d,%s,%.2f,%.2f]", item.Name, item.Price, item.Quantity, item.Type.String(), item.GetTax(), item.GetEffectivePrice())
+	return fmt.Sprintf("\nName: %s\nPrice: %.2f\nQuantity: %d\nType: %s\nTax: %.2f\nCost: %.2f\n", item.Name, item.Price, item.Quantity, item.Type.String(), item.GetTax(), item.GetEffectivePrice())
 }
 
 const (
 	RAWItmTaxRate                       = 0.125
 	ImportDuty                          = 0.100
-	ImportDutyLimit1                    = 100
-	ImportDutyLimit2                    = 200
+	FirstImportDuty                     = 100
+	SecondImportDuty                    = 200
 	FirstImportDutySurchargeAmt         = 5
 	SecondImportDutySurchargeAmt        = 10
 	ExceedSecondImportDutySurchargeRate = 0.05
@@ -107,9 +107,9 @@ func (item Item) GetEffectivePrice() float64 {
 }
 
 func (item Item) importSurcharge(price float64) float64 {
-	if price <= ImportDutyLimit1 {
+	if price <= FirstImportDuty {
 		return FirstImportDutySurchargeAmt
-	} else if price <= ImportDutyLimit2 {
+	} else if price <= SecondImportDuty {
 		return SecondImportDutySurchargeAmt
 	} else {
 		return price * ExceedSecondImportDutySurchargeRate

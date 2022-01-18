@@ -46,7 +46,7 @@ func Initialize() error {
 }
 
 func getItem() (name string, price float64, quantity int, typeItem string, err error) {
-	fmt.Printf("Item Name: ")
+	fmt.Printf("\nItem Name: ")
 	_, err = fmt.Scanf("%s", &name)
 	if err != nil {
 		err = errors.Wrap(err, "scan for Item Name failed")
