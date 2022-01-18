@@ -1,4 +1,4 @@
-package graph
+package Graph
 
 import (
 	"fmt"
@@ -7,18 +7,32 @@ import (
 	"github.com/mradulrathore/dependency-graph/service/node"
 )
 
-type Graph struct {
-	Nodes map[int]*node.Node
-}
-
-var g Graph
-
 const (
 	NodeNotExistErr = "node doesn't exist, id:%d"
 	NodeExistMsg    = "node exists (id: %d)"
 )
 
-func GetParent(id int) (map[int]*node.Node, error) {
+type Graph struct {
+	Nodes map[int]*node.Node
+}
+
+type GraphI interface {
+	GetParent(int) (map[int]*node.Node, error)
+	GetChild(int) (map[int]*node.Node, error)
+	GetAncestors(int) ([]int, error)
+	GetDescendants(int) ([]int, error)
+	DeleteEdge(int, int) error
+	DeleteNode(int) error
+	AddEdge(int, int) error
+	AddNode(int, string, map[int]string)
+	CheckIdExist(int) (*node.Node, bool)
+}
+
+func New() *Graph {
+	return &Graph{}
+}
+
+func (g *Graph) GetParent(id int) (map[int]*node.Node, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
 		err := fmt.Errorf(NodeNotExistErr, id)
@@ -28,7 +42,7 @@ func GetParent(id int) (map[int]*node.Node, error) {
 	return n.Parent, nil
 }
 
-func GetChild(id int) (map[int]*node.Node, error) {
+func (g *Graph) GetChild(id int) (map[int]*node.Node, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
 		err := fmt.Errorf(NodeNotExistErr, id)
@@ -38,7 +52,7 @@ func GetChild(id int) (map[int]*node.Node, error) {
 	return n.Child, nil
 }
 
-func GetAncestors(id int) ([]int, error) {
+func (g *Graph) GetAncestors(id int) ([]int, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
 		err := fmt.Errorf(NodeNotExistErr, id)
@@ -64,7 +78,7 @@ func ancestorsDFS(n *node.Node, visitCallback func(int)) {
 	}
 }
 
-func GetDescendants(id int) ([]int, error) {
+func (g *Graph) GetDescendants(id int) ([]int, error) {
 	n, exist := g.Nodes[id]
 	if !exist {
 		err := fmt.Errorf(NodeNotExistErr, id)
@@ -90,7 +104,7 @@ func descendantsDFS(n *node.Node, visitCallback func(int)) {
 	}
 }
 
-func DeleteEdge(id1 int, id2 int) error {
+func (g *Graph) DeleteEdge(id1 int, id2 int) error {
 	if g.Nodes == nil {
 		err := fmt.Errorf(NodeNotExistErr, id1)
 		return err
@@ -127,7 +141,7 @@ func DeleteEdge(id1 int, id2 int) error {
 	return nil
 }
 
-func DeleteNode(id int) error {
+func (g *Graph) DeleteNode(id int) error {
 	if g.Nodes == nil {
 		err := fmt.Errorf(NodeNotExistErr, id)
 		return err
@@ -139,7 +153,7 @@ func DeleteNode(id int) error {
 		return err
 	}
 
-	parent, err := GetParent(id)
+	parent, err := g.GetParent(id)
 	if err != nil {
 		return err
 	}
@@ -147,7 +161,7 @@ func DeleteNode(id int) error {
 		delete(node.Child, id)
 	}
 
-	child, err := GetChild(id)
+	child, err := g.GetChild(id)
 	if err != nil {
 		return err
 	}
@@ -160,7 +174,7 @@ func DeleteNode(id int) error {
 	return nil
 }
 
-func AddEdge(id1, id2 int) error {
+func (g *Graph) AddEdge(id1, id2 int) error {
 	if g.Nodes == nil {
 		g.Nodes = make(map[int]*node.Node)
 	}
@@ -190,7 +204,7 @@ func AddEdge(id1, id2 int) error {
 	return nil
 }
 
-func AddNode(id int, name string, metaData map[string]string) error {
+func (g *Graph) AddNode(id int, name string, metaData map[string]string) error {
 	if g.Nodes == nil {
 		g.Nodes = make(map[int]*node.Node)
 	}
@@ -211,7 +225,7 @@ func AddNode(id int, name string, metaData map[string]string) error {
 	return nil
 }
 
-func CheckIdExist(id int) (*node.Node, bool) {
+func (g *Graph) CheckIdExist(id int) (*node.Node, bool) {
 	n, exist := g.Nodes[id]
 	return n, exist
 }

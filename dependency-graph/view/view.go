@@ -4,12 +4,20 @@ import (
 	"fmt"
 	"log"
 
+	graphServ "github.com/mradulrathore/dependency-graph/service/graph"
 	"github.com/pkg/errors"
-
-	"github.com/mradulrathore/dependency-graph/service/graph"
 )
 
+const (
+	IdNotExist     = "id:%d doesn't exist"
+	DuplicateIdMsg = "duplicate id:%d"
+)
+
+var graph *graphServ.Graph
+
 func Init() error {
+	graph = graphServ.New()
+
 	var moreInput bool = true
 	for moreInput {
 		showMenu()
@@ -85,10 +93,6 @@ func getUserChoice() (string, error) {
 
 	return userChoice, nil
 }
-
-var (
-	IdNotExist = "id:%d doesn't exist"
-)
 
 func getParent() error {
 	var id int
@@ -268,10 +272,6 @@ func addNode() error {
 	return nil
 }
 
-var (
-	DuplicateIdMsg = "duplicate id"
-)
-
 func getNode() (id int, name string, metaData map[string]string, err error) {
 	fmt.Printf("Id: ")
 	_, err = fmt.Scanf("%d", &id)
@@ -282,7 +282,7 @@ func getNode() (id int, name string, metaData map[string]string, err error) {
 	}
 	_, exist := graph.CheckIdExist(id)
 	if exist {
-		err = fmt.Errorf(DuplicateIdMsg)
+		err = fmt.Errorf(DuplicateIdMsg, id)
 		log.Println(err)
 		return
 	}
