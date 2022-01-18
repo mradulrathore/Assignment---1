@@ -6,15 +6,27 @@ import (
 
 	"github.com/pkg/errors"
 
-	usr "github.com/mradulrathore/user-management/domain/user"
-	"github.com/mradulrathore/user-management/repository"
-	"github.com/mradulrathore/user-management/service"
+	"github.com/mradulrathore/user-management/service/repository"
+	usr "github.com/mradulrathore/user-management/service/user"
+)
+
+var (
+	DuplicateCourseMsg = "duplicate course"
+	DuplicateRollNoMsg = "duplicate rollno"
+)
+
+const (
+	Accept         = "y"
+	Deny           = "n"
+	TotalCourses   = 6
+	MinCousesEnrol = 4
 )
 
 func Init() error {
-	if err := service.LoadData(); err != nil {
+	if err := repository.LoadData(); err != nil {
 		return err
 	}
+	defer repository.Close()
 
 	var moreInput bool = true
 	for moreInput {
@@ -82,6 +94,7 @@ func add() error {
 
 	user, err := usr.New(name, age, address, rollNo, courseEnrol)
 	for err != nil {
+		fmt.Println(err)
 		name, age, address, rollNo, courseEnrol, err = getUser()
 		if err != nil {
 			return err
@@ -89,8 +102,11 @@ func add() error {
 		user, err = usr.New(name, age, address, rollNo, courseEnrol)
 	}
 
-	service.Add(user)
+	if err := repository.Add(user); err != nil {
+		return err
+	}
 
+	fmt.Println("user added successfully")
 	return nil
 }
 
@@ -138,24 +154,14 @@ func getUser() (name string, age int, address string, rollNo int, coursesEnrol [
 	return
 }
 
-var (
-	DuplicateCourseMsg = "duplicate course"
-	DuplicateRollNoMsg = "duplicate rollno"
-)
-
 func checkDuplicateRollNo(rollno int) error {
-	if exist := service.CheckDataExistence(rollno); exist {
+	if exist := repository.CheckDataExistence(rollno); exist {
 		err := fmt.Errorf("%s", DuplicateRollNoMsg)
 		log.Println(err)
 		return err
 	}
 	return nil
 }
-
-const (
-	TotalCourses   = 6
-	MinCousesEnrol = 4
-)
 
 func getCourse() ([]string, error) {
 	var coursesEnrol []string
@@ -225,10 +231,13 @@ func display() error {
 		return err
 	}
 
-	users, err := service.GetAll(field, order)
+	users, err := repository.GetAll(field, order)
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("	Name	|	Age	|	Address	|	RollNo	|	Courses	|")
+	fmt.Println()
 	for _, user := range users {
 		fmt.Println(user.String())
 	}
@@ -246,29 +255,25 @@ func deleteByRollNo() error {
 		return err
 	}
 
-	if err = service.DeleteByRollNo(rollNo); err != nil {
+	if err = repository.DeleteByRollNo(rollNo); err != nil {
 		return err
 	}
 
+	fmt.Println("user deleted successfully")
 	return nil
 }
 
 func save() error {
-	file, err := repository.Open()
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
 	//saving data in ascending order of name
-	users, err := service.GetAll("name", 1)
+	users, err := repository.GetAll("name", 1)
 	if err != nil {
 		return err
 	}
-	if err = repository.Save(file, users); err != nil {
+	if err = repository.Save(users); err != nil {
 		return err
 	}
 
+	fmt.Println("saved successfully")
 	return nil
 }
 
@@ -291,14 +296,9 @@ func confirmSave() error {
 			return err
 		}
 	}
-
+	fmt.Println("exiting")
 	return nil
 }
-
-const (
-	Accept = "y"
-	Deny   = "n"
-)
 
 func validateConfirmation(userChoice string) error {
 	if userChoice != Accept && userChoice != Deny {
