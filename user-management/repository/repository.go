@@ -7,7 +7,7 @@ import (
 	usr "github.com/mradulrathore/user-management/domain/user"
 )
 
-const dataFilePath = "user-data"
+const dataFilePath = "user-data.json"
 
 func Open() (*os.File, error) {
 	var err error
