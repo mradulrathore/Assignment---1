@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/mradulrathore/user-management/service/course/enum"
-	"github.com/mradulrathore/user-management/validationutil"
+	"github.com/mradulrathore/user-management/vutil"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 )
@@ -59,9 +59,9 @@ func getCourse(courses []string) ([]enum.Course, error) {
 func (user User) validate() error {
 	return validation.ValidateStruct(&user,
 		validation.Field(&user.Name, validation.Required),
-		validation.Field(&user.Age, validation.Required, validation.By(validationutil.CheckPositive)),
+		validation.Field(&user.Age, validation.Required, validation.By(vutil.CheckPositive)),
 		validation.Field(&user.Address, validation.Required),
-		validation.Field(&user.RollNo, validation.Required, validation.By(validationutil.CheckPositive)),
+		validation.Field(&user.RollNo, validation.Required, validation.By(vutil.CheckPositive)),
 		validation.Field(&user.Courses, validation.Required),
 	)
 }

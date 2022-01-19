@@ -1,4 +1,4 @@
-package validationutil
+package vutil
 
 import "errors"
 
