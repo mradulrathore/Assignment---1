@@ -15,7 +15,7 @@ func TestAdd(t *testing.T) {
 
 	dataEmptyFilePath := "../service/repository/user_data_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add user", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
 
 	app := New(repo)
@@ -38,7 +38,7 @@ func TestGetAll(t *testing.T) {
 
 	dataEmptyFilePath := "user_data_empty_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "get all users", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
 	defer os.Remove(dataEmptyFilePath)
 
@@ -169,7 +169,7 @@ func TestDeleteByRollNo(t *testing.T) {
 
 	dataEmptyFilePath := "user_data_empty_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "delete by rollno", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
 	defer os.Remove(dataEmptyFilePath)
 
@@ -214,14 +214,13 @@ func TestSave(t *testing.T) {
 
 	dataEmptyFilePath := "../service/repository/user_data_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "save user", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
 
 	app := New(repo)
 
 	if err := app.Save(); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "save user", err, nil)
-
 	}
 }
 
@@ -231,7 +230,7 @@ func TestConfirmSave(t *testing.T) {
 
 	dataEmptyFilePath := "../service/repository/user_data_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "confirm save user", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
 
 	app := New(repo)

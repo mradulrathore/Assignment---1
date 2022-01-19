@@ -25,10 +25,6 @@ func TestLoad(t *testing.T) {
 	if err := repo2.Load(dataFilePath); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
-
-	if err := repo2.Close(); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
 }
 
 func TestAdd(t *testing.T) {
@@ -39,14 +35,14 @@ func TestAdd(t *testing.T) {
 	if err := repo.Load(dataEmptyFilePath); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
-	defer os.Remove(repo.file.Name())
+	defer os.Remove(dataEmptyFilePath)
 
 	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
 	if err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
 	}
 
-	userAlreadyExist, err := usr.New("Rahul", 24, "Indore", 43, []string{"A", "B", "C", "D"})
+	userAlreadyExist, err := usr.New("Rahul", 24, "Indore", 43, []string{"A", "B", "C", "D", "E"})
 	if err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
 	}
@@ -84,7 +80,7 @@ func TestGetAll(t *testing.T) {
 	if err := repo.Load(dataEmptyFilePath); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
-	defer os.Remove(repo.file.Name())
+	defer os.Remove(dataEmptyFilePath)
 
 	tests := []struct {
 		scenario string
@@ -213,7 +209,7 @@ func TestDeleteByRollNo(t *testing.T) {
 	if err := repo.Load(dataEmptyFilePath); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
 	}
-	defer os.Remove(repo.file.Name())
+	defer os.Remove(dataEmptyFilePath)
 
 	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
 	if err != nil {
@@ -264,7 +260,7 @@ func TestSave(t *testing.T) {
 	}
 
 	if err := repo.Add(user); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "addd user", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add user", err, nil)
 	}
 
 	users, err := repo.GetAll("name", 1)

@@ -18,7 +18,7 @@ const (
 type Repository interface {
 	Load(dataFilePath string) error
 	Add(user usr.User) error
-	GetAll(field string, order int) ([]usr.User, error)
+	GetAll(field string, order int) (users []usr.User, err error)
 	DeleteByRollNo(id int) error
 	Save(users []usr.User) error
 	Close() error
@@ -55,6 +55,7 @@ func open(r *repository, dataFilePath string) error {
 	if r.file != nil {
 		return nil
 	}
+
 	var err error
 	r.file, err = os.OpenFile(dataFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
@@ -76,6 +77,7 @@ func retrieveData(r *repository) ([]usr.User, error) {
 	if len == 0 {
 		return []usr.User{}, err
 	}
+
 	dataB := make([]byte, len)
 	_, err = r.file.Read(dataB)
 	if err != nil {

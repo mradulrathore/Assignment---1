@@ -16,7 +16,7 @@ const (
 	Deny               = "n"
 	DataFilePath       = "user-data.json"
 	DuplicateCourseErr = "duplicate course"
-	MinCousesEnrol     = 4
+	MinCouses          = 4
 	TotalCourses       = 6
 )
 
@@ -25,7 +25,7 @@ func Init() error {
 	if err := repository.Load(DataFilePath); err != nil {
 		log.Println(err)
 	}
-	defer repository.Close().Error()
+	defer repository.Close()
 
 	application := application.New(repository)
 
@@ -42,34 +42,35 @@ func Init() error {
 			user, err := getUser()
 			if err != nil {
 				fmt.Println(err)
-			}
-			if err := application.Add(user); err != nil {
-				fmt.Println(err)
 			} else {
-				fmt.Print("\nuser added successfully\n")
+				if err := application.Add(user); err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Print("\nuser added successfully\n")
+				}
 			}
 		case "2":
 			field, order, err := getSortingFieldAndOrder()
 			if err != nil {
 				fmt.Println(err)
-			}
+			} else {
+				users, err := application.GetAll(field, order)
+				if err != nil {
+					fmt.Println(err)
+				}
 
-			users, err := application.GetAll(field, order)
-			if err != nil {
-				fmt.Println(err)
+				display(users)
 			}
-
-			display(users)
 		case "3":
 			rollNo, err := getRollNo()
 			if err != nil {
 				fmt.Println(err)
-			}
-
-			if err = application.DeleteByRollNo(rollNo); err != nil {
-				fmt.Println(err)
 			} else {
-				fmt.Print("\nuser deleted successfully\n")
+				if err = application.DeleteByRollNo(rollNo); err != nil {
+					fmt.Println(err)
+				} else {
+					fmt.Print("\nuser deleted successfully\n")
+				}
 			}
 		case "4":
 			if err = application.Save(); err != nil {
@@ -82,14 +83,14 @@ func Init() error {
 			userChoice, err = confirmSave()
 			if err != nil {
 				moreInput = true
+			} else {
+				if err = application.ConfirmSave(userChoice); err != nil {
+					fmt.Println(err)
+				} else if userChoice == Accept {
+					fmt.Println("saved successfully")
+				}
+				fmt.Println("exiting")
 			}
-
-			if err = application.ConfirmSave(userChoice); err != nil {
-				fmt.Println(err)
-			} else if userChoice == Accept {
-				fmt.Println("saved successfully")
-			}
-			fmt.Println("exiting")
 		default:
 			fmt.Println("Invalid choice")
 		}
@@ -159,7 +160,7 @@ func getUser() (usr.User, error) {
 
 	courses, err := getCourse()
 	if err != nil {
-		return usr.User{}, nil
+		return usr.User{}, err
 	}
 
 	user, err := usr.New(name, age, address, rollNo, courses)
@@ -171,8 +172,8 @@ func getUser() (usr.User, error) {
 }
 
 func getCourse() ([]string, error) {
-	var coursesEnrol []string
-	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", MinCousesEnrol)
+	var courses []string
+	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", MinCouses)
 	var numCourse int
 	_, err := fmt.Scanf("%d", &numCourse)
 	if err != nil {
@@ -180,8 +181,8 @@ func getCourse() ([]string, error) {
 		log.Println(err)
 		return []string{}, err
 	}
-	if numCourse < MinCousesEnrol {
-		err := fmt.Errorf("select atleast %d", MinCousesEnrol)
+	if numCourse < MinCouses {
+		err := fmt.Errorf("select atleast %d", MinCouses)
 		return []string{}, err
 	}
 
@@ -194,14 +195,14 @@ func getCourse() ([]string, error) {
 			log.Println(err)
 			return []string{}, err
 		}
-		coursesEnrol = append(coursesEnrol, course)
+		courses = append(courses, course)
 	}
 
-	if err = checkDuplicateCourse(coursesEnrol); err != nil {
+	if err = checkDuplicateCourse(courses); err != nil {
 		return []string{}, err
 	}
 
-	return coursesEnrol, nil
+	return courses, nil
 }
 
 func checkDuplicateCourse(courses []string) error {
