@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/mradulrathore/user-management/application"
 	repo "github.com/mradulrathore/user-management/service/repository"
 	"github.com/pkg/errors"
 
@@ -27,8 +26,6 @@ func Init() error {
 	}
 	defer repository.Close()
 
-	application := application.New(repository)
-
 	var moreInput bool = true
 	for moreInput {
 		showMenu()
@@ -39,56 +36,31 @@ func Init() error {
 		}
 		switch userChoice {
 		case "1":
-			user, err := getUser()
+			err := addUser(repository)
 			if err != nil {
 				fmt.Println(err)
-			} else {
-				if err := application.Add(user); err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Print("\nuser added successfully\n")
-				}
 			}
 		case "2":
-			field, order, err := getSortingFieldAndOrder()
+			users, err := getAll(repository)
 			if err != nil {
 				fmt.Println(err)
-			} else {
-				users, err := application.GetAll(field, order)
-				if err != nil {
-					fmt.Println(err)
-				}
-
-				display(users)
 			}
+			display(users)
 		case "3":
-			rollNo, err := getRollNo()
+			err := deleteByRollNo(repository)
 			if err != nil {
 				fmt.Println(err)
-			} else {
-				if err = application.DeleteByRollNo(rollNo); err != nil {
-					fmt.Println(err)
-				} else {
-					fmt.Print("\nuser deleted successfully\n")
-				}
 			}
 		case "4":
-			if err = application.Save(); err != nil {
+			if err = save(repository); err != nil {
 				fmt.Println(err)
-			} else {
-				fmt.Println("saved successfully")
 			}
 		case "5":
 			moreInput = false
-			userChoice, err = confirmSave()
+			err = confirmSave(repository)
 			if err != nil {
 				moreInput = true
 			} else {
-				if err = application.ConfirmSave(userChoice); err != nil {
-					fmt.Println(err)
-				} else if userChoice == Accept {
-					fmt.Println("saved successfully")
-				}
 				fmt.Println("exiting")
 			}
 		default:
@@ -121,14 +93,14 @@ func getUserChoice() (string, error) {
 	return userChoice, nil
 }
 
-func getUser() (usr.User, error) {
+func addUser(repository repo.Repository) error {
 	fmt.Printf("Full Name: ")
 	var name string
 	_, err := fmt.Scanf("%s", &name)
 	if err != nil {
 		err = errors.Wrap(err, "scan for user's name failed")
 		log.Println(err)
-		return usr.User{}, nil
+		return nil
 	}
 
 	var age int
@@ -137,7 +109,7 @@ func getUser() (usr.User, error) {
 	if err != nil {
 		err = errors.Wrap(err, "scan for user's age failed")
 		log.Println(err)
-		return usr.User{}, nil
+		return nil
 	}
 
 	var address string
@@ -146,7 +118,7 @@ func getUser() (usr.User, error) {
 	if err != nil {
 		err = errors.Wrap(err, "scan for user's address failed")
 		log.Println(err)
-		return usr.User{}, nil
+		return nil
 	}
 
 	var rollNo int
@@ -155,20 +127,26 @@ func getUser() (usr.User, error) {
 	if err != nil {
 		err = errors.Wrap(err, "scan for user's rollno failed")
 		log.Println(err)
-		return usr.User{}, nil
+		return nil
 	}
 
 	courses, err := getCourse()
 	if err != nil {
-		return usr.User{}, err
+		return err
 	}
 
 	user, err := usr.New(name, age, address, rollNo, courses)
 	if err != nil {
-		return usr.User{}, err
+		return err
 	}
 
-	return user, nil
+	if err := repository.Add(user); err != nil {
+		return err
+	}
+
+	fmt.Print("\nuser added successfully\n")
+
+	return nil
 }
 
 func getCourse() ([]string, error) {
@@ -220,7 +198,7 @@ func checkDuplicateCourse(courses []string) error {
 	return nil
 }
 
-func getSortingFieldAndOrder() (string, int, error) {
+func getAll(repository repo.Repository) ([]usr.User, error) {
 	fmt.Print("Field Name to sort details on (1. Ascending 2.Descending): ")
 
 	var field string
@@ -228,7 +206,7 @@ func getSortingFieldAndOrder() (string, int, error) {
 	if err != nil {
 		err = errors.Wrap(err, "scan for field name to sort details on failed")
 		log.Println(err)
-		return "", -1, err
+		return []usr.User{}, err
 	}
 
 	var order int
@@ -236,10 +214,15 @@ func getSortingFieldAndOrder() (string, int, error) {
 	if err != nil {
 		err = errors.Wrap(err, "scan for sorting order failed")
 		log.Println(err)
-		return "", -1, err
+		return []usr.User{}, err
 	}
 
-	return field, order, nil
+	users, err := repository.GetAll(field, order)
+	if err != nil {
+		return []usr.User{}, err
+	}
+
+	return users, nil
 }
 
 func display(users []usr.User) {
@@ -250,34 +233,61 @@ func display(users []usr.User) {
 	}
 }
 
-func getRollNo() (int, error) {
+func deleteByRollNo(repository repo.Repository) error {
 	fmt.Print("Enter roll no to delete: ")
 	var rollNo int
 	_, err := fmt.Scanf("%d", &rollNo)
 	if err != nil {
 		err = errors.Wrap(err, "scan for rollno to delete failed")
 		log.Println(err)
-		return -1, err
+		return err
 	}
 
-	return rollNo, nil
+	if err = repository.DeleteByRollNo(rollNo); err != nil {
+		return err
+	}
+
+	fmt.Print("\nuser deleted successfully\n")
+
+	return nil
 }
 
-func confirmSave() (string, error) {
+func save(repository repo.Repository) error {
+	//saving data in ascending order of name
+	users, err := repository.GetAll("name", 1)
+	if err != nil {
+		return err
+	}
+
+	if err = repository.Save(users); err != nil {
+		return err
+	}
+
+	fmt.Println("saved successfully")
+
+	return nil
+}
+
+func confirmSave(repository repo.Repository) error {
 	fmt.Println("Do you want to save the data(y/n)?")
 	var userChoice string
 	_, err := fmt.Scanf("%s", &userChoice)
 	if err != nil {
 		err = errors.Wrap(err, "scan for user choice to save details on exit failed")
 		log.Println(err)
-		return "", err
+		return err
 	}
 
 	if err := validateConfirmation(userChoice); err != nil {
-		return "", err
+		return err
 	}
 
-	return userChoice, nil
+	if userChoice == "y" {
+		if err := save(repository); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func validateConfirmation(userChoice string) error {
