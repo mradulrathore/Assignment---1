@@ -4,12 +4,16 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/mradulrathore/dependency-graph/service"
+	graphServ "github.com/mradulrathore/dependency-graph/service/graph"
+
+	nodeServ "github.com/mradulrathore/dependency-graph/service/node"
 	"github.com/pkg/errors"
 )
 
 func Init() error {
-	graph := service.NewGraph()
+
+	node := nodeServ.NewNode()
+	graph := graphServ.NewGraph(node)
 
 	var moreInput bool = true
 	for moreInput {
@@ -30,11 +34,11 @@ func Init() error {
 				log.Println(err)
 				fmt.Println(err)
 			}
-			nodes, err := graph.GetParent(id)
+			nodes, err := graph.GetNodeParent(id)
 			if err != nil {
 				fmt.Println(err)
 			}
-			_ = nodes
+			displayNodes(nodes)
 		case "2":
 			id, err := getChild()
 			if err != nil {
@@ -45,11 +49,11 @@ func Init() error {
 				log.Println(err)
 				fmt.Println(err)
 			}
-			nodes, err := graph.GetChild(id)
+			nodes, err := graph.GetNodeChild(id)
 			if err != nil {
 				fmt.Println(err)
 			}
-			_ = nodes
+			displayNodes(nodes)
 		case "3":
 			id, err := getIDAncestors()
 			if err != nil {
@@ -165,6 +169,12 @@ func getChild() (int, error) {
 	}
 
 	return id, nil
+}
+
+func displayNodes(nodes map[int]nodeServ.Node) {
+	for id, _ := range nodes {
+		fmt.Println(id)
+	}
 }
 
 func getIDAncestors() (int, error) {
