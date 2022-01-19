@@ -14,6 +14,7 @@ import (
 const (
 	Accept             = "y"
 	Deny               = "n"
+	DataFilePath       = "user-data.json"
 	DuplicateCourseErr = "duplicate course"
 	MinCousesEnrol     = 4
 	TotalCourses       = 6
@@ -21,9 +22,10 @@ const (
 
 func Init() error {
 	repository := repo.NewRepo()
-	if err := repository.Load(); err != nil {
+	if err := repository.Load(DataFilePath); err != nil {
 		log.Println(err)
 	}
+	defer repository.Close().Error()
 
 	application := application.New(repository)
 

@@ -11,13 +11,12 @@ import (
 )
 
 const (
-	dataFilePath    = "user-data.json"
 	UserExistErr    = "user exist with id:%d"
 	UserNotExistErr = "user does not exist with id:%d"
 )
 
 type Repository interface {
-	Load() error
+	Load(dataFilePath string) error
 	Add(user usr.User) error
 	GetAll(field string, order int) ([]usr.User, error)
 	DeleteByRollNo(id int) error
@@ -34,8 +33,8 @@ func NewRepo() *repository {
 	return &repository{}
 }
 
-func (r *repository) Load() error {
-	if err := open(r); err != nil {
+func (r *repository) Load(dataFilePath string) error {
+	if err := open(r, dataFilePath); err != nil {
 		return err
 	}
 	r.users = make(map[int]usr.User)
@@ -52,7 +51,7 @@ func (r *repository) Load() error {
 	return nil
 }
 
-func open(r *repository) error {
+func open(r *repository, dataFilePath string) error {
 	if r.file != nil {
 		return nil
 	}
