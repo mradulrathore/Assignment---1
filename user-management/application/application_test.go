@@ -1,90 +1,48 @@
-package repository
+package application
 
 import (
 	"fmt"
 	"os"
 	"testing"
 
+	"github.com/mradulrathore/user-management/service/repository"
 	usr "github.com/mradulrathore/user-management/service/user"
 )
 
-func TestLoad(t *testing.T) {
-	repo1 := NewRepo()
-	defer repo1.Close()
-
-	dataEmptyFilePath := "user_data_empty_test.json"
-	if err := repo1.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
-	defer os.Remove(repo1.file.Name())
-
-	repo2 := NewRepo()
-	defer repo2.Close()
-
-	dataFilePath := "user_data_test.json"
-	if err := repo2.Load(dataFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
-
-	if err := repo2.Close(); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
-}
-
 func TestAdd(t *testing.T) {
-	repo := NewRepo()
+	repo := repository.NewRepo()
 	defer repo.Close()
 
-	dataEmptyFilePath := "user_data_empty_test.json"
+	dataEmptyFilePath := "../service/repository/user_data_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add user", err, nil)
 	}
-	defer os.Remove(repo.file.Name())
+
+	app := New(repo)
 
 	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
 	if err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
 	}
 
-	userAlreadyExist, err := usr.New("Rahul", 24, "Indore", 43, []string{"A", "B", "C", "D"})
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
-	}
+	if err := app.Add(user); err != nil {
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add user", err, nil)
 
-	tests := []struct {
-		scenario string
-		req      usr.User
-		err      error
-	}{{
-		scenario: "add user with proper input",
-		req:      user,
-		err:      nil,
-	}, {
-		scenario: "add user which already exist",
-		req:      userAlreadyExist,
-		err:      fmt.Errorf("user already exists"),
-	}}
-
-	for _, tc := range tests {
-		err := repo.Add(tc.req)
-		if tc.err != nil && err == nil {
-			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
-		} else if tc.err == nil && err != nil {
-			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
-		}
 	}
 
 }
 
 func TestGetAll(t *testing.T) {
-	repo := NewRepo()
+	repo := repository.NewRepo()
 	defer repo.Close()
 
 	dataEmptyFilePath := "user_data_empty_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "get all users", err, nil)
 	}
-	defer os.Remove(repo.file.Name())
+	defer os.Remove(dataEmptyFilePath)
+
+	app := New(repo)
 
 	tests := []struct {
 		scenario string
@@ -134,7 +92,7 @@ func TestGetAll(t *testing.T) {
 	}}
 
 	for _, tc := range tests {
-		users, err := repo.GetAll(tc.field, tc.order)
+		users, err := app.GetAll(tc.field, tc.order)
 		if err != tc.err {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		}
@@ -206,21 +164,23 @@ func checkSortingOrder(field string, order int, users []usr.User) error {
 }
 
 func TestDeleteByRollNo(t *testing.T) {
-	repo := NewRepo()
+	repo := repository.NewRepo()
 	defer repo.Close()
 
 	dataEmptyFilePath := "user_data_empty_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "delete by rollno", err, nil)
 	}
-	defer os.Remove(repo.file.Name())
+	defer os.Remove(dataEmptyFilePath)
+
+	app := New(repo)
 
 	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
 	if err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
 	}
 
-	if err := repo.Add(user); err != nil {
+	if err := app.Add(user); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "addd user", err, nil)
 	}
 
@@ -239,7 +199,7 @@ func TestDeleteByRollNo(t *testing.T) {
 	}}
 
 	for _, tc := range tests {
-		err := repo.DeleteByRollNo(tc.rollNo)
+		err := app.DeleteByRollNo(tc.rollNo)
 		if tc.err != nil && err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		} else if tc.err == nil && err != nil {
@@ -249,31 +209,53 @@ func TestDeleteByRollNo(t *testing.T) {
 }
 
 func TestSave(t *testing.T) {
-	repo := NewRepo()
+	repo := repository.NewRepo()
 	defer repo.Close()
 
-	dataEmptyFilePath := "user_data_empty_test.json"
+	dataEmptyFilePath := "../service/repository/user_data_test.json"
 	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
-	defer os.Remove(repo.file.Name())
-
-	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "save user", err, nil)
 	}
 
-	if err := repo.Add(user); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "addd user", err, nil)
+	app := New(repo)
+
+	if err := app.Save(); err != nil {
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "save user", err, nil)
+
+	}
+}
+
+func TestConfirmSave(t *testing.T) {
+	repo := repository.NewRepo()
+	defer repo.Close()
+
+	dataEmptyFilePath := "../service/repository/user_data_test.json"
+	if err := repo.Load(dataEmptyFilePath); err != nil {
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "confirm save user", err, nil)
 	}
 
-	users, err := repo.GetAll("name", 1)
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "get all user", err, nil)
-	}
+	app := New(repo)
 
-	if err := repo.Save(users); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "save data", err, nil)
-	}
+	tests := []struct {
+		scenario   string
+		userChoice string
+		err        error
+	}{{
+		scenario:   "user choice(y)",
+		userChoice: "y",
+		err:        nil,
+	}, {
+		scenario:   "user choice(n)",
+		userChoice: "n",
+		err:        nil,
+	}}
 
+	for _, tc := range tests {
+		err := app.ConfirmSave(tc.userChoice)
+		if tc.err != nil && err == nil {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		} else if tc.err == nil && err != nil {
+			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
+		}
+	}
 }
