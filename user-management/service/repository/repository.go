@@ -16,27 +16,25 @@ const (
 	UserNotExistErr = "user does not exist with id:%d"
 )
 
-//go:generate mockgen -source=repository.go -destination=repository_mock.go -package=repository
-type RepositoryI interface {
+type Repository interface {
 	Load() error
-	Add(usr.User) error
-	CheckDataExistence(int) bool
-	GetAll(string, int) ([]usr.User, error)
-	DeleteByRollNo(int) error
-	Save([]usr.User) error
+	Add(user usr.User) error
+	GetAll(field string, order int) ([]usr.User, error)
+	DeleteByRollNo(id int) error
+	Save(users []usr.User) error
 	Close() error
 }
 
-type Repository struct {
+type repository struct {
 	users map[int]usr.User
 	file  *os.File
 }
 
-func NewRepo() *Repository {
-	return &Repository{}
+func NewRepo() *repository {
+	return &repository{}
 }
 
-func (r *Repository) Load() error {
+func (r *repository) Load() error {
 	if err := open(r); err != nil {
 		return err
 	}
@@ -54,7 +52,7 @@ func (r *Repository) Load() error {
 	return nil
 }
 
-func open(r *Repository) error {
+func open(r *repository) error {
 	if r.file != nil {
 		return nil
 	}
@@ -68,7 +66,7 @@ func open(r *Repository) error {
 	return err
 }
 
-func retrieveData(r *Repository) ([]usr.User, error) {
+func retrieveData(r *repository) ([]usr.User, error) {
 	fs, err := r.file.Stat()
 	if err != nil {
 		log.Println(err)
@@ -94,7 +92,7 @@ func retrieveData(r *Repository) ([]usr.User, error) {
 	return usersDisk, nil
 }
 
-func (r *Repository) Add(user usr.User) error {
+func (r *repository) Add(user usr.User) error {
 	if exist := r.checkDataExistence(user.RollNo); exist {
 		err := fmt.Errorf(UserExistErr, user.RollNo)
 		log.Println(err)
@@ -105,12 +103,12 @@ func (r *Repository) Add(user usr.User) error {
 	return nil
 }
 
-func (r *Repository) checkDataExistence(rollno int) bool {
+func (r *repository) checkDataExistence(rollno int) bool {
 	_, exists := r.users[rollno]
 	return exists
 }
 
-func (r *Repository) GetAll(field string, order int) ([]usr.User, error) {
+func (r *repository) GetAll(field string, order int) ([]usr.User, error) {
 	var usersTemp []usr.User
 	for _, user := range r.users {
 		usersTemp = append(usersTemp, user)
@@ -157,7 +155,7 @@ func sortDescCustom(usersDisk []usr.User, field string) {
 	})
 }
 
-func (r *Repository) DeleteByRollNo(rollno int) error {
+func (r *repository) DeleteByRollNo(rollno int) error {
 	if exist := r.checkDataExistence(rollno); !exist {
 		err := fmt.Errorf(UserNotExistErr, rollno)
 		log.Println(err)
@@ -168,7 +166,7 @@ func (r *Repository) DeleteByRollNo(rollno int) error {
 	return nil
 }
 
-func (r *Repository) Save(users []usr.User) error {
+func (r *repository) Save(users []usr.User) error {
 	dataB, err := usr.EncodeUser(users)
 	if err != nil {
 		log.Println(err)
@@ -190,6 +188,6 @@ func (r *Repository) Save(users []usr.User) error {
 	return nil
 }
 
-func (r *Repository) Close() error {
+func (r *repository) Close() error {
 	return r.file.Close()
 }

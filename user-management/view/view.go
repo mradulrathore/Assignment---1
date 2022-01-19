@@ -11,16 +11,12 @@ import (
 	usr "github.com/mradulrathore/user-management/service/user"
 )
 
-var (
-	DuplicateCourseErr = "duplicate course"
-	DuplicateRollNoErr = "duplicate rollno"
-)
-
 const (
-	Accept         = "y"
-	Deny           = "n"
-	TotalCourses   = 6
-	MinCousesEnrol = 4
+	Accept             = "y"
+	Deny               = "n"
+	DuplicateCourseErr = "duplicate course"
+	MinCousesEnrol     = 4
+	TotalCourses       = 6
 )
 
 func Init() error {
@@ -28,7 +24,6 @@ func Init() error {
 	if err := repository.Load(); err != nil {
 		log.Println(err)
 	}
-	defer repository.Close()
 
 	application := application.New(repository)
 
@@ -48,6 +43,8 @@ func Init() error {
 			}
 			if err := application.Add(user); err != nil {
 				fmt.Println(err)
+			} else {
+				fmt.Print("\nuser added successfully\n")
 			}
 		case "2":
 			field, order, err := getSortingFieldAndOrder()
@@ -69,10 +66,14 @@ func Init() error {
 
 			if err = application.DeleteByRollNo(rollNo); err != nil {
 				fmt.Println(err)
+			} else {
+				fmt.Print("\nuser deleted successfully\n")
 			}
 		case "4":
 			if err = application.Save(); err != nil {
 				fmt.Println(err)
+			} else {
+				fmt.Println("saved successfully")
 			}
 		case "5":
 			moreInput = false
@@ -80,9 +81,13 @@ func Init() error {
 			if err != nil {
 				moreInput = true
 			}
+
 			if err = application.ConfirmSave(userChoice); err != nil {
 				fmt.Println(err)
+			} else if userChoice == Accept {
+				fmt.Println("saved successfully")
 			}
+			fmt.Println("exiting")
 		default:
 			fmt.Println("Invalid choice")
 		}

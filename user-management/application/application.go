@@ -1,31 +1,24 @@
 package application
 
 import (
-	"fmt"
-
 	repo "github.com/mradulrathore/user-management/service/repository"
 
 	usr "github.com/mradulrathore/user-management/service/user"
 )
 
-var (
-	DuplicateCourseErr = "duplicate course"
-	DuplicateRollNoErr = "duplicate rollno"
-)
-
 type Application interface {
 	Add(user usr.User) error
-	GetAll(field string, order int) ([]usr.User, error)
+	GetAll(field string, order int) (users []usr.User, err error)
 	DeleteByRollNo(rollno int) error
 	Save(users []usr.User) error
 	ConfirmSave(userChoice string) error
 }
 
 type application struct {
-	repository *repo.Repository
+	repository repo.Repository
 }
 
-func New(repo *repo.Repository) *application {
+func New(repo repo.Repository) *application {
 	return &application{
 		repository: repo,
 	}
@@ -35,8 +28,6 @@ func (app *application) Add(user usr.User) error {
 	if err := app.repository.Add(user); err != nil {
 		return err
 	}
-
-	fmt.Print("\nuser added successfully\n")
 	return nil
 }
 
@@ -54,7 +45,6 @@ func (app *application) DeleteByRollNo(rollNo int) error {
 		return err
 	}
 
-	fmt.Print("\nuser deleted successfully\n")
 	return nil
 }
 
@@ -68,7 +58,6 @@ func (app *application) Save() error {
 		return err
 	}
 
-	fmt.Println("saved successfully")
 	return nil
 }
 
@@ -78,6 +67,5 @@ func (app *application) ConfirmSave(userChoice string) error {
 			return err
 		}
 	}
-	fmt.Println("exiting")
 	return nil
 }
