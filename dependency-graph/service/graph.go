@@ -80,27 +80,21 @@ func (g *graph) GetAncestors(id int) (map[int]*node, error) {
 	}
 
 	ancestors := make(map[int]*node)
-	if err := ancestorsDFS(n, func(i *node) { ancestors[i.id] = i }); err != nil {
-		return nil, err
-	}
+	ancestorsDFS(n, func(i *node) { ancestors[i.id] = i })
 
 	return ancestors, nil
 }
 
-func ancestorsDFS(n *node, visitCallback func(*node)) error {
+func ancestorsDFS(n *node, visitCallback func(*node)) {
 	if n == nil {
-		return nil
+		return
 	}
 
 	ancestors := n.parent
 	for _, ancestor := range ancestors {
 		visitCallback(ancestor)
-
-		if err := ancestorsDFS(ancestor, visitCallback); err != nil {
-			return err
-		}
+		ancestorsDFS(ancestor, visitCallback)
 	}
-	return nil
 }
 
 func (g *graph) GetDescendants(id int) (map[int]*node, error) {
@@ -116,27 +110,21 @@ func (g *graph) GetDescendants(id int) (map[int]*node, error) {
 	}
 
 	descendants := make(map[int]*node)
-	if err := descendantsDFS(n, func(i *node) { descendants[i.id] = i }); err != nil {
-		return nil, err
-	}
+	descendantsDFS(n, func(i *node) { descendants[i.id] = i })
 
 	return descendants, nil
 }
 
-func descendantsDFS(n *node, visitCallback func(*node)) error {
+func descendantsDFS(n *node, visitCallback func(*node)) {
 	if n == nil {
-		return nil
+		return
 	}
 
 	descendants := n.child
 	for _, descendant := range descendants {
 		visitCallback(descendant)
-		if err := descendantsDFS(descendant, visitCallback); err != nil {
-			return err
-		}
+		descendantsDFS(descendant, visitCallback)
 	}
-
-	return nil
 }
 
 func (g *graph) DeleteEdge(id1 int, id2 int) error {

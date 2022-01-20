@@ -256,12 +256,12 @@ func TestGetDescendants(t *testing.T) {
 			descendants: []int{2, 3, 4},
 			err:         nil,
 		}, {
-			scenario:    "get node ancestors when node doesn't exist",
+			scenario:    "get node descendants when node doesn't exist",
 			nodeId:      12,
 			descendants: []int{},
 			err:         fmt.Errorf("node doesn't exist, id:%d", 12),
 		}, {
-			scenario:    "get node ancestors when node exist",
+			scenario:    "get node descendants when node exist",
 			nodeId:      4,
 			descendants: []int{},
 			err:         nil,
@@ -308,6 +308,10 @@ func TestDeleteEdge(t *testing.T) {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
 	}
 
+	if err := graph.AddNode(5, "D", nil); err != nil {
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
+	}
+
 	if err := graph.AddEdge(1, 2); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
 	}
@@ -317,6 +321,10 @@ func TestDeleteEdge(t *testing.T) {
 	}
 
 	if err := graph.AddEdge(3, 4); err != nil {
+		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
+	}
+
+	if err := graph.AddEdge(1, 5); err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
 	}
 
@@ -337,10 +345,25 @@ func TestDeleteEdge(t *testing.T) {
 			nodeId2:  1,
 			err:      fmt.Errorf("node doesn't exist, id:%d", 12),
 		}, {
-			scenario: "delete edge which doesn't exist",
+			scenario: "delete edge when node doesn't exist",
 			nodeId1:  14,
 			nodeId2:  1,
-			err:      fmt.Errorf("node doesn't exist, id:%d", 12),
+			err:      fmt.Errorf("node doesn't exist, id:%d", 14),
+		}, {
+			scenario: "delete edge when node doesn't exist",
+			nodeId1:  1,
+			nodeId2:  14,
+			err:      fmt.Errorf("node doesn't exist, id:%d", 14),
+		}, {
+			scenario: "delete edge which doesn't exist",
+			nodeId1:  4,
+			nodeId2:  1,
+			err:      fmt.Errorf("edge doesn't exist"),
+		}, {
+			scenario: "delete edge when node doesn't exist",
+			nodeId1:  1,
+			nodeId2:  3,
+			err:      fmt.Errorf("node doesn't exist"),
 		},
 	}
 
