@@ -6,14 +6,12 @@ import (
 
 	graphServ "github.com/mradulrathore/dependency-graph/service/graph"
 
-	nodeServ "github.com/mradulrathore/dependency-graph/service/node"
 	"github.com/pkg/errors"
 )
 
 func Init() error {
 
-	node := nodeServ.NewNode()
-	graph := graphServ.NewGraph(node)
+	graph := graphServ.NewGraph()
 
 	var moreInput bool = true
 	for moreInput {
@@ -25,89 +23,35 @@ func Init() error {
 		}
 		switch userChoice {
 		case "1":
-			id, err := getParent()
-			if err != nil {
+			if err := getParent(graph); err != nil {
 				fmt.Println(err)
 			}
-			_, err = graph.CheckIdExist(id)
-			if err != nil {
-				log.Println(err)
-				fmt.Println(err)
-			}
-			nodes, err := graph.GetNodeParent(id)
-			if err != nil {
-				fmt.Println(err)
-			}
-			displayNodes(nodes)
 		case "2":
-			id, err := getChild()
-			if err != nil {
+			if err := getChild(graph); err != nil {
 				fmt.Println(err)
 			}
-			_, err = graph.CheckIdExist(id)
-			if err != nil {
-				log.Println(err)
-				fmt.Println(err)
-			}
-			nodes, err := graph.GetNodeChild(id)
-			if err != nil {
-				fmt.Println(err)
-			}
-			displayNodes(nodes)
 		case "3":
-			id, err := getIDAncestors()
-			if err != nil {
+			if err := getAncestors(graph); err != nil {
 				fmt.Println(err)
 			}
-
-			ids, err := graph.GetAncestors(id)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			display(ids)
 		case "4":
-			id, err := getIDDescendants()
-			if err != nil {
+			if err := getDescendants(graph); err != nil {
 				fmt.Println(err)
 			}
-
-			ids, err := graph.GetDescendants(id)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			display(ids)
 		case "5":
-			id1, id2, err := deleteDependencyIDs()
-			if err != nil {
-				fmt.Println(err)
-			}
-			if err := graph.DeleteEdge(id1, id2); err != nil {
+			if err := deleteDependency(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "6":
-			id, err := getDeleteNodeID()
-			if err != nil {
-				fmt.Println(err)
-			}
-			if err := graph.DeleteNode(id); err != nil {
+			if err := deleteNode(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "7":
-			id1, id2, err := getDependencyIDs()
-			if err != nil {
-				fmt.Println(err)
-			}
-			if err = graph.AddEdge(id1, id2); err != nil {
+			if err := addDependency(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "8":
-			id, name, metaData, err := getNode()
-			if err != nil {
-				fmt.Println(err)
-			}
-			if err := graph.AddNode(id, name, metaData); err != nil {
+			if err := addNode(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "9":
@@ -145,131 +89,157 @@ func getUserChoice() (string, error) {
 	return userChoice, nil
 }
 
-func getParent() (int, error) {
+func getParent(graph graphServ.GraphI) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
 	if err != nil {
 		err = errors.Wrap(err, "scan for node's id (get immediate parent) failed")
 		log.Println(err)
-		return -1, err
+		return err
 	}
 
-	return id, nil
+	nodes, err := graph.GetNodeParent(id)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(graph.GetNodeDetials(nodes))
+	return nil
 }
 
-func getChild() (int, error) {
+func getChild(graph graphServ.GraphI) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
 	if err != nil {
 		err = errors.Wrap(err, "scan for node's id (get immediate child) failed")
 		log.Println(err)
-		return -1, err
+		return err
 	}
 
-	return id, nil
-}
-
-func displayNodes(nodes map[int]nodeServ.Node) {
-	for id, _ := range nodes {
-		fmt.Println(id)
+	nodes, err := graph.GetNodeChild(id)
+	if err != nil {
+		return err
 	}
+
+	fmt.Println(graph.GetNodeDetials(nodes))
+
+	return nil
 }
 
-func getIDAncestors() (int, error) {
+func getAncestors(graph graphServ.GraphI) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
 	if err != nil {
 		err = errors.Wrap(err, "scan for node's id (get ancestors) failed")
 		log.Println(err)
-		return -1, err
+		return err
 	}
 
-	return id, nil
-}
-
-func display(ids []int) {
-	for _, nodeID := range ids {
-		fmt.Printf("%v\n", nodeID)
+	nodes, err := graph.GetAncestors(id)
+	if err != nil {
+		return err
 	}
+
+	fmt.Println(graph.GetNodeDetials(nodes))
+	return nil
 }
 
-func getIDDescendants() (int, error) {
+func getDescendants(graph graphServ.GraphI) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
 	if err != nil {
 		err = errors.Wrap(err, "scan for node's id (get descendants) failed")
 		log.Println(err)
-		return -1, err
+		return err
 	}
 
-	return id, nil
+	nodes, err := graph.GetDescendants(id)
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(graph.GetNodeDetials(nodes))
+
+	return nil
 }
 
-func deleteDependencyIDs() (int, int, error) {
+func deleteDependency(graph graphServ.GraphI) error {
 	fmt.Println("Enter ids of nodes")
 	var n1 int
 	_, err := fmt.Scanf("%d", &n1)
 	if err != nil {
 		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
 		log.Println(err)
-		return -1, -1, err
+		return err
 	}
 	var n2 int
 	_, err = fmt.Scanf("%d", &n2)
 	if err != nil {
 		err := errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
 		log.Println(err)
-		return -1, -1, err
+		return err
 	}
 
-	return n1, n2, nil
+	if err := graph.DeleteEdge(n1, n2); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func getDeleteNodeID() (int, error) {
+func deleteNode(graph graphServ.GraphI) error {
 	fmt.Println("Enter id of node")
 	var id int
 	_, err := fmt.Scanf("%d", &id)
 	if err != nil {
 		err := errors.Wrap(err, "scan for node's id failed while deleting")
 		log.Println(err)
-		return -1, err
+		return err
 	}
 
-	return id, nil
+	if err := graph.DeleteNode(id); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func getDependencyIDs() (int, int, error) {
+func addDependency(graph graphServ.GraphI) error {
 	fmt.Println("Enter ids of nodes")
 	var id1 int
 	_, err := fmt.Scanf("%d", &id1)
 	if err != nil {
 		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
 		log.Println(err)
-		return -1, -1, err
+		return err
 	}
 	var id2 int
 	_, err = fmt.Scanf("%d", &id2)
 	if err != nil {
 		err := errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
 		log.Println(err)
-		return -1, -1, err
+		return err
 	}
 
-	return id1, id2, err
+	if err = graph.AddEdge(id1, id2); err != nil {
+		return err
+	}
+
+	return err
 }
 
-func getNode() (int, string, map[string]string, error) {
+func addNode(graph graphServ.GraphI) error {
 	var id int
 	fmt.Printf("Id: ")
 	_, err := fmt.Scanf("%d", &id)
 	if err != nil {
 		err = errors.Wrap(err, "scan for node's id failed")
 		log.Println(err)
-		return -1, "", nil, err
+		return err
 	}
 
 	var name string
@@ -278,17 +248,21 @@ func getNode() (int, string, map[string]string, error) {
 	if err != nil {
 		err = errors.Wrap(err, "scan for node's name failed")
 		log.Println(err)
-		return -1, "", nil, err
+		return err
 	}
 
 	metaData := make(map[string]string)
 	if err = getAdditionInfo(metaData); err != nil {
 		err = errors.Wrap(err, "scan for node's metadata failed")
 		log.Println(err)
-		return -1, "", nil, err
+		return err
 	}
 
-	return id, name, metaData, nil
+	if err := graph.AddNode(id, name, metaData); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func getAdditionInfo(metaData map[string]string) error {
