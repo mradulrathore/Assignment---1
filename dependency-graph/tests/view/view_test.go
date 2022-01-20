@@ -1,5 +1,7 @@
 package view
 
+//TODO integration testing
+
 // import (
 // 	"errors"
 // 	"log"
