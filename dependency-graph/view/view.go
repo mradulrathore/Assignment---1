@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	graphServ "github.com/mradulrathore/dependency-graph/service/graph"
+	graphServ "github.com/mradulrathore/dependency-graph/service"
 
 	"github.com/pkg/errors"
 )

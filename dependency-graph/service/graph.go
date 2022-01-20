@@ -6,9 +6,10 @@ import (
 )
 
 const (
-	NodeNotExistErr = "node doesn't exist, id:%d"
-	NodeExistErr    = "node exists (id: %d)"
-	DuplicateIdErr  = "duplicate id:%d"
+	DependencyExistErr = "dependency exists"
+	NodeNotExistErr    = "node doesn't exist, id:%d"
+	NodeExistErr       = "node exists (id: %d)"
+	DuplicateIdErr     = "duplicate id:%d"
 )
 
 type GraphI interface {
@@ -243,6 +244,13 @@ func (g *graph) AddEdge(id1, id2 int) error {
 	if g.nodes[id1].child == nil {
 		g.nodes[id1].child = make(map[int]*node)
 	}
+
+	_, exist = g.nodes[id1].child[id2]
+	if exist {
+		err := fmt.Errorf(DependencyExistErr)
+		return err
+	}
+
 	g.nodes[id1].child[id2] = g.nodes[id2]
 
 	if g.nodes[id2].parent == nil {
