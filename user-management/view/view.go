@@ -202,6 +202,7 @@ func getCourse() ([]string, error) {
 		var course string
 		if scanner.Scan() {
 			course = scanner.Text()
+			course = strings.TrimSpace(course)
 		}
 		if err := scanner.Err(); err != nil {
 			log.Println(err)
