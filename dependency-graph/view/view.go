@@ -89,7 +89,7 @@ func getUserChoice() (string, error) {
 	return userChoice, nil
 }
 
-func getParent(graph graphServ.GraphI) error {
+func getParent(graph graphServ.Graph) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
@@ -104,11 +104,11 @@ func getParent(graph graphServ.GraphI) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetials(nodes))
+	fmt.Println(graph.GetNodeDetails(nodes))
 	return nil
 }
 
-func getChild(graph graphServ.GraphI) error {
+func getChild(graph graphServ.Graph) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
@@ -123,12 +123,12 @@ func getChild(graph graphServ.GraphI) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetials(nodes))
+	fmt.Println(graph.GetNodeDetails(nodes))
 
 	return nil
 }
 
-func getAncestors(graph graphServ.GraphI) error {
+func getAncestors(graph graphServ.Graph) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
@@ -143,11 +143,11 @@ func getAncestors(graph graphServ.GraphI) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetials(nodes))
+	fmt.Println(graph.GetNodeDetails(nodes))
 	return nil
 }
 
-func getDescendants(graph graphServ.GraphI) error {
+func getDescendants(graph graphServ.Graph) error {
 	var id int
 	fmt.Printf("Enter id: ")
 	_, err := fmt.Scanf("%d", &id)
@@ -162,12 +162,12 @@ func getDescendants(graph graphServ.GraphI) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetials(nodes))
+	fmt.Println(graph.GetNodeDetails(nodes))
 
 	return nil
 }
 
-func deleteDependency(graph graphServ.GraphI) error {
+func deleteDependency(graph graphServ.Graph) error {
 	fmt.Println("Enter ids of nodes")
 	var n1 int
 	_, err := fmt.Scanf("%d", &n1)
@@ -191,7 +191,7 @@ func deleteDependency(graph graphServ.GraphI) error {
 	return nil
 }
 
-func deleteNode(graph graphServ.GraphI) error {
+func deleteNode(graph graphServ.Graph) error {
 	fmt.Println("Enter id of node")
 	var id int
 	_, err := fmt.Scanf("%d", &id)
@@ -208,7 +208,7 @@ func deleteNode(graph graphServ.GraphI) error {
 	return nil
 }
 
-func addDependency(graph graphServ.GraphI) error {
+func addDependency(graph graphServ.Graph) error {
 	fmt.Println("Enter ids of nodes")
 	var id1 int
 	_, err := fmt.Scanf("%d", &id1)
@@ -232,7 +232,7 @@ func addDependency(graph graphServ.GraphI) error {
 	return err
 }
 
-func addNode(graph graphServ.GraphI) error {
+func addNode(graph graphServ.Graph) error {
 	var id int
 	fmt.Printf("Id: ")
 	_, err := fmt.Scanf("%d", &id)

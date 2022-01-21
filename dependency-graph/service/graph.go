@@ -12,7 +12,7 @@ const (
 	DuplicateIdErr     = "duplicate id:%d"
 )
 
-type GraphI interface {
+type Graph interface {
 	GetNodeParent(id int) (map[int]*node, error)
 	GetNodeChild(id int) (map[int]*node, error)
 	GetAncestors(int) (map[int]*node, error)
@@ -21,7 +21,7 @@ type GraphI interface {
 	DeleteNode(int) error
 	AddEdge(int, int) error
 	AddNode(int, string, map[string]string) error
-	GetNodeDetials(map[int]*node) string
+	GetNodeDetails(map[int]*node) string
 }
 
 type graph struct {
@@ -267,7 +267,7 @@ func (g *graph) AddNode(id int, name string, metaData map[string]string) error {
 	return nil
 }
 
-func (g *graph) GetNodeDetials(nodes map[int]*node) string {
+func (g *graph) GetNodeDetails(nodes map[int]*node) string {
 	str := ""
 	for id, node := range nodes {
 		str = fmt.Sprintf("\n%sId: %d | Name: %s\n", str, id, node.name)
