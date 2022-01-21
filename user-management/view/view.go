@@ -92,6 +92,7 @@ func getUserChoice() (string, error) {
 	var userChoice string
 	if scanner.Scan() {
 		userChoice = scanner.Text()
+		userChoice = strings.TrimSpace(userChoice)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
@@ -241,6 +242,7 @@ func getAll(repository repo.Repository) ([]usr.User, error) {
 	var field string
 	if scanner.Scan() {
 		field = scanner.Text()
+		field = strings.TrimSpace(field)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
@@ -328,6 +330,7 @@ func confirmSave(repository repo.Repository) error {
 	var userChoice string
 	if scanner.Scan() {
 		userChoice = scanner.Text()
+		userChoice = strings.TrimSpace(userChoice)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
