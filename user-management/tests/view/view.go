@@ -153,7 +153,7 @@ func setInputAdd(userChoice string, user userTest) *os.File {
 		content = fmt.Sprintf("%s\n%s", content, user.coursesEnrol[i])
 	}
 	content = fmt.Sprintf("%s\n%s\n%s\n", content, "5", user.userChoice)
-
+	log.Println(content)
 	contentB := []byte(content)
 
 	tmpfile, err := ioutil.TempFile("", "temp")

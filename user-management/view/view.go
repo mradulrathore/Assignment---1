@@ -1,11 +1,14 @@
 package view
 
 import (
+	"bufio"
 	"fmt"
 	"log"
+	"os"
+	"strconv"
+	"strings"
 
 	repo "github.com/mradulrathore/user-management/service/repository"
-	"github.com/pkg/errors"
 
 	usr "github.com/mradulrathore/user-management/service/user"
 )
@@ -84,50 +87,70 @@ func showMenu() {
 }
 
 func getUserChoice() (string, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+
 	var userChoice string
-	_, err := fmt.Scanf("%s", &userChoice)
-	if err != nil {
-		err = errors.Wrap(err, "scan for user choice failed")
+	if scanner.Scan() {
+		userChoice = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
+		log.Println(err)
 		return "", err
 	}
 	return userChoice, nil
 }
 
 func addUser(repository repo.Repository) error {
+	scanner := bufio.NewScanner(os.Stdin)
+
 	fmt.Printf("Full Name: ")
 	var name string
-	_, err := fmt.Scanf("%s", &name)
-	if err != nil {
-		err = errors.Wrap(err, "scan for user's name failed")
+	if scanner.Scan() {
+		name = scanner.Text()
+		name = strings.TrimSpace(name)
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
-		return nil
+		return err
 	}
 
 	var age int
+	var err error
 	fmt.Printf("Age: ")
-	_, err = fmt.Scanf("%d", &age)
-	if err != nil {
-		err = errors.Wrap(err, "scan for user's age failed")
+	if scanner.Scan() {
+		age, err = strconv.Atoi(string(scanner.Bytes()))
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
-		return nil
+		return err
 	}
 
-	var address string
 	fmt.Printf("Address: ")
-	_, err = fmt.Scanf("%s", &address)
-	if err != nil {
-		err = errors.Wrap(err, "scan for user's address failed")
+	var address string
+	if scanner.Scan() {
+		address = scanner.Text()
+		address = strings.TrimSpace(address)
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
-		return nil
+		return err
 	}
 
 	var rollNo int
 	fmt.Printf("Roll No : ")
-	_, err = fmt.Scanf("%d", &rollNo)
-	if err != nil {
-		err = errors.Wrap(err, "scan for user's rollno failed")
-		log.Println(err)
-		return nil
+	if scanner.Scan() {
+		rollNo, err = strconv.Atoi(string(scanner.Bytes()))
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+	if err := scanner.Err(); err != nil {
+		return err
 	}
 
 	courses, err := getCourse()
@@ -150,15 +173,24 @@ func addUser(repository repo.Repository) error {
 }
 
 func getCourse() ([]string, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+
 	var courses []string
+	var err error
 	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", MinCouses)
 	var numCourse int
-	_, err := fmt.Scanf("%d", &numCourse)
-	if err != nil {
-		err = errors.Wrap(err, "scan for number of course failed")
+	if scanner.Scan() {
+		numCourse, err = strconv.Atoi(string(scanner.Bytes()))
+		if err != nil {
+			log.Println(err)
+			return []string{}, err
+		}
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
 		return []string{}, err
 	}
+
 	if numCourse < MinCouses {
 		err := fmt.Errorf("select atleast %d", MinCouses)
 		return []string{}, err
@@ -166,13 +198,16 @@ func getCourse() ([]string, error) {
 
 	for i := 1; i <= numCourse; i++ {
 		fmt.Printf("Enter course - %d: ", i)
+
 		var course string
-		_, err = fmt.Scanf("%s", &course)
-		if err != nil {
-			err = errors.Wrapf(err, "scan for course %d failed", i)
+		if scanner.Scan() {
+			course = scanner.Text()
+		}
+		if err := scanner.Err(); err != nil {
 			log.Println(err)
 			return []string{}, err
 		}
+
 		courses = append(courses, course)
 	}
 
@@ -199,20 +234,29 @@ func checkDuplicateCourse(courses []string) error {
 }
 
 func getAll(repository repo.Repository) ([]usr.User, error) {
-	fmt.Print("Field Name to sort details on (1. Ascending 2.Descending): ")
+	fmt.Print("Field Name to sort details on: ")
 
+	scanner := bufio.NewScanner(os.Stdin)
 	var field string
-	_, err := fmt.Scanf("%s", &field)
-	if err != nil {
-		err = errors.Wrap(err, "scan for field name to sort details on failed")
+	if scanner.Scan() {
+		field = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
 		return []usr.User{}, err
 	}
 
+	fmt.Print("\n1. Ascending 2.Descending : ")
 	var order int
-	_, err = fmt.Scanf("%d", &order)
-	if err != nil {
-		err = errors.Wrap(err, "scan for sorting order failed")
+	var err error
+	if scanner.Scan() {
+		order, err = strconv.Atoi(string(scanner.Bytes()))
+		if err != nil {
+			log.Println(err)
+			return []usr.User{}, err
+		}
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
 		return []usr.User{}, err
 	}
@@ -235,10 +279,18 @@ func display(users []usr.User) {
 
 func deleteByRollNo(repository repo.Repository) error {
 	fmt.Print("Enter roll no to delete: ")
+
+	scanner := bufio.NewScanner(os.Stdin)
 	var rollNo int
-	_, err := fmt.Scanf("%d", &rollNo)
-	if err != nil {
-		err = errors.Wrap(err, "scan for rollno to delete failed")
+	var err error
+	if scanner.Scan() {
+		rollNo, err = strconv.Atoi(string(scanner.Bytes()))
+		if err != nil {
+			log.Println(err)
+			return err
+		}
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
 		return err
 	}
@@ -270,10 +322,13 @@ func save(repository repo.Repository) error {
 
 func confirmSave(repository repo.Repository) error {
 	fmt.Println("Do you want to save the data(y/n)?")
+
+	scanner := bufio.NewScanner(os.Stdin)
 	var userChoice string
-	_, err := fmt.Scanf("%s", &userChoice)
-	if err != nil {
-		err = errors.Wrap(err, "scan for user choice to save details on exit failed")
+	if scanner.Scan() {
+		userChoice = scanner.Text()
+	}
+	if err := scanner.Err(); err != nil {
 		log.Println(err)
 		return err
 	}
