@@ -3,6 +3,7 @@ package view
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	graphServ "github.com/mradulrathore/dependency-graph/service"
 
@@ -80,6 +81,7 @@ func showMenu() {
 func getUserChoice() (string, error) {
 	var userChoice string
 	_, err := fmt.Scanf("%s", &userChoice)
+	userChoice = strings.TrimSpace(userChoice)
 	if err != nil {
 		err := errors.Wrap(err, "scan for user's choice failed")
 		log.Println(err)
@@ -245,6 +247,7 @@ func addNode(graph graphServ.Graph) error {
 	var name string
 	fmt.Printf("Name: ")
 	_, err = fmt.Scanf("%s", &name)
+	name = strings.TrimSpace(name)
 	if err != nil {
 		err = errors.Wrap(err, "scan for node's name failed")
 		log.Println(err)
@@ -269,6 +272,7 @@ func getAdditionInfo(metaData map[string]string) error {
 	fmt.Printf("Additional Info (y/n): ")
 	var userChoice string
 	_, err := fmt.Scanf("%s", &userChoice)
+	userChoice = strings.TrimSpace(userChoice)
 	if err != nil {
 		err = errors.Wrap(err, "scan for user's choice for meta data failed")
 		log.Println(err)
