@@ -6,7 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	itm "github.com/mradulrathore/item-inventory/item"
+	itm "github.com/mradulrathore/item-inventory/service"
 )
 
 const (
