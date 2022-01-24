@@ -11,7 +11,7 @@ type Item struct {
 	Name     string        `gorm:"column:Name;type:varchar;size:255;" json:"name"`
 	Price    float64       `gorm:"column:Price;type:float" json:"price"`
 	Quantity int           `gorm:"column:Quantity:type:int;" json:"quantity"`
-	Type     enum.ItemType `gorm:"column:Type;type:ENUM('raw','manufactured','imported');" json:"type"`
+	Type     enum.ItemType `gorm:"column:Type;type:enum('raw','manufactured','imported');" json:"type"`
 }
 
 func (m *Item) TableName() string {

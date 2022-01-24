@@ -1,4 +1,4 @@
-package view
+package service
 
 // cmd go test -coverprofile=coverage.out
 
