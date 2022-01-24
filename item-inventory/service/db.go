@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockgen -source=db.go -destination=db_mock.go -package=service
 type DB interface {
 	GetItems() (items []Item, err error)
 }
