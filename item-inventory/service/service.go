@@ -14,24 +14,41 @@ func Initialize() error {
 
 	repo := NewRepo(db)
 
-	item := make(chan Item)
-	go getItem(repo, item)
+	itemDB := make(chan Item)
+	go getItemsFromDB(repo, itemDB)
 
-	for itm := range item {
+	var items []Item
+	for itm := range itemDB {
+		items = append(items, itm)
+	}
+
+	itemMemory := make(chan Item)
+	go getItemsFromMemory(items, itemMemory)
+
+	for itm := range itemMemory {
 		fmt.Println(itm.Invoice())
 	}
 
 	return nil
 }
 
-func getItem(repo *Repository, item chan Item) {
+func getItemsFromDB(repo *Repository, itemDB chan Item) {
 	list, err := repo.GetItems()
 	if err != nil {
 		log.Println(err)
 	}
-	for _, itemDb := range list.Items {
-		item <- itemDb
+
+	for _, item := range list.Items {
+		itemDB <- item
 	}
 
-	close(item)
+	close(itemDB)
+}
+
+func getItemsFromMemory(items []Item, itemMemory chan Item) {
+	for _, itm := range items {
+		itemMemory <- itm
+	}
+
+	close(itemMemory)
 }
