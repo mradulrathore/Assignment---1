@@ -24,9 +24,12 @@ const (
 
 func Init() error {
 	repository := repo.NewRepo()
+
 	if err := repository.Load(DataFilePath); err != nil {
 		log.Println(err)
+		return err
 	}
+
 	defer repository.Close()
 
 	var moreInput bool = true
@@ -37,10 +40,10 @@ func Init() error {
 		if err != nil {
 			return err
 		}
+
 		switch userChoice {
 		case "1":
-			err := addUser(repository)
-			if err != nil {
+			if err := addUser(repository); err != nil {
 				fmt.Println(err)
 			}
 		case "2":
@@ -50,8 +53,7 @@ func Init() error {
 			}
 			display(users)
 		case "3":
-			err := deleteByRollNo(repository)
-			if err != nil {
+			if err := deleteByRollNo(repository); err != nil {
 				fmt.Println(err)
 			}
 		case "4":
@@ -60,8 +62,7 @@ func Init() error {
 			}
 		case "5":
 			moreInput = false
-			err = confirmSave(repository)
-			if err != nil {
+			if err = confirmSave(repository); err != nil {
 				moreInput = true
 			} else {
 				fmt.Println("exiting")
