@@ -13,15 +13,15 @@ const (
 )
 
 type Graph interface {
-	GetNodeParent(id int) (map[int]*node, error)
-	GetNodeChild(id int) (map[int]*node, error)
-	GetAncestors(int) (map[int]*node, error)
-	GetDescendants(int) (map[int]*node, error)
+	ListNodeParent(id int) (map[int]*node, error)
+	ListNodeChild(id int) (map[int]*node, error)
+	ListAncestors(int) (map[int]*node, error)
+	ListDescendants(int) (map[int]*node, error)
 	DeleteEdge(int, int) error
 	DeleteNode(int) error
 	AddEdge(int, int) error
 	AddNode(int, string, map[string]string) error
-	GetNodesID(map[int]*node) []int
+	ListNodesID(map[int]*node) []int
 }
 
 type graph struct {
@@ -40,7 +40,7 @@ func NewGraph() *graph {
 	return &graph{}
 }
 
-func (g *graph) GetNodeParent(id int) (map[int]*node, error) {
+func (g *graph) ListNodeParent(id int) (map[int]*node, error) {
 	n, exist := g.nodes[id]
 	if !exist {
 		err := fmt.Errorf(NodeNotExistErr, id)
@@ -54,7 +54,7 @@ func (g *graph) GetNodeParent(id int) (map[int]*node, error) {
 	return ancestors, nil
 }
 
-func (g *graph) GetNodeChild(id int) (map[int]*node, error) {
+func (g *graph) ListNodeChild(id int) (map[int]*node, error) {
 	n, exist := g.nodes[id]
 	if !exist {
 		err := fmt.Errorf(NodeNotExistErr, id)
@@ -68,7 +68,7 @@ func (g *graph) GetNodeChild(id int) (map[int]*node, error) {
 	return descendants, nil
 }
 
-func (g *graph) GetAncestors(id int) (map[int]*node, error) {
+func (g *graph) ListAncestors(id int) (map[int]*node, error) {
 	if g.nodes == nil {
 		err := fmt.Errorf(NodeNotExistErr, id)
 		return nil, err
@@ -97,7 +97,7 @@ func ancestorsDFS(n *node, visitCallback func(*node)) {
 	}
 }
 
-func (g *graph) GetDescendants(id int) (map[int]*node, error) {
+func (g *graph) ListDescendants(id int) (map[int]*node, error) {
 	if g.nodes == nil {
 		err := fmt.Errorf(NodeNotExistErr, id)
 		return nil, err
@@ -216,7 +216,7 @@ func (g *graph) AddEdge(id1, id2 int) error {
 		return err
 	}
 
-	ancestors, err := g.GetAncestors(id1)
+	ancestors, err := g.ListAncestors(id1)
 	if err != nil {
 		return err
 	}
@@ -267,7 +267,7 @@ func (g *graph) AddNode(id int, name string, metaData map[string]string) error {
 	return nil
 }
 
-func (g *graph) GetNodesID(nodes map[int]*node) []int {
+func (g *graph) ListNodesID(nodes map[int]*node) []int {
 	var ids []int
 	for id := range nodes {
 		ids = append(ids, id)

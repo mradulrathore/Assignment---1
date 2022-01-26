@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGetNodeParent(t *testing.T) {
+func TestListNodeParent(t *testing.T) {
 	graph := NewGraph()
 
 	err := graph.AddNode(1, "A", nil)
@@ -33,19 +33,19 @@ func TestGetNodeParent(t *testing.T) {
 		err      error
 	}{
 		{
-			scenario: "get node parents when edge between nodes doesn't exist",
+			scenario: "List node parents when edge between nodes doesn't exist",
 			nodeId:   4,
 			checkId:  3,
 			exist:    false,
 			err:      nil,
 		}, {
-			scenario: "get node parents when edge between nodes exist",
+			scenario: "List node parents when edge between nodes exist",
 			nodeId:   2,
 			checkId:  1,
 			exist:    true,
 			err:      nil,
 		}, {
-			scenario: "get node parents when node doesn't exist",
+			scenario: "List node parents when node doesn't exist",
 			nodeId:   21,
 			checkId:  -1,
 			exist:    false,
@@ -54,7 +54,7 @@ func TestGetNodeParent(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		nodes, err := graph.GetNodeParent(tc.nodeId)
+		nodes, err := graph.ListNodeParent(tc.nodeId)
 		if tc.err != nil && err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		} else if tc.err == nil && err != nil {
@@ -68,7 +68,7 @@ func TestGetNodeParent(t *testing.T) {
 	}
 }
 
-func TestGetNodeChild(t *testing.T) {
+func TestListNodeChild(t *testing.T) {
 	graph := NewGraph()
 
 	err := graph.AddNode(1, "A", nil)
@@ -94,19 +94,19 @@ func TestGetNodeChild(t *testing.T) {
 		err      error
 	}{
 		{
-			scenario: "get node parents when edge between nodes doesn't exist",
+			scenario: "List node parents when edge between nodes doesn't exist",
 			nodeId:   4,
 			checkId:  3,
 			exist:    false,
 			err:      nil,
 		}, {
-			scenario: "get node parents when edge between nodes exist",
+			scenario: "List node parents when edge between nodes exist",
 			nodeId:   1,
 			checkId:  2,
 			exist:    true,
 			err:      nil,
 		}, {
-			scenario: "get node parents when node doesn't exist",
+			scenario: "List node parents when node doesn't exist",
 			nodeId:   21,
 			checkId:  -1,
 			exist:    false,
@@ -115,7 +115,7 @@ func TestGetNodeChild(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		nodes, err := graph.GetNodeChild(tc.nodeId)
+		nodes, err := graph.ListNodeChild(tc.nodeId)
 		if tc.err != nil && err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		} else if tc.err == nil && err != nil {
@@ -129,7 +129,7 @@ func TestGetNodeChild(t *testing.T) {
 	}
 }
 
-func TestGetAncestors(t *testing.T) {
+func TestListAncestors(t *testing.T) {
 	graph := NewGraph()
 
 	err := graph.AddNode(1, "A", nil)
@@ -160,17 +160,17 @@ func TestGetAncestors(t *testing.T) {
 		err       error
 	}{
 		{
-			scenario:  "get node ancestors when node exist",
+			scenario:  "List node ancestors when node exist",
 			nodeId:    4,
 			ancestors: []int{1, 2, 3},
 			err:       nil,
 		}, {
-			scenario:  "get node ancestors when node doesn't exist",
+			scenario:  "List node ancestors when node doesn't exist",
 			nodeId:    12,
 			ancestors: []int{},
 			err:       fmt.Errorf("node doesn't exist, id:%d", 12),
 		}, {
-			scenario:  "get node ancestors when node exist",
+			scenario:  "List node ancestors when node exist",
 			nodeId:    1,
 			ancestors: []int{},
 			err:       nil,
@@ -178,7 +178,7 @@ func TestGetAncestors(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		nodes, err := graph.GetAncestors(tc.nodeId)
+		nodes, err := graph.ListAncestors(tc.nodeId)
 		if tc.err != nil && err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		} else if tc.err == nil && err != nil {
@@ -198,7 +198,7 @@ func TestGetAncestors(t *testing.T) {
 	}
 }
 
-func TestGetDescendants(t *testing.T) {
+func TestListDescendants(t *testing.T) {
 	graph := NewGraph()
 
 	err := graph.AddNode(1, "A", nil)
@@ -229,17 +229,17 @@ func TestGetDescendants(t *testing.T) {
 		err         error
 	}{
 		{
-			scenario:    "get node descendants when node exist",
+			scenario:    "List node descendants when node exist",
 			nodeId:      1,
 			descendants: []int{2, 3, 4},
 			err:         nil,
 		}, {
-			scenario:    "get node descendants when node doesn't exist",
+			scenario:    "List node descendants when node doesn't exist",
 			nodeId:      12,
 			descendants: []int{},
 			err:         fmt.Errorf("node doesn't exist, id:%d", 12),
 		}, {
-			scenario:    "get node descendants when node exist",
+			scenario:    "List node descendants when node exist",
 			nodeId:      4,
 			descendants: []int{},
 			err:         nil,
@@ -247,7 +247,7 @@ func TestGetDescendants(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		nodes, err := graph.GetDescendants(tc.nodeId)
+		nodes, err := graph.ListDescendants(tc.nodeId)
 		if tc.err != nil && err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		} else if tc.err == nil && err != nil {
@@ -388,7 +388,7 @@ func TestDeleteNode(t *testing.T) {
 			parentNodeId: -1,
 			err:          fmt.Errorf("node doesn't exist, id:%d", 12),
 		}, {
-			scenario:     "get node ancestors when node exist",
+			scenario:     "List node ancestors when node exist",
 			nodeId:       4,
 			parentNodeId: 3,
 			err:          nil,
@@ -403,7 +403,7 @@ func TestDeleteNode(t *testing.T) {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		}
 		if tc.err == nil {
-			nodes, err := graph.GetNodeChild(tc.parentNodeId)
+			nodes, err := graph.ListNodeChild(tc.parentNodeId)
 			if err != nil {
 				t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, nil)
 			}
