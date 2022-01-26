@@ -21,7 +21,7 @@ type Graph interface {
 	DeleteNode(int) error
 	AddEdge(int, int) error
 	AddNode(int, string, map[string]string) error
-	GetNodeDetails(map[int]*node) string
+	GetNodesID(map[int]*node) []int
 }
 
 type graph struct {
@@ -267,10 +267,10 @@ func (g *graph) AddNode(id int, name string, metaData map[string]string) error {
 	return nil
 }
 
-func (g *graph) GetNodeDetails(nodes map[int]*node) string {
-	str := ""
-	for id, node := range nodes {
-		str = fmt.Sprintf("\n%sId: %d | Name: %s\n", str, id, node.name)
+func (g *graph) GetNodesID(nodes map[int]*node) []int {
+	var ids []int
+	for id := range nodes {
+		ids = append(ids, id)
 	}
-	return str
+	return ids
 }

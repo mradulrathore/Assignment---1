@@ -13,6 +13,11 @@ import (
 	"github.com/pkg/errors"
 )
 
+const (
+	Accept = "y"
+	Deny   = "n"
+)
+
 func Init() error {
 
 	graph := graphServ.NewGraph()
@@ -25,6 +30,7 @@ func Init() error {
 		if err != nil {
 			return err
 		}
+
 		switch userChoice {
 		case "1":
 			if err := getParent(graph); err != nil {
@@ -64,6 +70,7 @@ func Init() error {
 			fmt.Println("Invalid choice")
 		}
 	}
+
 	return nil
 }
 
@@ -85,15 +92,16 @@ func getUserChoice() (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var userChoice string
+
 	if scanner.Scan() {
 		userChoice = scanner.Text()
 		userChoice = strings.TrimSpace(userChoice)
 	}
 	if err := scanner.Err(); err != nil {
-		err := errors.Wrap(err, "scan for user's choice failed")
-		log.Println(err)
-		return "", err
+		log.Println("scan for user's choice failed")
+		return "", errors.Wrap(err, "scan for user's choice failed")
 	}
+
 	return userChoice, nil
 }
 
@@ -101,20 +109,20 @@ func getParent(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
-	var err error
+
 	fmt.Printf("Enter id: ")
+
 	if scanner.Scan() {
-		id, err = strconv.Atoi(string(scanner.Bytes()))
+		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err = errors.Wrap(err, "scan for node's id (get immediate parent) failed")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id (get immediate parent) failed")
+			return errors.Wrap(err, "scan for node's id (get immediate parent) failed")
 		}
+		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		err = errors.Wrap(err, "scan for node's id (get immediate parent) failed")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id (get immediate parent) failed")
+		return errors.Wrap(err, "scan for node's id (get immediate parent) failed")
 	}
 
 	nodes, err := graph.GetNodeParent(id)
@@ -122,7 +130,8 @@ func getParent(graph graphServ.Graph) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetails(nodes))
+	fmt.Println(graph.GetNodesID(nodes))
+
 	return nil
 }
 
@@ -130,20 +139,20 @@ func getChild(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
-	var err error
+
 	fmt.Printf("Enter id: ")
+
 	if scanner.Scan() {
-		id, err = strconv.Atoi(string(scanner.Bytes()))
+		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err = errors.Wrap(err, "scan for node's id (get immediate child) failed")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id (get immediate child) failed")
+			return errors.Wrap(err, "scan for node's id (get immediate child) failed")
 		}
+		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		err = errors.Wrap(err, "scan for node's id (get immediate child) failed")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id (get immediate child) failed")
+		return errors.Wrap(err, "scan for node's id (get immediate child) failed")
 	}
 
 	nodes, err := graph.GetNodeChild(id)
@@ -151,7 +160,7 @@ func getChild(graph graphServ.Graph) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetails(nodes))
+	fmt.Println(graph.GetNodesID(nodes))
 
 	return nil
 }
@@ -160,20 +169,20 @@ func getAncestors(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
-	var err error
+
 	fmt.Printf("Enter id: ")
+
 	if scanner.Scan() {
-		id, err = strconv.Atoi(string(scanner.Bytes()))
+		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err = errors.Wrap(err, "scan for node's id (get ancestors) failed")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id (get ancestors) failed")
+			return errors.Wrap(err, "scan for node's id (get ancestors) failed")
 		}
+		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		err = errors.Wrap(err, "scan for node's id (get ancestors) failed")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id (get ancestors) failed")
+		return errors.Wrap(err, "scan for node's id (get ancestors) failed")
 	}
 
 	nodes, err := graph.GetAncestors(id)
@@ -181,7 +190,8 @@ func getAncestors(graph graphServ.Graph) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetails(nodes))
+	fmt.Println(graph.GetNodesID(nodes))
+
 	return nil
 }
 
@@ -189,20 +199,20 @@ func getDescendants(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
-	var err error
+
 	fmt.Printf("Enter id: ")
+
 	if scanner.Scan() {
-		id, err = strconv.Atoi(string(scanner.Bytes()))
+		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err = errors.Wrap(err, "scan for node's id (get descendants) failed")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id (get descendants) failed")
+			return errors.Wrap(err, "scan for node's id (get descendants) failed")
 		}
+		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		err = errors.Wrap(err, "scan for node's id (get descendants) failed")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id (get descendants) failed")
+		return errors.Wrap(err, "scan for node's id (get descendants) failed")
 	}
 
 	nodes, err := graph.GetDescendants(id)
@@ -210,7 +220,7 @@ func getDescendants(graph graphServ.Graph) error {
 		return err
 	}
 
-	fmt.Println(graph.GetNodeDetails(nodes))
+	fmt.Println(graph.GetNodesID(nodes))
 
 	return nil
 }
@@ -218,16 +228,17 @@ func getDescendants(graph graphServ.Graph) error {
 func deleteDependency(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Println("Enter ids of nodes")
 	var id1 int
-	var err error
+
+	fmt.Println("Enter ids of nodes")
+
 	if scanner.Scan() {
-		id1, err = strconv.Atoi(string(scanner.Bytes()))
+		i1, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err := errors.Wrap(err, "scan for node's id-1 failed while deleting dependency")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id-1 failed while deleting dependency")
+			return errors.Wrap(err, "scan for node's id-1 failed while deleting dependency")
 		}
+		id1 = i1
 	}
 	if err := scanner.Err(); err != nil {
 		err := errors.Wrap(err, "scan for node's id-1 failed while deleting dependency")
@@ -236,18 +247,18 @@ func deleteDependency(graph graphServ.Graph) error {
 	}
 
 	var id2 int
+
 	if scanner.Scan() {
-		id2, err = strconv.Atoi(string(scanner.Bytes()))
+		i2, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err := errors.Wrap(err, "scan for node's id-2 failed while deleting dependency")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id-2 failed while deleting dependency")
+			return errors.Wrap(err, "scan for node's id-2 failed while deleting dependency")
 		}
+		id2 = i2
 	}
 	if err := scanner.Err(); err != nil {
-		err := errors.Wrap(err, "scan for node's id-2 failed while deleting dependency")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id-2 failed while deleting dependency")
+		return errors.Wrap(err, "scan for node's id-2 failed while deleting dependency")
 	}
 
 	if err := graph.DeleteEdge(id1, id2); err != nil {
@@ -260,21 +271,21 @@ func deleteDependency(graph graphServ.Graph) error {
 func deleteNode(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Println("Enter id of node")
 	var id int
-	var err error
+
+	fmt.Println("Enter id of node")
+
 	if scanner.Scan() {
-		id, err = strconv.Atoi(string(scanner.Bytes()))
+		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err := errors.Wrap(err, "scan for node's id failed while deleting")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id failed while deleting")
+			return errors.Wrap(err, "scan for node's id failed while deleting")
 		}
+		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		err := errors.Wrap(err, "scan for node's id failed while deleting")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id failed while deleting")
+		return errors.Wrap(err, "scan for node's id failed while deleting")
 	}
 
 	if err := graph.DeleteNode(id); err != nil {
@@ -287,82 +298,83 @@ func deleteNode(graph graphServ.Graph) error {
 func addDependency(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Println("Enter ids of nodes")
 	var id1 int
-	var err error
+
+	fmt.Println("Enter ids of nodes")
+
 	if scanner.Scan() {
-		id1, err = strconv.Atoi(string(scanner.Bytes()))
+		i1, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id-1 failed while adding dependency")
+			return errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
 		}
+		id1 = i1
 	}
 	if err := scanner.Err(); err != nil {
-		err := errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id-1 failed while adding dependency")
+		return errors.Wrap(err, "scan for node's id-1 failed while adding dependency")
 	}
 
 	var id2 int
+
 	if scanner.Scan() {
-		id2, err = strconv.Atoi(string(scanner.Bytes()))
+		i2, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err := errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id-2 failed while adding dependency")
+			return errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
 		}
+		id2 = i2
 	}
 	if err := scanner.Err(); err != nil {
-		err := errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
-		log.Println(err)
+		log.Println("scan for node's id-2 failed while adding dependency")
+		return errors.Wrap(err, "scan for node's id-2 failed while adding dependency")
+	}
+
+	if err := graph.AddEdge(id1, id2); err != nil {
 		return err
 	}
 
-	if err = graph.AddEdge(id1, id2); err != nil {
-		return err
-	}
-
-	return err
+	return nil
 }
 
 func addNode(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Printf("Id: ")
 	var id int
-	var err error
+
+	fmt.Printf("Id: ")
+
 	if scanner.Scan() {
-		id, err = strconv.Atoi(string(scanner.Bytes()))
+		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			err = errors.Wrap(err, "scan for node's id failed")
-			log.Println(err)
-			return err
+			log.Println("scan for node's id failed")
+			return errors.Wrap(err, "scan for node's id failed")
 		}
+		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		err = errors.Wrap(err, "scan for node's id failed")
-		log.Println(err)
-		return err
+		log.Println("scan for node's id failed")
+		return errors.Wrap(err, "scan for node's id failed")
 	}
 
 	var name string
+
 	fmt.Printf("Name: ")
+
 	if scanner.Scan() {
 		name = scanner.Text()
 		name = strings.TrimSpace(name)
 	}
 	if err := scanner.Err(); err != nil {
-		err = errors.Wrap(err, "scan for node's name failed")
-		log.Println(err)
-		return err
+		log.Println("scan for node's name failed")
+		return errors.Wrap(err, "scan for node's name failed")
 	}
 
 	metaData := make(map[string]string)
-	if err = getAdditionInfo(metaData); err != nil {
-		err = errors.Wrap(err, "scan for node's metadata failed")
-		log.Println(err)
-		return err
+
+	if err := getAdditionInfo(metaData); err != nil {
+		log.Println("scan for node's metadata failed")
+		return errors.Wrap(err, "scan for node's metadata failed")
 	}
 
 	if err := graph.AddNode(id, name, metaData); err != nil {
@@ -375,44 +387,48 @@ func addNode(graph graphServ.Graph) error {
 func getAdditionInfo(metaData map[string]string) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Printf("Additional Info (y/n): ")
 	var userChoice string
+
+	fmt.Printf("Additional Info (" + Accept + "/" + Deny + "): ")
+
 	if scanner.Scan() {
 		userChoice = scanner.Text()
 		userChoice = strings.TrimSpace(userChoice)
 	}
 	if err := scanner.Err(); err != nil {
-		err = errors.Wrap(err, "scan for user's choice for meta data failed")
-		log.Println(err)
-		return err
+		log.Println("scan for user's choice for meta data failed")
+		return errors.Wrap(err, "scan for user's choice for meta data failed")
 	}
 
-	if userChoice == "y" {
-		fmt.Print("Enter key: ")
+	if userChoice == Accept {
 		var key string
+
+		fmt.Print("Enter key: ")
+
 		if scanner.Scan() {
 			key = scanner.Text()
 			key = strings.TrimSpace(key)
 		}
 		if err := scanner.Err(); err != nil {
-			err = errors.Wrap(err, "scan for node's meta data failed")
-			log.Println(err)
-			return err
+			log.Println("scan for node's meta data failed")
+			return errors.Wrap(err, "scan for node's meta data failed")
 		}
 
-		fmt.Print("Enter value: ")
 		var value string
+
+		fmt.Print("Enter value: ")
+
 		if scanner.Scan() {
 			value = scanner.Text()
 			value = strings.TrimSpace(value)
 		}
 		if err := scanner.Err(); err != nil {
-			err = errors.Wrap(err, "scan for node's meta data failed")
-			log.Println(err)
-			return err
+			log.Println("scan for node's meta data failed")
+			return errors.Wrap(err, "scan for node's meta data failed")
 		}
 
 		metaData[key] = value
+
 		if err := getAdditionInfo(metaData); err != nil {
 			return err
 		}

@@ -3,30 +3,27 @@ package graph
 import (
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetNodeParent(t *testing.T) {
 	graph := NewGraph()
 
-	if err := graph.AddNode(1, "A", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err := graph.AddNode(1, "A", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(2, "B", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(2, "B", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(1, 2); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(1, 2)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(3, "C", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(3, "C", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(4, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(4, "D", nil)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario string
@@ -74,25 +71,20 @@ func TestGetNodeParent(t *testing.T) {
 func TestGetNodeChild(t *testing.T) {
 	graph := NewGraph()
 
-	if err := graph.AddNode(1, "A", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err := graph.AddNode(1, "A", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(2, "B", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(2, "B", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(1, 2); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(1, 2)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(3, "C", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(3, "C", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(4, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(4, "D", nil)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario string
@@ -140,33 +132,26 @@ func TestGetNodeChild(t *testing.T) {
 func TestGetAncestors(t *testing.T) {
 	graph := NewGraph()
 
-	if err := graph.AddNode(1, "A", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err := graph.AddNode(1, "A", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(2, "B", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(2, "B", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(3, "C", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(3, "C", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(4, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(4, "D", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(1, 2); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(1, 2)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(2, 3); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(2, 3)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(3, 4); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(3, 4)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario  string
@@ -216,33 +201,26 @@ func TestGetAncestors(t *testing.T) {
 func TestGetDescendants(t *testing.T) {
 	graph := NewGraph()
 
-	if err := graph.AddNode(1, "A", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err := graph.AddNode(1, "A", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(2, "B", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(2, "B", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(3, "C", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(3, "C", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(4, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(4, "D", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(1, 2); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(1, 2)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(2, 3); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(2, 3)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(3, 4); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(3, 4)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario    string
@@ -292,41 +270,32 @@ func TestGetDescendants(t *testing.T) {
 func TestDeleteEdge(t *testing.T) {
 	graph := NewGraph()
 
-	if err := graph.AddNode(1, "A", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err := graph.AddNode(1, "A", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(2, "B", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(2, "B", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(3, "C", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(3, "C", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(4, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(4, "D", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(5, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(5, "D", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(1, 2); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(1, 2)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(2, 3); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(2, 3)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(3, 4); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(3, 4)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(1, 5); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(1, 5)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario string
@@ -381,33 +350,26 @@ func TestDeleteEdge(t *testing.T) {
 func TestDeleteNode(t *testing.T) {
 	graph := NewGraph()
 
-	if err := graph.AddNode(1, "A", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err := graph.AddNode(1, "A", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(2, "B", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(2, "B", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(3, "C", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(3, "C", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(4, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(4, "D", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(1, 2); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(1, 2)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(2, 3); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(2, 3)
+	require.Nil(t, err)
 
-	if err := graph.AddEdge(3, 4); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddEdge(3, 4)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario     string
@@ -456,21 +418,17 @@ func TestDeleteNode(t *testing.T) {
 func TestAddEdge(t *testing.T) {
 	graph := NewGraph()
 
-	if err := graph.AddNode(11, "A", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err := graph.AddNode(11, "A", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(12, "B", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(12, "B", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(13, "C", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(13, "C", nil)
+	require.Nil(t, err)
 
-	if err := graph.AddNode(14, "D", nil); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add node", err, nil)
-	}
+	err = graph.AddNode(14, "D", nil)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario     string
