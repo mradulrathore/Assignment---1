@@ -26,26 +26,26 @@ func Init() error {
 	for moreInput {
 		showMenu()
 
-		userChoice, err := getUserChoice()
+		userChoice, err := ListUserChoice()
 		if err != nil {
 			return err
 		}
 
 		switch userChoice {
 		case "1":
-			if err := getParent(graph); err != nil {
+			if err := ListParent(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "2":
-			if err := getChild(graph); err != nil {
+			if err := ListChild(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "3":
-			if err := getAncestors(graph); err != nil {
+			if err := ListAncestors(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "4":
-			if err := getDescendants(graph); err != nil {
+			if err := ListDescendants(graph); err != nil {
 				fmt.Println(err)
 			}
 		case "5":
@@ -88,7 +88,7 @@ func showMenu() {
 	fmt.Println("-------------------")
 }
 
-func getUserChoice() (string, error) {
+func ListUserChoice() (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var userChoice string
@@ -105,7 +105,7 @@ func getUserChoice() (string, error) {
 	return userChoice, nil
 }
 
-func getParent(graph graphServ.Graph) error {
+func ListParent(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
@@ -115,27 +115,27 @@ func getParent(graph graphServ.Graph) error {
 	if scanner.Scan() {
 		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			log.Println("scan for node's id (get immediate parent) failed")
-			return errors.Wrap(err, "scan for node's id (get immediate parent) failed")
+			log.Println("scan for node's id (List immediate parent) failed")
+			return errors.Wrap(err, "scan for node's id (List immediate parent) failed")
 		}
 		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		log.Println("scan for node's id (get immediate parent) failed")
-		return errors.Wrap(err, "scan for node's id (get immediate parent) failed")
+		log.Println("scan for node's id (List immediate parent) failed")
+		return errors.Wrap(err, "scan for node's id (List immediate parent) failed")
 	}
 
-	nodes, err := graph.GetNodeParent(id)
+	nodes, err := graph.ListNodeParent(id)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(graph.GetNodesID(nodes))
+	fmt.Println(graph.ListNodesID(nodes))
 
 	return nil
 }
 
-func getChild(graph graphServ.Graph) error {
+func ListChild(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
@@ -145,27 +145,27 @@ func getChild(graph graphServ.Graph) error {
 	if scanner.Scan() {
 		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			log.Println("scan for node's id (get immediate child) failed")
-			return errors.Wrap(err, "scan for node's id (get immediate child) failed")
+			log.Println("scan for node's id (List immediate child) failed")
+			return errors.Wrap(err, "scan for node's id (List immediate child) failed")
 		}
 		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		log.Println("scan for node's id (get immediate child) failed")
-		return errors.Wrap(err, "scan for node's id (get immediate child) failed")
+		log.Println("scan for node's id (List immediate child) failed")
+		return errors.Wrap(err, "scan for node's id (List immediate child) failed")
 	}
 
-	nodes, err := graph.GetNodeChild(id)
+	nodes, err := graph.ListNodeChild(id)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(graph.GetNodesID(nodes))
+	fmt.Println(graph.ListNodesID(nodes))
 
 	return nil
 }
 
-func getAncestors(graph graphServ.Graph) error {
+func ListAncestors(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
@@ -175,27 +175,27 @@ func getAncestors(graph graphServ.Graph) error {
 	if scanner.Scan() {
 		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			log.Println("scan for node's id (get ancestors) failed")
-			return errors.Wrap(err, "scan for node's id (get ancestors) failed")
+			log.Println("scan for node's id (List ancestors) failed")
+			return errors.Wrap(err, "scan for node's id (List ancestors) failed")
 		}
 		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		log.Println("scan for node's id (get ancestors) failed")
-		return errors.Wrap(err, "scan for node's id (get ancestors) failed")
+		log.Println("scan for node's id (List ancestors) failed")
+		return errors.Wrap(err, "scan for node's id (List ancestors) failed")
 	}
 
-	nodes, err := graph.GetAncestors(id)
+	nodes, err := graph.ListAncestors(id)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(graph.GetNodesID(nodes))
+	fmt.Println(graph.ListNodesID(nodes))
 
 	return nil
 }
 
-func getDescendants(graph graphServ.Graph) error {
+func ListDescendants(graph graphServ.Graph) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var id int
@@ -205,22 +205,22 @@ func getDescendants(graph graphServ.Graph) error {
 	if scanner.Scan() {
 		i, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
-			log.Println("scan for node's id (get descendants) failed")
-			return errors.Wrap(err, "scan for node's id (get descendants) failed")
+			log.Println("scan for node's id (List descendants) failed")
+			return errors.Wrap(err, "scan for node's id (List descendants) failed")
 		}
 		id = i
 	}
 	if err := scanner.Err(); err != nil {
-		log.Println("scan for node's id (get descendants) failed")
-		return errors.Wrap(err, "scan for node's id (get descendants) failed")
+		log.Println("scan for node's id (List descendants) failed")
+		return errors.Wrap(err, "scan for node's id (List descendants) failed")
 	}
 
-	nodes, err := graph.GetDescendants(id)
+	nodes, err := graph.ListDescendants(id)
 	if err != nil {
 		return err
 	}
 
-	fmt.Println(graph.GetNodesID(nodes))
+	fmt.Println(graph.ListNodesID(nodes))
 
 	return nil
 }
@@ -372,7 +372,7 @@ func addNode(graph graphServ.Graph) error {
 
 	metaData := make(map[string]string)
 
-	if err := getAdditionInfo(metaData); err != nil {
+	if err := ListAdditionInfo(metaData); err != nil {
 		log.Println("scan for node's metadata failed")
 		return errors.Wrap(err, "scan for node's metadata failed")
 	}
@@ -384,7 +384,7 @@ func addNode(graph graphServ.Graph) error {
 	return nil
 }
 
-func getAdditionInfo(metaData map[string]string) error {
+func ListAdditionInfo(metaData map[string]string) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var userChoice string
@@ -429,7 +429,7 @@ func getAdditionInfo(metaData map[string]string) error {
 
 		metaData[key] = value
 
-		if err := getAdditionInfo(metaData); err != nil {
+		if err := ListAdditionInfo(metaData); err != nil {
 			return err
 		}
 	}
