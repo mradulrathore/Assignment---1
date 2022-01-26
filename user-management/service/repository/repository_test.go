@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	usr "github.com/mradulrathore/user-management/service/user"
+	"github.com/stretchr/testify/require"
 )
 
 func TestLoad(t *testing.T) {
@@ -13,18 +14,17 @@ func TestLoad(t *testing.T) {
 	defer repo1.Close()
 
 	dataEmptyFilePath := "user_data_empty_test.json"
-	if err := repo1.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
+	err := repo1.Load(dataEmptyFilePath)
+	require.Nil(t, err)
+
 	defer os.Remove(repo1.file.Name())
 
 	repo2 := NewRepo()
 	defer repo2.Close()
 
 	dataFilePath := "user_data_test.json"
-	if err := repo2.Load(dataFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
+	err = repo2.Load(dataFilePath)
+	require.Nil(t, err)
 }
 
 func TestAdd(t *testing.T) {
@@ -32,20 +32,16 @@ func TestAdd(t *testing.T) {
 	defer repo.Close()
 
 	dataEmptyFilePath := "user_data_empty_test.json"
-	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
+	err := repo.Load(dataEmptyFilePath)
+	require.Nil(t, err)
+
 	defer os.Remove(dataEmptyFilePath)
 
 	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
-	}
+	require.Nil(t, err)
 
 	userAlreadyExist, err := usr.New("Rahul", 24, "Indore", 43, []string{"A", "B", "C", "D", "E"})
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
-	}
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario string
@@ -77,9 +73,9 @@ func TestGetAll(t *testing.T) {
 	defer repo.Close()
 
 	dataEmptyFilePath := "user_data_empty_test.json"
-	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
+	err := repo.Load(dataEmptyFilePath)
+	require.Nil(t, err)
+
 	defer os.Remove(dataEmptyFilePath)
 
 	tests := []struct {
@@ -206,19 +202,16 @@ func TestDeleteByRollNo(t *testing.T) {
 	defer repo.Close()
 
 	dataEmptyFilePath := "user_data_empty_test.json"
-	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
+	err := repo.Load(dataEmptyFilePath)
+	require.Nil(t, err)
+
 	defer os.Remove(dataEmptyFilePath)
 
 	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
-	}
+	require.Nil(t, err)
 
-	if err := repo.Add(user); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "addd user", err, nil)
-	}
+	err = repo.Add(user)
+	require.Nil(t, err)
 
 	tests := []struct {
 		scenario string
@@ -249,27 +242,20 @@ func TestSave(t *testing.T) {
 	defer repo.Close()
 
 	dataEmptyFilePath := "user_data_empty_test.json"
-	if err := repo.Load(dataEmptyFilePath); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "load data", err, nil)
-	}
+	err := repo.Load(dataEmptyFilePath)
+	require.Nil(t, err)
+
 	defer os.Remove(repo.file.Name())
 
 	user, err := usr.New("Mradul", 21, "Indore", 43, []string{"A", "B", "C", "D"})
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "new user", err, nil)
-	}
+	require.Nil(t, err)
 
-	if err := repo.Add(user); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add user", err, nil)
-	}
+	err = repo.Add(user)
+	require.Nil(t, err)
 
 	users, err := repo.List("name", true)
-	if err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "get all user", err, nil)
-	}
+	require.Nil(t, err)
 
-	if err := repo.Save(users); err != nil {
-		t.Errorf("Scenario: %s \n got: %v, expected: %v", "save data", err, nil)
-	}
-
+	err = repo.Save(users)
+	require.Nil(t, err)
 }
