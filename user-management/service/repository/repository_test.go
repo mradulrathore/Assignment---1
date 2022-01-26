@@ -85,63 +85,63 @@ func TestGetAll(t *testing.T) {
 	tests := []struct {
 		scenario string
 		field    string
-		order    int
+		ASCOrder bool
 		err      error
 	}{{
 		scenario: "get all users details in ascending order of name",
 		field:    "name",
-		order:    1,
+		ASCOrder: true,
 		err:      nil,
 	}, {
 		scenario: "get all users details in descending order of name",
 		field:    "name",
-		order:    2,
+		ASCOrder: false,
 		err:      nil,
 	}, {
 		scenario: "get all users details in ascending order of age",
 		field:    "age",
-		order:    1,
+		ASCOrder: true,
 		err:      nil,
 	}, {
 		scenario: "get all users details in descending order of age",
 		field:    "age",
-		order:    2,
+		ASCOrder: false,
 		err:      nil,
 	}, {
 		scenario: "get all users details in ascending order of address",
 		field:    "address",
-		order:    1,
+		ASCOrder: true,
 		err:      nil,
 	}, {
 		scenario: "get all users details in descending order of address",
 		field:    "address",
-		order:    2,
+		ASCOrder: false,
 		err:      nil,
 	}, {
 		scenario: "get all users details in ascending order of rollno",
 		field:    "rollno",
-		order:    1,
+		ASCOrder: true,
 		err:      nil,
 	}, {
 		scenario: "get all users details in descending order of rollno",
 		field:    "rollno",
-		order:    2,
+		ASCOrder: false,
 		err:      nil,
 	}}
 
 	for _, tc := range tests {
-		users, err := repo.GetAll(tc.field, tc.order)
+		users, err := repo.List(tc.field, tc.ASCOrder)
 		if err != tc.err {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		}
-		if err := checkSortingOrder(tc.field, tc.order, users); err != nil {
+		if err := checkSortingOrder(tc.field, tc.ASCOrder, users); err != nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		}
 	}
 }
 
-func checkSortingOrder(field string, order int, users []usr.User) error {
-	if order == 1 {
+func checkSortingOrder(field string, ASCOrder bool, users []usr.User) error {
+	if ASCOrder {
 		//ascending
 		switch field {
 		case "name ":
@@ -169,7 +169,7 @@ func checkSortingOrder(field string, order int, users []usr.User) error {
 				}
 			}
 		}
-	} else if order == 2 {
+	} else {
 		//descending
 		switch field {
 		case "name ":
@@ -235,7 +235,7 @@ func TestDeleteByRollNo(t *testing.T) {
 	}}
 
 	for _, tc := range tests {
-		err := repo.DeleteByRollNo(tc.rollNo)
+		err := repo.Delete(tc.rollNo)
 		if tc.err != nil && err == nil {
 			t.Errorf("Scenario: %s \n got: %v, expected: %v", tc.scenario, err, tc.err)
 		} else if tc.err == nil && err != nil {
@@ -263,7 +263,7 @@ func TestSave(t *testing.T) {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "add user", err, nil)
 	}
 
-	users, err := repo.GetAll("name", 1)
+	users, err := repo.List("name", true)
 	if err != nil {
 		t.Errorf("Scenario: %s \n got: %v, expected: %v", "get all user", err, nil)
 	}

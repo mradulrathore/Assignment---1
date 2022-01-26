@@ -21,16 +21,17 @@ type User struct {
 
 func New(name string, age int, address string, rollNo int, courses []string) (User, error) {
 	var user User
-	var err error
-
 	user.Name = name
 	user.Age = age
 	user.Address = address
 	user.RollNo = rollNo
-	user.Courses, err = getCourse(courses)
+
+	c, err := getCourse(courses)
 	if err != nil {
 		return User{}, err
 	}
+
+	user.Courses = c
 
 	if err = user.validate(); err != nil {
 		log.Println(err)
@@ -42,10 +43,8 @@ func New(name string, age int, address string, rollNo int, courses []string) (Us
 
 func getCourse(courses []string) ([]enum.Course, error) {
 	var courseEnum []enum.Course
-	var err error
-	var course enum.Course
 	for _, c := range courses {
-		course, err = enum.CourseString(c)
+		course, err := enum.CourseString(c)
 		if err != nil {
 			log.Println(err)
 			return []enum.Course{}, err
@@ -79,7 +78,7 @@ func courseString(course []enum.Course) []string {
 	return courses
 }
 
-func EncodeUser(users []User) ([]byte, error) {
+func EncodeUsers(users []User) ([]byte, error) {
 	userB, err := json.Marshal(users)
 	if err != nil {
 		log.Println(err)
@@ -89,7 +88,7 @@ func EncodeUser(users []User) ([]byte, error) {
 	return userB, nil
 }
 
-func DecodeUser(userB []byte) ([]User, error) {
+func DecodeUsers(userB []byte) ([]User, error) {
 	var users []User
 	if err := json.Unmarshal(userB, &users); err != nil {
 		log.Println(err)

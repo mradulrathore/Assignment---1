@@ -13,13 +13,17 @@ import (
 const (
 	UserExistErr    = "user exist with id:%d"
 	UserNotExistErr = "user does not exist with id:%d"
+	Name            = "name"
+	RollNo          = "rollno"
+	Address         = "address"
+	Age             = "age"
 )
 
 type Repository interface {
 	Load(dataFilePath string) error
 	Add(user usr.User) error
-	GetAll(field string, order int) (users []usr.User, err error)
-	DeleteByRollNo(id int) error
+	List(field string, ASCOrder bool) (users []usr.User, err error)
+	Delete(rollno int) error
 	Save(users []usr.User) error
 	Close() error
 }
@@ -37,14 +41,15 @@ func (r *repository) Load(dataFilePath string) error {
 	if err := open(r, dataFilePath); err != nil {
 		return err
 	}
+
 	r.users = make(map[int]usr.User)
 
-	usersTemp, err := retrieveData(r)
+	usrs, err := retrieveData(r)
 	if err != nil {
 		return err
 	}
 
-	for _, user := range usersTemp {
+	for _, user := range usrs {
 		r.users[user.RollNo] = user
 	}
 
@@ -56,14 +61,15 @@ func open(r *repository, dataFilePath string) error {
 		return nil
 	}
 
-	var err error
-	r.file, err = os.OpenFile(dataFilePath, os.O_RDWR|os.O_CREATE, 0755)
+	file, err := os.OpenFile(dataFilePath, os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
 
-	return err
+	r.file = file
+
+	return nil
 }
 
 func retrieveData(r *repository) ([]usr.User, error) {
@@ -85,16 +91,16 @@ func retrieveData(r *repository) ([]usr.User, error) {
 		return []usr.User{}, err
 	}
 
-	usersDisk, err := usr.DecodeUser(dataB)
+	users, err := usr.DecodeUsers(dataB)
 	if err != nil {
 		return []usr.User{}, err
 	}
 
-	return usersDisk, nil
+	return users, nil
 }
 
 func (r *repository) Add(user usr.User) error {
-	if exist := r.checkDataExistence(user.RollNo); exist {
+	if _, exist := r.users[user.RollNo]; exist {
 		err := fmt.Errorf(UserExistErr, user.RollNo)
 		log.Println(err)
 		return err
@@ -104,75 +110,74 @@ func (r *repository) Add(user usr.User) error {
 	return nil
 }
 
-func (r *repository) checkDataExistence(rollno int) bool {
-	_, exists := r.users[rollno]
-	return exists
-}
-
-func (r *repository) GetAll(field string, order int) ([]usr.User, error) {
-	var usersTemp []usr.User
+func (r *repository) List(field string, ASCOrder bool) ([]usr.User, error) {
+	var users []usr.User
 	for _, user := range r.users {
-		usersTemp = append(usersTemp, user)
+		users = append(users, user)
 	}
 
-	if order == 1 {
-		sortAscCustom(usersTemp, field)
+	if ASCOrder {
+		sortAscCustom(users, field)
 	} else {
-		sortDescCustom(usersTemp, field)
+		sortDescCustom(users, field)
 	}
 
-	return usersTemp, nil
+	return users, nil
 }
 
-func sortAscCustom(usersDisk []usr.User, field string) {
-	sort.SliceStable(usersDisk, func(i, j int) bool {
+func sortAscCustom(users []usr.User, field string) {
+	sort.SliceStable(users, func(i, j int) bool {
 		switch field {
-		case "name":
-			return (strings.Compare(usersDisk[i].Name, usersDisk[j].Name) == -1)
-		case "rollno":
-			return (usersDisk[i].RollNo < usersDisk[j].RollNo)
-		case "address":
-			return (strings.Compare(usersDisk[i].Address, usersDisk[j].Address) == -1)
-		case "age":
-			return (usersDisk[i].Age < usersDisk[j].Age)
+		case Name:
+			return (strings.Compare(users[i].Name, users[j].Name) == -1)
+		case RollNo:
+			return (users[i].RollNo < users[j].RollNo)
+		case Address:
+			return (strings.Compare(users[i].Address, users[j].Address) == -1)
+		case Age:
+			return (users[i].Age < users[j].Age)
+		default:
+			return true
 		}
-		return true
 	})
 }
 
-func sortDescCustom(usersDisk []usr.User, field string) {
-	sort.SliceStable(usersDisk, func(i, j int) bool {
+func sortDescCustom(users []usr.User, field string) {
+	sort.SliceStable(users, func(i, j int) bool {
 		switch field {
-		case "name":
-			return (strings.Compare(usersDisk[i].Name, usersDisk[j].Name) == 1)
-		case "rollno":
-			return (usersDisk[i].RollNo > usersDisk[j].RollNo)
-		case "address":
-			return (strings.Compare(usersDisk[i].Address, usersDisk[j].Address) == 1)
-		case "age":
-			return (usersDisk[i].Age > usersDisk[j].Age)
+		case Name:
+			return (strings.Compare(users[i].Name, users[j].Name) == 1)
+		case RollNo:
+			return (users[i].RollNo > users[j].RollNo)
+		case Address:
+			return (strings.Compare(users[i].Address, users[j].Address) == 1)
+		case Age:
+			return (users[i].Age > users[j].Age)
+		default:
+			return true
 		}
-		return true
 	})
 }
 
-func (r *repository) DeleteByRollNo(rollno int) error {
-	if exist := r.checkDataExistence(rollno); !exist {
+func (r *repository) Delete(rollno int) error {
+	if _, exist := r.users[rollno]; !exist {
 		err := fmt.Errorf(UserNotExistErr, rollno)
 		log.Println(err)
 		return err
 	}
 
 	delete(r.users, rollno)
+
 	return nil
 }
 
 func (r *repository) Save(users []usr.User) error {
-	dataB, err := usr.EncodeUser(users)
+	dataB, err := usr.EncodeUsers(users)
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+
 	if err = r.file.Truncate(0); err != nil {
 		return err
 	}
@@ -180,6 +185,7 @@ func (r *repository) Save(users []usr.User) error {
 	if err != nil {
 		return err
 	}
+
 	_, err = r.file.Write(dataB)
 	if err != nil {
 		log.Println(err)

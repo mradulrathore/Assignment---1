@@ -57,12 +57,12 @@ func Init() error {
 				fmt.Println(err)
 			}
 		case "4":
-			if err = save(repository); err != nil {
+			if err := save(repository); err != nil {
 				fmt.Println(err)
 			}
 		case "5":
 			moreInput = false
-			if err = confirmSave(repository); err != nil {
+			if err := confirmSave(repository); err != nil {
 				moreInput = true
 			} else {
 				fmt.Println("exiting")
@@ -91,6 +91,7 @@ func getUserChoice() (string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	var userChoice string
+
 	if scanner.Scan() {
 		userChoice = scanner.Text()
 		userChoice = strings.TrimSpace(userChoice)
@@ -99,6 +100,7 @@ func getUserChoice() (string, error) {
 		log.Println(err)
 		return "", err
 	}
+
 	return userChoice, nil
 }
 
@@ -106,7 +108,9 @@ func addUser(repository repo.Repository) error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Printf("Full Name: ")
+
 	var name string
+
 	if scanner.Scan() {
 		name = scanner.Text()
 		name = strings.TrimSpace(name)
@@ -116,15 +120,17 @@ func addUser(repository repo.Repository) error {
 		return err
 	}
 
-	var age int
-	var err error
 	fmt.Printf("Age: ")
+
+	var age int
+
 	if scanner.Scan() {
-		age, err = strconv.Atoi(string(scanner.Bytes()))
+		a, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
 			log.Println(err)
 			return err
 		}
+		age = a
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
@@ -132,7 +138,9 @@ func addUser(repository repo.Repository) error {
 	}
 
 	fmt.Printf("Address: ")
+
 	var address string
+
 	if scanner.Scan() {
 		address = scanner.Text()
 		address = strings.TrimSpace(address)
@@ -142,14 +150,17 @@ func addUser(repository repo.Repository) error {
 		return err
 	}
 
-	var rollNo int
 	fmt.Printf("Roll No : ")
+
+	var rollNo int
+
 	if scanner.Scan() {
-		rollNo, err = strconv.Atoi(string(scanner.Bytes()))
+		r, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
 			log.Println(err)
 			return err
 		}
+		rollNo = r
 	}
 	if err := scanner.Err(); err != nil {
 		return err
@@ -177,16 +188,18 @@ func addUser(repository repo.Repository) error {
 func getCourse() ([]string, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	var courses []string
-	var err error
 	fmt.Printf("Enter number of courses you want to enrol (atleast %d) ", MinCouses)
+
+	var courses []string
 	var numCourse int
+
 	if scanner.Scan() {
-		numCourse, err = strconv.Atoi(string(scanner.Bytes()))
+		n, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
 			log.Println(err)
 			return []string{}, err
 		}
+		numCourse = n
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
@@ -202,6 +215,7 @@ func getCourse() ([]string, error) {
 		fmt.Printf("Enter course - %d: ", i)
 
 		var course string
+
 		if scanner.Scan() {
 			course = scanner.Text()
 			course = strings.TrimSpace(course)
@@ -214,7 +228,7 @@ func getCourse() ([]string, error) {
 		courses = append(courses, course)
 	}
 
-	if err = checkDuplicateCourse(courses); err != nil {
+	if err := checkDuplicateCourse(courses); err != nil {
 		return []string{}, err
 	}
 
@@ -237,10 +251,12 @@ func checkDuplicateCourse(courses []string) error {
 }
 
 func getAll(repository repo.Repository) ([]usr.User, error) {
+	scanner := bufio.NewScanner(os.Stdin)
+
 	fmt.Print("Field Name to sort details on: ")
 
-	scanner := bufio.NewScanner(os.Stdin)
 	var field string
+
 	if scanner.Scan() {
 		field = scanner.Text()
 		field = strings.TrimSpace(field)
@@ -251,21 +267,25 @@ func getAll(repository repo.Repository) ([]usr.User, error) {
 	}
 
 	fmt.Print("\n1. Ascending 2.Descending : ")
-	var order int
-	var err error
+
+	var order string
+
 	if scanner.Scan() {
-		order, err = strconv.Atoi(string(scanner.Bytes()))
-		if err != nil {
-			log.Println(err)
-			return []usr.User{}, err
-		}
+		order = scanner.Text()
+		order = strings.TrimSpace(order)
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
 		return []usr.User{}, err
 	}
 
-	users, err := repository.GetAll(field, order)
+	var ASCOrder bool = true
+
+	if order == "2" {
+		ASCOrder = false
+	}
+
+	users, err := repository.List(field, ASCOrder)
 	if err != nil {
 		return []usr.User{}, err
 	}
@@ -282,24 +302,26 @@ func display(users []usr.User) {
 }
 
 func deleteByRollNo(repository repo.Repository) error {
+	scanner := bufio.NewScanner(os.Stdin)
+
 	fmt.Print("Enter roll no to delete: ")
 
-	scanner := bufio.NewScanner(os.Stdin)
 	var rollNo int
-	var err error
+
 	if scanner.Scan() {
-		rollNo, err = strconv.Atoi(string(scanner.Bytes()))
+		r, err := strconv.Atoi(string(scanner.Bytes()))
 		if err != nil {
 			log.Println(err)
 			return err
 		}
+		rollNo = r
 	}
 	if err := scanner.Err(); err != nil {
 		log.Println(err)
 		return err
 	}
 
-	if err = repository.DeleteByRollNo(rollNo); err != nil {
+	if err := repository.Delete(rollNo); err != nil {
 		return err
 	}
 
@@ -310,7 +332,7 @@ func deleteByRollNo(repository repo.Repository) error {
 
 func save(repository repo.Repository) error {
 	//saving data in ascending order of name
-	users, err := repository.GetAll("name", 1)
+	users, err := repository.List("name", true)
 	if err != nil {
 		return err
 	}
@@ -325,10 +347,12 @@ func save(repository repo.Repository) error {
 }
 
 func confirmSave(repository repo.Repository) error {
-	fmt.Println("Do you want to save the data(y/n)?")
-
 	scanner := bufio.NewScanner(os.Stdin)
+
+	fmt.Println("Do you want to save the data(" + Accept + "/" + Deny + ")?")
+
 	var userChoice string
+
 	if scanner.Scan() {
 		userChoice = scanner.Text()
 		userChoice = strings.TrimSpace(userChoice)
@@ -342,7 +366,7 @@ func confirmSave(repository repo.Repository) error {
 		return err
 	}
 
-	if userChoice == "y" {
+	if userChoice == Accept {
 		if err := save(repository); err != nil {
 			return err
 		}
@@ -352,7 +376,7 @@ func confirmSave(repository repo.Repository) error {
 
 func validateConfirmation(userChoice string) error {
 	if userChoice != Accept && userChoice != Deny {
-		err := fmt.Errorf("%s", "invalid choice")
+		err := fmt.Errorf("%s: %s", "invalid choice", userChoice)
 		log.Println(err)
 		return err
 	}
