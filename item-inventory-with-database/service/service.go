@@ -8,7 +8,6 @@ import (
 )
 
 func Initialize() error {
-
 	config := config.LoadAppConfig()
 
 	db, cleanup, err := Open(config)
