@@ -1,17 +1,21 @@
-package item
+package service
 
 import (
 	"fmt"
 
 	validation "github.com/go-ozzo/ozzo-validation"
-	"github.com/mradulrathore/item-inventory/item/enum"
+	"github.com/mradulrathore/item-inventory/service/enum"
 )
 
 type Item struct {
-	Name     string        `json:"name"`
-	Price    float64       `json:"price"`
-	Quantity int           `json:"quantity"`
-	Type     enum.ItemType `json:"type"`
+	Name     string        `gorm:"column:Name;type:varchar;size:255;" json:"name"`
+	Price    float64       `gorm:"column:Price;type:float" json:"price"`
+	Quantity int           `gorm:"column:Quantity:type:int;" json:"quantity"`
+	Type     enum.ItemType `gorm:"column:Type;type:enum('raw','manufactured','imported');" json:"type"`
+}
+
+func (m *Item) TableName() string {
+	return "items"
 }
 
 func New(name string, price float64, quantity int, typeItem string) (Item, error) {

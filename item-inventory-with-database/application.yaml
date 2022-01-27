@@ -1,0 +1,11 @@
+database:
+  user: root
+  password: 
+  host: 127.0.0.1:3306
+  name: item_inventory
+  maxIdleConnections: 5
+  maxOpenConnections: 5
+  maxConnectionLifetime: 50s
+  maxConnectionIdletime: 50s
+  disableTLS: true
+  debug: true
